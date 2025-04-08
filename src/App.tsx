@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { AppIcon } from './components/AppIcon';
 import { NotesScreen } from './screens/NotesScreen';
 import { SocialsScreen } from './screens/SocialsScreen';
-import { WorkScreen } from './screens/WorkScreen';
+import { EventScreen } from './screens/EventScreen';
 import type { AppIcon as AppIconType } from './types';
 import { Music } from 'lucide-react';
 
@@ -66,7 +66,7 @@ function App() {
   const apps: AppIconType[] = [
     { id: 'notes', name: 'notes', icon: 'StickyNote', color: 'from-white/90 to-white/80', component: NotesScreen },
     { id: 'socials', name: 'socials', icon: 'AtSign', color: 'from-white/90 to-white/80', component: SocialsScreen },
-    { id: 'partiful', name: 'partiful', icon: 'PartyPopper', color: 'from-white/90 to-white/80', component: WorkScreen },
+    { id: 'partiful', name: 'partiful', icon: 'PartyPopper', color: 'from-white/90 to-white/80', component: EventScreen },
   ];
 
   // Handle app closing with proper animation
