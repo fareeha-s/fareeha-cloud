@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { AppScreenProps } from '../types';
 import { motion, useReducedMotion } from 'framer-motion';
 import { createTactileEffect } from '../App';
+import { PartifulEvent } from '../components/PartifulEvent';
 
-export const WorkScreen: React.FC<AppScreenProps> = () => {
+export const EventScreen: React.FC<AppScreenProps> = () => {
   const prefersReducedMotion = useReducedMotion();
+  const [showPartiful, setShowPartiful] = useState(false);
   
   const projects = [
     {
@@ -52,6 +54,17 @@ export const WorkScreen: React.FC<AppScreenProps> = () => {
     }
   };
 
+  if (showPartiful) {
+    return (
+      <PartifulEvent 
+        onBack={() => {
+          setShowPartiful(false);
+          createTactileEffect();
+        }}
+      />
+    );
+  }
+
   return (
     <div className="h-full px-5 py-6" onClick={(e) => e.stopPropagation()}>
       <motion.div 
@@ -73,6 +86,10 @@ export const WorkScreen: React.FC<AppScreenProps> = () => {
             onClick={(e) => {
               e.stopPropagation();
               createTactileEffect();
+              // Open the Partiful iframe when the first project is clicked
+              if (index === 0) {
+                setShowPartiful(true);
+              }
             }}
             variants={itemVariants}
             style={{ 
