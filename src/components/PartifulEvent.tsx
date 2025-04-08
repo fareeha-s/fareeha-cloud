@@ -32,18 +32,44 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
     e.stopPropagation(); // Stop event from bubbling up
     onBack();
   };
+
+  // Function to handle external link clicks, prevents event propagation
+  const handleExternalLinkClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Stop event from bubbling up
+  };
+  
+  // Function to prevent any clicks from bubbling up
+  const preventBubbling = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
   
   return (
-    <div className="fixed inset-0 overflow-auto z-50" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
-      {/* Main content - removed onClick handler from section */}
-      <section className="WJXgWN min-h-screen w-full overflow-y-auto" style={{ backgroundColor: '#0e2b17', padding: '20px' }}>
-        {/* Partiful logo in upper left */}
+    // Adding onClick handler to prevent bubbling on the entire component
+    <div 
+      className="fixed inset-0 overflow-auto z-50" 
+      style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+      onClick={preventBubbling}
+    >
+      {/* Main content - also adding onClick here for extra safety */}
+      <section 
+        className="WJXgWN min-h-screen w-full overflow-y-auto" 
+        style={{ backgroundColor: '#0e2b17', padding: '20px' }}
+        onClick={preventBubbling}
+      >
+        {/* Partiful logo in upper left - now with link to partiful.com */}
         <div className="absolute top-6 left-6">
-          <img 
-            src="/icons/partiful.png" 
-            alt="Partiful" 
-            className="w-6 h-6" 
-          />
+          <a 
+            href="https://partiful.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            onClick={handleExternalLinkClick}
+          >
+            <img 
+              src="/icons/partiful.png" 
+              alt="Partiful" 
+              className="w-6 h-6" 
+            />
+          </a>
         </div>
 
         {/* Back arrow moved to top right */}
@@ -137,6 +163,7 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
                 rel="noopener noreferrer"
                 className="ptf-l-5a8R- ptf-l-4Jj6a"
                 style={{ color: '#E6F8C1', fontSize: '14px', cursor: 'pointer' }}
+                onClick={handleExternalLinkClick}
               >
                 surf it scroll it pause it click it cross it crack it ssswitch update it
               </a>
@@ -149,11 +176,11 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
             style={{ color: 'white', fontSize: '14px', fontWeight: 400, overflowWrap: 'break-word', whiteSpace: 'pre-line', wordBreak: 'break-word', minHeight: '40px', textWrap: 'pretty' }}
           >
             quick hits of obscure knowledge 💚 
-            
+            <br></br><br></br>
             bring that random wikipedia rabbithole only you seem to know about. weird nature stuff, unsolved mysteries, watershed moments, conspiracy theories, crazy undercover govt ops, cool people etc etc <span style={{ color: '#5938e8' }}>🌀🌀🌀</span> 
-            
+            <br></br><br></br>
             wiki page will go up on a projector. exactly two mins for you to brief us. +1 question from the rest of us
-            
+            <br></br><br></br>
             limited capacity! tell us what you'd share 🫶🏼
           </span>
         </div>
