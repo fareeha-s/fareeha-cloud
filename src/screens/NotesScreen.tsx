@@ -1,135 +1,105 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import type { AppScreenProps } from '../types';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createTactileEffect } from '../App';
 
-type Note = {
+type NoteItem = {
   id: number;
   title: string;
   content: string;
   expanded: boolean;
+  timeframe: 'recent' | 'older';
 };
 
 export const NotesScreen: React.FC<AppScreenProps> = () => {
-  const [notes, setNotes] = useState<Note[]>([
-    { 
-      id: 1, 
-      title: "so, tell me about yourself...",
-      content: "always such a loaded question why?",
-      expanded: false
-    },
-    { 
-      id: 2, 
-      title: "social for longevity",
-      content: "research shows that maintaining strong social connections contributes significantly to longer, healthier lives. regular social interactions can reduce stress, boost immune function, and provide emotional support.",
-      expanded: false
-    },
-    { 
-      id: 3, 
-      title: "apples",
-      content: "varieties to try: honeycrisp, pink lady, granny smith, fuji. remember to pick up some at the farmers market this weekend.",
-      expanded: false
-    }
+  const [notes, setNotes] = useState<NoteItem[]>([
+    { id: 1, title: "canada", content: "no, we're not the US, we never should be, and we never will be. thank you <3", expanded: false, timeframe: 'recent' },
+    { id: 2, title: "\"so...tell me about yourself\"", content: "an impossible question to answer briefly.", expanded: false, timeframe: 'older' },
+    { id: 3, title: "reshaping social culture for longevity", content: "strong connections lead to longer, healthier lives.", expanded: false, timeframe: 'older' },
+    { id: 4, title: "apples", content: "honeycrisp, pink lady, granny smith, fuji.", expanded: false, timeframe: 'older' }
   ]);
-  
-  const prefersReducedMotion = useReducedMotion();
 
-  const toggleExpand = (id: number) => {
+  const toggleNote = (id: number) => {
     setNotes(notes.map(note => 
       note.id === id ? { ...note, expanded: !note.expanded } : note
     ));
-
-    // Use global tactile effect
     createTactileEffect();
   };
 
-  // Apple-like spring animation
-  const springTransition = {
-    type: "spring",
-    damping: 30,
-    stiffness: 400,
-    mass: 0.8,
-  };
+  // Filter notes by timeframe
+  const recentNotes = notes.filter(note => note.timeframe === 'recent');
+  const olderNotes = notes.filter(note => note.timeframe === 'older');
+
+  // Note renderer function
+  const renderNote = (note: NoteItem) => (
+    <div key={note.id}>
+      <div 
+        className="flex items-center cursor-pointer group py-1.5" 
+        onClick={() => toggleNote(note.id)}
+      >
+        <motion.div 
+          animate={{ rotate: note.expanded ? 90 : 0 }}
+          transition={{ duration: 0.2, ease: [0.3, 1.1, 0.3, 0.9] }}
+          className="w-5 h-5 flex items-center justify-center text-white/50 group-hover:text-white/70"
+        >
+          <ChevronRight size={16} />
+        </motion.div>
+        <h3 className={`text-sm font-normal ml-2 ${note.expanded ? 'text-white' : 'text-white/90 group-hover:text-white'}`}>
+          {note.title}
+        </h3>
+      </div>
+      
+      <AnimatePresence initial={false}>
+        {note.expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0, y: -10 }}
+            animate={{ height: "auto", opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: -5 }}
+            transition={{ 
+              height: { duration: 0.3, ease: [0.33, 1, 0.68, 1] },
+              opacity: { duration: 0.25, ease: "easeInOut" },
+              y: { duration: 0.25, ease: "easeOut" }
+            }}
+            className="overflow-hidden"
+          >
+            <div className="pl-7 pr-3 py-1 text-white/70 text-sm max-h-60 overflow-y-auto scrollbar-hide">
+              {note.content}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 
   return (
-    <div className="h-full px-5 py-6" onClick={(e) => e.stopPropagation()}>
-      <div className="h-full overflow-y-auto scrollbar-hide space-y-3 mt-2">
-        {notes.map((note, index) => (
-          <motion.div 
-            key={note.id} 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ 
-              opacity: 1, 
-              y: 0, 
-              transition: {
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-                delay: index * 0.03,
-                duration: 0.2
-              }
-            }}
-            className="border-b border-white/10"
-          >
-            <motion.div 
-              className="py-3 flex items-center cursor-pointer will-change-transform"
-              onClick={() => toggleExpand(note.id)}
-              whileHover={{ paddingLeft: 4 }}
-              whileTap={{ paddingLeft: 8 }}
-              transition={{
-                ...springTransition,
-                duration: prefersReducedMotion ? 0 : undefined
-              }}
-            >
-              <motion.div
-                initial={false}
-                animate={{ rotate: note.expanded ? 90 : 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 500,
-                  damping: 30,
-                  duration: 0.2
-                }}
-                className="flex-shrink-0 mr-2"
-              >
-                {note.expanded ? 
-                  <ChevronDown className="w-4 h-4 text-white/70" /> : 
-                  <ChevronRight className="w-4 h-4 text-white/70" />
-                }
-              </motion.div>
-              <h3 className="text-white text-sm font-normal">{note.title}</h3>
-            </motion.div>
-            
-            <AnimatePresence initial={false}>
-              {note.expanded && (
-                <motion.div
-                  key={`content-${note.id}`}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ 
-                    height: 'auto', 
-                    opacity: 1,
-                    transition: { 
-                      height: { type: "spring", stiffness: 500, damping: 30, duration: 0.2 },
-                      opacity: { duration: 0.15, ease: [0, 0, 0.2, 1] }
-                    } 
-                  }}
-                  exit={{ 
-                    height: 0, 
-                    opacity: 0,
-                    transition: { 
-                      height: { type: "spring", stiffness: 500, damping: 30, duration: 0.15 },
-                      opacity: { duration: 0.1, ease: [0.4, 0, 1, 1] }
-                    } 
-                  }}
-                  className="pl-6 pr-1 py-3 overflow-hidden will-change-transform"
-                >
-                  <p className="text-white/90 text-sm">{note.content}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        ))}
+    <div className="h-full w-full p-4" onClick={(e) => e.stopPropagation()}>
+      <div className="h-full overflow-y-auto scrollbar-hide">
+        <div className="space-y-6">
+          {/* Recent notes section */}
+          {recentNotes.length > 0 && (
+            <div>
+              <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 pl-2">
+                Previous 7 days
+              </h2>
+              <div className="space-y-2">
+                {recentNotes.map(renderNote)}
+              </div>
+            </div>
+          )}
+
+          {/* Older notes section */}
+          {olderNotes.length > 0 && (
+            <div>
+              <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 pl-2">
+                Previous 30 days
+              </h2>
+              <div className="space-y-2">
+                {olderNotes.map(renderNote)}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -10,13 +10,9 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
   
   const projects = [
     {
-      title: "partiful app",
-      description: "ios-inspired party invitation app"
+      title: "my partiful portfolio",
+      description: "everything made with love and intention"
     },
-    {
-      title: "e-commerce platform",
-      description: "modern e-commerce solution"
-    }
   ];
 
   // Apple-like spring animation
