@@ -64,9 +64,9 @@ function App() {
   });
 
   const apps: AppIconType[] = [
-    { id: 'notes', name: 'notes', icon: 'StickyNote', color: 'from-white/90 to-white/80', component: NotesScreen },
-    { id: 'socials', name: 'socials', icon: 'AtSign', color: 'from-white/90 to-white/80', component: SocialsScreen },
-    { id: 'partiful', name: 'partiful', icon: 'PartyPopper', color: 'from-white/90 to-white/80', component: EventScreen },
+    { id: 'notes', name: 'notes', icon: 'StickyNote', color: '', component: NotesScreen },
+    { id: 'socials', name: 'socials', icon: 'AtSign', color: '', component: SocialsScreen },
+    { id: 'partiful', name: 'partiful', icon: 'PartyPopper', color: '', component: EventScreen },
   ];
 
   // Handle app closing with proper animation

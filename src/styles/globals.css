@@ -1,11 +1,47 @@
 /* Partiful event styling */
 body.partiful-event-active .sidebar,
-body.partiful-event-active nav {
+body.partiful-event-active nav,
+body.partiful-event-active header,
+body.partiful-event-active footer,
+body.partiful-event-active [class*="sidebar"],
+body.partiful-event-active [class*="navigation"],
+body.partiful-event-active [id*="sidebar"],
+body.partiful-event-active [id*="nav"],
+body.partiful-event-active [class*="menu"],
+body.partiful-event-active [class*="dock"],
+body.partiful-event-active [class*="toolbar"] {
   display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
 }
 
 body.partiful-event-active {
-  overflow: hidden;
+  overflow: hidden !important;
+  background-color: #0e2b17 !important; /* Match the Partiful background color */
+}
+
+/* Aggressively hide all elements except our partiful component */
+body.partiful-event-active > *:not([class*="z-[9999]"]) {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Ensure our partiful component is visible and positioned above everything else */
+body.partiful-event-active [class*="z-[9999]"] {
+  z-index: 9999 !important;
+  position: fixed !important;
+  inset: 0 !important;
 }
 
 /* Import Inter font from Google Fonts */
