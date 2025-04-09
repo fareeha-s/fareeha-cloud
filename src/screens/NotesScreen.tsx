@@ -120,7 +120,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Note list view
   const NotesListView = () => (
     <motion.div 
-      className="h-full overflow-y-auto scrollbar-hide"
+      className="h-full overflow-y-auto scrollbar-subtle"
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, x: -30 }}
@@ -255,7 +255,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               <span className="text-xs text-white/50">{getRelativeDate(selectedNote.date)}</span>
             </div>
           </div>
-          <div className="text-white/80 text-sm leading-relaxed overflow-y-auto max-h-[calc(100vh-90px)] scrollbar-hide">
+          <div className="text-white/80 text-sm leading-relaxed overflow-y-auto max-h-[calc(100vh-90px)] scrollbar-subtle">
             {selectedNote.content}
           </div>
         </div>

@@ -36,7 +36,7 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       icon: <Send className="w-7 h-7 text-white/90" strokeWidth={1.5} />,
       url: "mailto:fareeha_s@icloud.com",
       position: 3,
-      customStyles: "bg-white/15 backdrop-blur-lg"
+      customStyles: "bg-white/15 backdrop-blur-lg border border-white/20"
     },
     {
       name: "empty1",
@@ -119,70 +119,72 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
 
   return (
     <motion.div 
-      className="grid grid-cols-3 gap-5 w-[280px] h-[280px]"
+      className="flex flex-col justify-center items-center h-full w-full"
       variants={containerVariants}
       initial="hidden"
       animate="show"
       onClick={(e) => e.stopPropagation()}
     >
-      {socials.map((social, index) => (
-        <motion.a
-          key={index}
-          href={social.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={social.icon ? { scale: 1.05 } : {}}
-          whileTap={social.icon ? { scale: 0.95 } : {}}
-          transition={{
-            ...springTransition,
-            duration: prefersReducedMotion ? 0 : undefined
-          }}
-          className="flex items-center justify-center will-change-transform"
-          onClick={(e) => {
-            if (social.icon) {
-              e.stopPropagation();
-              createTactileEffect();
-            }
-          }}
-          variants={itemVariants}
-          style={{ 
-            willChange: 'transform, opacity'
-          }}
-        >
-          {/* Only render if there's an icon */}
-          {social.icon && (
-            social.customStyles ? (
-              <motion.div
-                className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center ${social.customStyles}`}
-                whileHover={{ boxShadow: "0 0 15px 0 rgba(255, 255, 255, 0.25)" }}
-                transition={springTransition}
-              >
-                {social.icon}
-              </motion.div>
-            ) : social.isCustomIcon ? (
-              <motion.div
-                className="w-[60px] h-[60px] rounded-[14px] overflow-hidden"
-                whileHover={{ boxShadow: "0 0 15px 0 rgba(255, 255, 255, 0.25)" }}
-                transition={springTransition}
-              >
-                <img 
-                  src={social.icon as string} 
-                  alt={social.name} 
-                  className="w-full h-full object-cover" 
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                className="w-[60px] h-[60px] rounded-[14px] bg-white/15 backdrop-blur-md flex items-center justify-center"
-                whileHover={{ boxShadow: "0 0 15px 0 rgba(255, 255, 255, 0.25)" }}
-                transition={springTransition}
-              >
-                {social.icon}
-              </motion.div>
-            )
-          )}
-        </motion.a>
-      ))}
+      <div className="grid grid-cols-3 grid-rows-3 gap-6 mx-auto">
+        {socials.map((social, index) => (
+          <motion.a
+            key={index}
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={social.icon ? { scale: 1.05 } : {}}
+            whileTap={social.icon ? { scale: 0.95 } : {}}
+            transition={{
+              ...springTransition,
+              duration: prefersReducedMotion ? 0 : undefined
+            }}
+            className="flex items-center justify-center will-change-transform"
+            onClick={(e) => {
+              if (social.icon) {
+                e.stopPropagation();
+                createTactileEffect();
+              }
+            }}
+            variants={itemVariants}
+            style={{ 
+              willChange: 'transform, opacity'
+            }}
+          >
+            {/* Only render if there's an icon */}
+            {social.icon && (
+              social.customStyles ? (
+                <motion.div
+                  className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center ${social.customStyles}`}
+                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
+                  transition={springTransition}
+                >
+                  {social.icon}
+                </motion.div>
+              ) : social.isCustomIcon ? (
+                <motion.div
+                  className="w-[60px] h-[60px] rounded-[14px] overflow-hidden"
+                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
+                  transition={springTransition}
+                >
+                  <img 
+                    src={social.icon as string} 
+                    alt={social.name} 
+                    className="w-full h-full object-cover" 
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  className="w-[60px] h-[60px] rounded-[14px] bg-white/15 backdrop-blur-md flex items-center justify-center"
+                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
+                  transition={springTransition}
+                >
+                  {social.icon}
+                </motion.div>
+              )
+            )}
+          </motion.a>
+        ))}
+      </div>
     </motion.div>
   );
 };

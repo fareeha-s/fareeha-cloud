@@ -133,7 +133,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
       onTouchStart={handleInteraction}
     >
       <motion.div 
-        className="h-full overflow-y-auto scrollbar-hide"
+        className="h-full overflow-y-auto scrollbar-subtle"
         variants={containerVariants}
         initial="hidden"
         animate="show"
