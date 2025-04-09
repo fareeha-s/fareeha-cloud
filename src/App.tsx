@@ -438,6 +438,15 @@ function App() {
     mass: 1.2,
     duration: 0.3
   };
+  
+  // Special transition for the taller partiful container
+  const partifulOpeningTransition = {
+    type: "spring",
+    stiffness: 300,
+    damping: 40,
+    mass: 1.3,
+    duration: 0.4
+  };
 
   // Handle navigation between apps
   const navigateToNextApp = (e: React.MouseEvent) => {
@@ -619,14 +628,16 @@ function App() {
           ) : (
             /* Home screen title with enhanced styling */
             <motion.h2 
-              className="text-3xl text-white font-medium tracking-wide text-center text-shadow-md absolute"
+              className="text-3xl text-white font-medium tracking-wide text-center relative z-30"
               initial={{ y: 0 }}
               animate={{ y: 0 }}
               style={{ 
-                top: '15px', 
-                paddingBottom: '15px',
-                textShadow: '0 4px 10px rgba(0,0,0,0.25)',
-                filter: 'drop-shadow(0 3px 5px rgba(0,0,0,0.2))'
+                position: 'relative',
+                textShadow: '0 0 15px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3)',
+                filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.25))',
+                marginBottom: '-15px',
+                transform: 'translateY(-10px)',
+                zIndex: 30
               }}
             >
               fareeha's cloud
@@ -636,7 +647,7 @@ function App() {
 
         {/* Main container - with iOS style blur effect */}
         <motion.div 
-          className={`w-[290px] aspect-square rounded-[24px] overflow-hidden shadow-xl relative z-20 will-change-transform ${
+          className={`${activeApp === 'partiful' ? 'w-[290px] aspect-auto h-[420px]' : 'w-[290px] aspect-square'} rounded-[24px] overflow-hidden shadow-xl relative z-20 will-change-transform ${
             isLoaded ? (activeApp ? 'app-container-blur-animation app-container-bg-animation app-container-blur-active-animation app-container-bg-active-animation' : 'app-container-blur-animation app-container-bg-animation') : ''
           }`}
           onClick={(e) => {
@@ -732,12 +743,14 @@ function App() {
               }}
               animate={{
                 width: '100%',
-                height: '100%',
+                height: clonedAppIcon.app?.id === 'partiful' ? '420px' : '100%',
                 x: 0,
                 y: 0,
                 borderRadius: 24,
               }}
-              transition={appOpeningTransition}
+              transition={clonedAppIcon.app?.id === 'partiful' 
+                ? { type: "spring", stiffness: 300, damping: 40, mass: 1.3, duration: 0.4 } 
+                : appOpeningTransition}
             >
               {/* Icon in center during expansion */}
               <motion.div

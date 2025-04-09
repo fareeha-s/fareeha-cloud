@@ -31,10 +31,10 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
   };
 
   const iconMap: Record<string, React.ReactElement> = {
-    'StickyNote': <StickyNote className={`w-6 h-6 ${iconColors['StickyNote']}`} strokeWidth={1.5} />,
-    'AtSign': <AtSign className={`w-6 h-6 ${iconColors['AtSign']}`} strokeWidth={1.5} />,
-    'PartyPopper': <PartyPopper className={`w-6 h-6 ${iconColors['PartyPopper']}`} strokeWidth={1.5} />,
-    'Partiful': <img src="/icons/partiful.png" alt="Partiful" className="w-6 h-6" />,
+    'StickyNote': <StickyNote className={`w-7 h-7 ${iconColors['StickyNote']}`} strokeWidth={1.5} />,
+    'AtSign': <AtSign className={`w-7 h-7 ${iconColors['AtSign']}`} strokeWidth={1.5} />,
+    'PartyPopper': <PartyPopper className={`w-7 h-7 ${iconColors['PartyPopper']}`} strokeWidth={1.5} />,
+    'Partiful': <img src="/icons/partiful.png" alt="Partiful" className="w-7 h-7" />,
   };
 
   // Apple-like spring animation
@@ -75,11 +75,11 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
       }}
     >
       <motion.div 
-        className={`w-[55px] h-[55px] bg-white/15 backdrop-blur-sm border border-white/20 rounded-[12px] flex items-center justify-center shadow-sm will-change-transform`}
+        className={`w-[60px] h-[60px] bg-white/15 backdrop-blur-sm border border-white/20 rounded-[14px] flex items-center justify-center shadow-sm will-change-transform`}
         whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
         transition={springTransition}
       >
-        {iconMap[icon] || <div className="w-6 h-6 text-white">?</div>}
+        {iconMap[icon] || <div className="w-7 h-7 text-white">?</div>}
       </motion.div>
       {showLabel && (
         <span className="text-[11px] text-white font-normal mt-[5px] tracking-wide text-center">{displayName}</span>

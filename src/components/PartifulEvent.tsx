@@ -75,11 +75,11 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
       onClick={preventBubbling}
     >
       {/* Scrollable content container */}
-      <div className="w-full h-full overflow-auto">
+      <div className="w-full h-full overflow-auto scrollbar-subtle">
         {/* Main content section */}
         <section 
-          className="min-h-screen w-full" 
-          style={{ padding: '20px' }}
+          className="min-h-full w-full" 
+          style={{ padding: '15px 20px' }}
           onClick={preventBubbling}
         >
           {/* Header title - using Grotesk font - with proper top padding now that logo is removed */}
@@ -87,12 +87,12 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
             fontSize: '28px', 
             fontFamily: 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif', 
             lineHeight: 1.1, 
-            marginBottom: '12px', 
+            marginBottom: '10px', 
             color: 'white', 
             textAlign: 'center', 
             fontWeight: 600, 
             letterSpacing: '0.12em', 
-            paddingTop: '12px',
+            paddingTop: '8px',
             textTransform: 'lowercase',
             fontStretch: '150%',
             fontStyle: 'normal',
@@ -102,9 +102,9 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
             <span className="summary" style={{ fontStretch: 'expanded', letterSpacing: '0.08em' }}>mental static</span>
           </h1>
           
-          {/* Event image with square corners */}
-          <div className="w-full flex justify-center mb-4">
-            <div className="w-full max-w-md h-[260px] overflow-hidden">
+          {/* Event image with square corners - slightly smaller to fit more content */}
+          <div className="w-full flex justify-center mb-3">
+            <div className="w-full max-w-md h-[220px] overflow-hidden">
               <picture>
                 <source srcSet="/images/partiful/ms-giphy.webp" type="image/webp" />
                 <img 
