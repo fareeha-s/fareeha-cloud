@@ -83,8 +83,23 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
           onClick={preventBubbling}
         >
           {/* Header title - using Grotesk font - with proper top padding now that logo is removed */}
-          <h1 className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" style={{ fontSize: '32px', fontFamily: 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif', lineHeight: 1.1, marginBottom: '12px', color: 'white', textAlign: 'center', fontWeight: 600, letterSpacing: '0.5px', paddingTop: '12px' }}>
-            <span className="summary">mental static</span>
+          <h1 className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" style={{ 
+            fontSize: '28px', 
+            fontFamily: 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif', 
+            lineHeight: 1.1, 
+            marginBottom: '12px', 
+            color: 'white', 
+            textAlign: 'center', 
+            fontWeight: 600, 
+            letterSpacing: '0.12em', 
+            paddingTop: '12px',
+            textTransform: 'lowercase',
+            fontStretch: '150%',
+            fontStyle: 'normal',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden'
+          }}>
+            <span className="summary" style={{ fontStretch: 'expanded', letterSpacing: '0.08em' }}>mental static</span>
           </h1>
           
           {/* Event image with square corners */}

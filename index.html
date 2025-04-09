@@ -5,9 +5,12 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
     <title>fareeha's cloud</title>
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/background.jpg" as="image" />
     <style>
       :root {
         --app-height: 100vh;
+        --blur-animation-duration: 2.5s;
       }
       html, body {
         overflow: hidden;
@@ -19,13 +22,158 @@
         -webkit-overflow-scrolling: touch;
         touch-action: manipulation;
         height: var(--app-height);
+        background-color: transparent;
       }
       #root {
         height: 100%;
         width: 100%;
         overflow: hidden;
       }
+      /* Background image preloader with smoother transition */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background-image: url('/background.jpg');
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 2s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      body.loaded::before {
+        opacity: 1;
+      }
+
+      /* Progressive blur animation keyframes */
+      @keyframes gradualBlur {
+        0% { 
+          backdrop-filter: blur(0px); 
+          -webkit-backdrop-filter: blur(0px); 
+        }
+        20% { 
+          backdrop-filter: blur(2px); 
+          -webkit-backdrop-filter: blur(2px); 
+        }
+        40% { 
+          backdrop-filter: blur(4px); 
+          -webkit-backdrop-filter: blur(4px); 
+        }
+        60% { 
+          backdrop-filter: blur(6px); 
+          -webkit-backdrop-filter: blur(6px); 
+        }
+        80% { 
+          backdrop-filter: blur(8px); 
+          -webkit-backdrop-filter: blur(8px); 
+        }
+        100% { 
+          backdrop-filter: blur(10px); 
+          -webkit-backdrop-filter: blur(10px); 
+        }
+      }
+
+      @keyframes gradualBlurMedium {
+        0% { 
+          backdrop-filter: blur(0px); 
+          -webkit-backdrop-filter: blur(0px); 
+        }
+        25% { 
+          backdrop-filter: blur(3px); 
+          -webkit-backdrop-filter: blur(3px); 
+        }
+        50% { 
+          backdrop-filter: blur(6px); 
+          -webkit-backdrop-filter: blur(6px); 
+        }
+        75% { 
+          backdrop-filter: blur(9px); 
+          -webkit-backdrop-filter: blur(9px); 
+        }
+        100% { 
+          backdrop-filter: blur(12px); 
+          -webkit-backdrop-filter: blur(12px); 
+        }
+      }
+
+      @keyframes gradualBlurSmall {
+        0% { 
+          backdrop-filter: blur(0px); 
+          -webkit-backdrop-filter: blur(0px); 
+        }
+        50% { 
+          backdrop-filter: blur(2px); 
+          -webkit-backdrop-filter: blur(2px); 
+        }
+        100% { 
+          backdrop-filter: blur(4px); 
+          -webkit-backdrop-filter: blur(4px); 
+        }
+      }
+
+      /* Apply animations to elements */
+      .backdrop-blur-lg {
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+      }
+      
+      body.loaded .backdrop-blur-lg {
+        animation: gradualBlur var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: gradualBlur var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      
+      body.loaded .backdrop-blur-2xl {
+        animation: gradualBlurMedium var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: gradualBlurMedium var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      
+      body.loaded .backdrop-blur-sm {
+        animation: gradualBlurSmall var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: gradualBlurSmall var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      /* Force transparency during initial load with gradual change */
+      @keyframes fadeInBackground {
+        0% { background-color: rgba(0, 0, 0, 0.02); }
+        25% { background-color: rgba(0, 0, 0, 0.05); }
+        50% { background-color: rgba(0, 0, 0, 0.08); }
+        75% { background-color: rgba(0, 0, 0, 0.12); }
+        100% { background-color: rgba(0, 0, 0, 0.15); }
+      }
+      
+      .bg-black\/20 {
+        background-color: rgba(0, 0, 0, 0.02) !important;
+      }
+      
+      body.loaded .bg-black\/20 {
+        animation: fadeInBackground var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      
+      /* Improve rendering on mobile */
+      .will-change-transform {
+        will-change: transform;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+      }
     </style>
+    <script>
+      // Preload the background image with gradual animation
+      const img = new Image();
+      img.src = '/background.jpg';
+      img.onload = function() {
+        // Add a delay to ensure everything is ready
+        setTimeout(() => {
+          document.body.classList.add('loaded');
+        }, 300);
+      };
+      
+      // Fallback in case image loading takes too long
+      setTimeout(() => {
+        if (!document.body.classList.contains('loaded')) {
+          document.body.classList.add('loaded');
+        }
+      }, 2000);
+    </script>
   </head>
   <body>
     <div id="root"></div>
