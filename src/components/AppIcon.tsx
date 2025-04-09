@@ -27,12 +27,14 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
     'StickyNote': 'text-white',
     'AtSign': 'text-white',
     'PartyPopper': 'text-white',
+    'Partiful': 'text-white',
   };
 
   const iconMap: Record<string, React.ReactElement> = {
     'StickyNote': <StickyNote className={`w-6 h-6 ${iconColors['StickyNote']}`} strokeWidth={1.5} />,
     'AtSign': <AtSign className={`w-6 h-6 ${iconColors['AtSign']}`} strokeWidth={1.5} />,
     'PartyPopper': <PartyPopper className={`w-6 h-6 ${iconColors['PartyPopper']}`} strokeWidth={1.5} />,
+    'Partiful': <img src="/icons/partiful.png" alt="Partiful" className="w-6 h-6" />,
   };
 
   // Apple-like spring animation

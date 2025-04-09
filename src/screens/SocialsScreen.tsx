@@ -1,14 +1,16 @@
 import React from 'react';
 import type { AppScreenProps } from '../types';
 import { motion, useReducedMotion } from 'framer-motion';
-import { AtSign, Instagram, Clock } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { createTactileEffect } from '../App';
 
 type SocialApp = {
   name: string;
-  icon: React.ReactNode;
+  icon: React.ReactNode | string;
   url: string;
   position: number;
+  isCustomIcon?: boolean;
+  customStyles?: string;
 };
 
 export const SocialsScreen: React.FC<AppScreenProps> = () => {
@@ -17,23 +19,68 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
   const socials: SocialApp[] = [
     {
       name: "instagram",
-      icon: <Instagram className="w-7 h-7 text-white" strokeWidth={1.5} />,
+      icon: "/icons/instagram.png",
       url: "https://instagram.com/fareehasala",
-      position: 1
+      position: 1,
+      isCustomIcon: true
     },
     {
       name: "retro",
-      icon: <Clock className="w-7 h-7 text-white" strokeWidth={1.5} />,
+      icon: "/icons/retro.jpg",
       url: "https://retro.app",
-      position: 2
+      position: 2,
+      isCustomIcon: true
     },
     {
       name: "email",
-      icon: <AtSign className="w-7 h-7 text-white" strokeWidth={1.5} />,
+      icon: <Send className="w-7 h-7 text-white/90" strokeWidth={1.5} />,
       url: "mailto:fareeha_s@icloud.com",
-      position: 3
+      position: 3,
+      customStyles: "bg-gray-800/40 backdrop-blur-lg"
+    },
+    {
+      name: "empty1",
+      icon: null,
+      url: "#",
+      position: 4
+    },
+    {
+      name: "corner",
+      icon: "/icons/corner.jpg",
+      url: "https://www.corner.inc/fareeha?sid=db7c68ce-dad2-40e7-bdd7-547a523f1708",
+      position: 5,
+      isCustomIcon: true
+    },
+    {
+      name: "empty2",
+      icon: null,
+      url: "#",
+      position: 6
+    },
+    {
+      name: "empty3",
+      icon: null,
+      url: "#",
+      position: 7
+    },
+    {
+      name: "airbuds",
+      icon: "/icons/airbuds.png",
+      url: "https://i.airbuds.fm/fareehas/pC4Nm0VR4i",
+      position: 8,
+      isCustomIcon: true
+    },
+    {
+      name: "strava",
+      icon: "/icons/strava.png",
+      url: "https://strava.app.link/PzFPfOvKpSb",
+      position: 9,
+      isCustomIcon: true
     }
   ];
+
+  // Reorder socials to ensure icons are in correct positions
+  socials.sort((a, b) => a.position - b.position);
 
   // Apple-like spring animation
   const springTransition = {
@@ -71,10 +118,10 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
   };
 
   return (
-    <div className="h-full py-6 px-5" onClick={(e) => e.stopPropagation()}>
+    <div className="h-full w-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
       {/* iPhone-style grid container with 3 columns */}
       <motion.div 
-        className="grid grid-cols-3 gap-x-5 mt-2"
+        className="grid grid-cols-3 gap-5 w-[280px] h-[280px] p-6"
         variants={containerVariants}
         initial="hidden"
         animate="show"
@@ -85,30 +132,56 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
             href={social.url}
             target="_blank"
             rel="noopener noreferrer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={social.icon ? { scale: 1.05 } : {}}
+            whileTap={social.icon ? { scale: 0.95 } : {}}
             transition={{
               ...springTransition,
               duration: prefersReducedMotion ? 0 : undefined
             }}
-            className="flex flex-col items-center will-change-transform hardware-accelerated"
+            className="flex items-center justify-center will-change-transform hardware-accelerated"
             onClick={(e) => {
-              e.stopPropagation();
-              createTactileEffect();
+              if (social.icon) {
+                e.stopPropagation();
+                createTactileEffect();
+              }
             }}
             variants={itemVariants}
             style={{ 
               willChange: 'transform, opacity'
             }}
           >
-            <motion.div
-              className="w-[55px] h-[55px] rounded-[12px] bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center"
-              whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.15)" }}
-              transition={springTransition}
-            >
-              {social.icon}
-            </motion.div>
-            <span className="text-[11px] text-white font-normal mt-[5px] tracking-wide">{social.name}</span>
+            {/* Only render if there's an icon */}
+            {social.icon && (
+              social.customStyles ? (
+                <motion.div
+                  className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center ${social.customStyles}`}
+                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.15)" }}
+                  transition={springTransition}
+                >
+                  {social.icon}
+                </motion.div>
+              ) : social.isCustomIcon ? (
+                <motion.div
+                  className="w-[60px] h-[60px] rounded-[14px] overflow-hidden"
+                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.15)" }}
+                  transition={springTransition}
+                >
+                  <img 
+                    src={social.icon as string} 
+                    alt={social.name} 
+                    className="w-full h-full object-cover" 
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  className="w-[60px] h-[60px] rounded-[14px] bg-gray-600/50 backdrop-blur-sm flex items-center justify-center"
+                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.15)" }}
+                  transition={springTransition}
+                >
+                  {social.icon}
+                </motion.div>
+              )
+            )}
           </motion.a>
         ))}
       </motion.div>

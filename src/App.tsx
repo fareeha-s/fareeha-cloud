@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { AppIcon } from './components/AppIcon';
 import { NotesScreen } from './screens/NotesScreen';
@@ -53,6 +53,35 @@ function App() {
   const [appPosition, setAppPosition] = useState<AnimationPosition | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentAppElement, setCurrentAppElement] = useState<HTMLElement | null>(null);
+  const [windowHeight, setWindowHeight] = useState('100vh');
+  
+  // Set body to prevent scrolling and get actual window height
+  useEffect(() => {
+    // Prevent scrolling on the body
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    // Set the actual window height for mobile browsers where 100vh can be inconsistent
+    const setHeight = () => {
+      const vh = window.innerHeight;
+      setWindowHeight(`${vh}px`);
+      document.documentElement.style.setProperty('--app-height', `${vh}px`);
+    };
+    
+    // Set initial height
+    setHeight();
+    
+    // Update on resize
+    window.addEventListener('resize', setHeight);
+    window.addEventListener('orientationchange', setHeight);
+    
+    return () => {
+      window.removeEventListener('resize', setHeight);
+      window.removeEventListener('orientationchange', setHeight);
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
   
   // For icon masking/cloning during animation
   const [clonedAppIcon, setClonedAppIcon] = useState<{
@@ -66,7 +95,7 @@ function App() {
   const apps: AppIconType[] = [
     { id: 'notes', name: 'notes', icon: 'StickyNote', color: '', component: NotesScreen },
     { id: 'socials', name: 'socials', icon: 'AtSign', color: '', component: SocialsScreen },
-    { id: 'partiful', name: 'partiful', icon: 'PartyPopper', color: '', component: EventScreen },
+    { id: 'partiful', name: 'partiful', icon: 'Partiful', color: '', component: EventScreen },
   ];
 
   // Handle app closing with proper animation
@@ -158,11 +187,12 @@ function App() {
 
   return (
     <div 
-      className="min-h-screen p-8 relative overflow-hidden flex items-center justify-center"
+      className="h-screen w-screen fixed inset-0 overflow-hidden flex items-center justify-center"
       style={{
         backgroundImage: 'url(/background.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        height: windowHeight
       }}
       onClick={activeApp && !isAnimating ? handleClose : undefined}
     >
@@ -288,13 +318,17 @@ function App() {
                 transition={{ duration: 0.15, delay: 0.1 }}
               >
                 <div className={`bg-gradient-to-br ${clonedAppIcon.app.color} h-full w-full rounded-[12px] flex items-center justify-center`}>
-                  <AppIcon
-                    icon={clonedAppIcon.app.icon}
-                    name=""
-                    color={clonedAppIcon.app.color}
-                    onClick={() => {}}
-                    showLabel={false}
-                  />
+                  {clonedAppIcon.app.icon === 'Partiful' ? (
+                    <img src="/icons/partiful.png" alt="Partiful" className="w-6 h-6" />
+                  ) : (
+                    <AppIcon
+                      icon={clonedAppIcon.app.icon}
+                      name=""
+                      color={clonedAppIcon.app.color}
+                      onClick={() => {}}
+                      showLabel={false}
+                    />
+                  )}
                 </div>
               </motion.div>
             </motion.div>
@@ -303,7 +337,7 @@ function App() {
           {/* App Content Layer */}
           {activeApp && ActiveComponent && (
             <div 
-              className="absolute inset-0 z-30"
+              className="absolute inset-0 z-30 overflow-hidden flex items-center justify-center"
               style={{ 
                 opacity: activeApp ? 1 : 0,
                 transition: 'opacity 0.15s ease-in',
