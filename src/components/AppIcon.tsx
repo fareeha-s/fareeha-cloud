@@ -73,7 +73,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
       }}
     >
       <motion.div 
-        className={`w-[55px] h-[55px] bg-gradient-to-br ${color} backdrop-blur-sm border border-white/20 rounded-[12px] flex items-center justify-center shadow-sm will-change-transform`}
+        className={`w-[55px] h-[55px] bg-white/15 backdrop-blur-sm border border-white/20 rounded-[12px] flex items-center justify-center shadow-sm will-change-transform`}
         whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
         transition={springTransition}
       >

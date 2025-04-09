@@ -16,7 +16,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     { 
       id: 1, 
       title: "so, tell me about yourself...",
-      content: "i'm a passionate designer with a focus on creating intuitive user experiences. i enjoy combining aesthetics with functionality to build meaningful digital products.",
+      content: "always such a loaded question why?",
       expanded: false
     },
     { 
