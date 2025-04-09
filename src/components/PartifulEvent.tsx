@@ -82,27 +82,8 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
           style={{ padding: '20px' }}
           onClick={preventBubbling}
         >
-          {/* Simplified header with just the Partiful logo */}
-          <div className="flex justify-start items-center mb-2">
-            {/* Partiful logo in upper left - with link to partiful.com */}
-            <div>
-              <a 
-                href="https://partiful.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                onClick={handleExternalLinkClick}
-              >
-                <img 
-                  src="/icons/partiful.png" 
-                  alt="Partiful" 
-                  className="w-6 h-6" 
-                />
-              </a>
-            </div>
-          </div>
-          
-          {/* Header title - using Grotesk font - reduced top padding */}
-          <h1 className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" style={{ fontSize: '32px', fontFamily: 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif', lineHeight: 1.1, marginBottom: '12px', color: 'white', textAlign: 'center', fontWeight: 600, letterSpacing: '0.5px', paddingTop: '0' }}>
+          {/* Header title - using Grotesk font - with proper top padding now that logo is removed */}
+          <h1 className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" style={{ fontSize: '32px', fontFamily: 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif', lineHeight: 1.1, marginBottom: '12px', color: 'white', textAlign: 'center', fontWeight: 600, letterSpacing: '0.5px', paddingTop: '12px' }}>
             <span className="summary">mental static</span>
           </h1>
           
