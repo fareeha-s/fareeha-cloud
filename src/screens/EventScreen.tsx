@@ -5,6 +5,14 @@ import { createTactileEffect } from '../App';
 import { PartifulEvent } from '../components/PartifulEvent';
 import { ChevronRight } from 'lucide-react';
 
+// Declare the global window property for TypeScript
+declare global {
+  interface Window {
+    noteScreenBackHandler?: () => boolean;
+    eventScreenBackHandler?: () => boolean;
+  }
+}
+
 type EventItem = {
   id: number;
   title: string;
@@ -18,6 +26,37 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
   const [showPartiful, setShowPartiful] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const chevronControls = useAnimation();
+  
+  // Add a special handler for the main App's back button
+  useEffect(() => {
+    // If we are showing Partiful and the App's back button is clicked,
+    // we should go back to the event list first instead of closing the app
+    const handleAppBackClick = () => {
+      if (showPartiful) {
+        setShowPartiful(false);
+        createTactileEffect();
+        return true; // Event was handled
+      }
+      return false; // Let App handle the default behavior
+    };
+    
+    // Add this handler to window to be accessible by the App component
+    window.eventScreenBackHandler = handleAppBackClick;
+    
+    // Add a class to the document body to disable drag in the App component
+    if (showPartiful) {
+      document.body.classList.add('disable-app-drag');
+    } else {
+      document.body.classList.remove('disable-app-drag');
+    }
+    
+    // Clean up
+    return () => {
+      // @ts-ignore
+      delete window.eventScreenBackHandler;
+      document.body.classList.remove('disable-app-drag');
+    };
+  }, [showPartiful]);
   
   // Run a subtle animation sequence on first render for mobile users
   useEffect(() => {
@@ -110,12 +149,20 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
 
   if (showPartiful) {
     return (
-      <PartifulEvent 
-        onBack={() => {
-          setShowPartiful(false);
-          createTactileEffect();
-        }}
-      />
+      <div 
+        className="h-full w-full overflow-hidden" 
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <PartifulEvent 
+          onBack={() => {
+            setShowPartiful(false);
+            createTactileEffect();
+          }}
+        />
+      </div>
     );
   }
 
@@ -125,7 +172,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
 
   return (
     <div 
-      className="h-full w-full p-3" 
+      className="h-full w-full" 
       onClick={(e) => {
         e.stopPropagation();
         handleInteraction();
@@ -138,12 +185,12 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
         initial="hidden"
         animate="show"
       >
-        <div className="space-y-4 px-2 py-1">
+        <div className="space-y-4 p-6">
           {/* Upcoming events section */}
           {upcomingEvents.length > 0 && (
             <div>
-              <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 pl-1">
-                Upcoming Events
+              <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2">
+                Previous 30 Days
               </h2>
               <div className="space-y-1">
                 {upcomingEvents.map((event, index) => (
@@ -172,7 +219,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                         <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
                       </motion.div>
                     </div>
-                    <div className="ml-2 flex-1 flex justify-between">
+                    <div className="ml-1 flex-1 flex justify-between">
                       <div className="flex-1 pr-3">
                         <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                           {event.title}
@@ -211,7 +258,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
           {/* Past events section (if any added later) */}
           {pastEvents.length > 0 && (
             <div>
-              <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 pl-1">
+              <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2">
                 Past Events
               </h2>
               <div className="space-y-1">
@@ -224,7 +271,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                     <div className="w-5 h-5 flex-shrink-0 flex items-start justify-center pt-0.5 text-white/50">
                       <ChevronRight size={16} />
                     </div>
-                    <div className="ml-2 flex-1 flex justify-between">
+                    <div className="ml-1 flex-1 flex justify-between">
                       <div className="flex-1 pr-3">
                         <h3 className="text-sm font-normal text-white/90 break-words">
                           {event.title}

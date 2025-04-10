@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronDown } from 'lucide-react';
 
 type PartifulEventProps = {
   onBack: () => void;
@@ -9,15 +9,18 @@ type PartifulEventProps = {
 export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
   // State to track if user has scrolled
   const [hasScrolled, setHasScrolled] = useState(false);
-
-  // Add useEffect to hide sidebar when component mounts
+  // State to track if additional content is expanded
+  const [isExpanded, setIsExpanded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Add useEffect to handle sidebar visibility and scroll tracking
   useEffect(() => {
     // Add a class to the body to handle sidebar visibility
     document.body.classList.add('partiful-event-active');
     
     // Add scroll event listener
     const handleScroll = () => {
-      if (window.scrollY > 50) {
+      if (window.scrollY > 50 || (containerRef.current && containerRef.current.scrollTop > 50)) {
         setHasScrolled(true);
       }
     };
@@ -30,6 +33,28 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Toggle expanded state
+  const toggleExpanded = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(prev => !prev);
+  };
+
+  // Handle back button click
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onBack();
+  };
+
+  // Function to prevent any clicks from bubbling up
+  const preventBubbling = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  // Function to prevent touch events from bubbling up
+  const preventTouchBubbling = (e: React.TouchEvent) => {
+    e.stopPropagation();
+  };
 
   // Host profile photos with smaller size to match screenshot
   const hostPhotos = [
@@ -50,20 +75,9 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
   // Spotify link for Technologic by Daft Punk
   const spotifyLink = "https://open.spotify.com/track/0LSLM0zuWRkEYemF7JcfEE?si=EhnHw1mWS1OOC9joykQgOA";
   
-  // Function to handle back click, prevents event propagation
-  const handleBackClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Stop event from bubbling up
-    onBack();
-  };
-
   // Function to handle external link clicks, prevents event propagation
   const handleExternalLinkClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Stop event from bubbling up
-  };
-  
-  // Function to prevent any clicks from bubbling up
-  const preventBubbling = (e: React.MouseEvent) => {
-    e.stopPropagation();
   };
   
   // Animation variants for staggered text
@@ -91,6 +105,57 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
     }
   };
 
+  // Variants for the expanded content animation
+  const expandedContentVariants = {
+    hidden: { 
+      height: 0, 
+      opacity: 0 
+    },
+    visible: { 
+      height: 'auto', 
+      opacity: 1,
+      transition: {
+        height: {
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+          duration: 0.3
+        },
+        opacity: {
+          duration: 0.2,
+          delay: 0.1
+        }
+      }
+    }
+  };
+
+  // Variants for the arrow animation
+  const arrowVariants = {
+    initial: { 
+      rotate: 0,
+      y: [0, 3, 0],
+      transition: {
+        y: {
+          repeat: Infinity,
+          repeatType: "reverse",
+          duration: 1.5,
+          ease: "easeInOut"
+        }
+      }
+    },
+    expanded: { 
+      rotate: 180,
+      y: 0,
+      transition: {
+        rotate: {
+          type: "spring",
+          stiffness: 300,
+          damping: 25
+        }
+      }
+    }
+  };
+
   // Split the description text into words for animation
   const descriptionText = `quick hits of obscure knowledge 💚
 
@@ -103,47 +168,49 @@ limited capacity! tell us what you'd share 🫶🏼`;
   const descriptionWords = descriptionText.split(' ');
   
   return (
-    // Root container with height and width
+    // Root container with height and width - capture and stop all events
     <div 
-      className="h-full w-full" 
+      className="h-full w-full flex flex-col" 
       onClick={preventBubbling}
+      onMouseDown={preventBubbling}
+      onTouchStart={preventTouchBubbling}
+      onTouchMove={preventTouchBubbling}
+      onTouchEnd={preventTouchBubbling}
+      style={{ touchAction: 'pan-y' }}
     >
+      {/* Main content container - no drag or swipe functionality */}
       <motion.div 
-        className="h-full w-full overflow-auto scrollbar-subtle"
+        ref={containerRef}
+        className="h-full w-full overflow-auto scrollbar-subtle relative"
         style={{ 
           fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Inter", sans-serif',
           backgroundColor: '#0e2b17',
           borderRadius: '8px',
+          overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
+          maxHeight: '100%',  // Make sure content stays within the container height
+          touchAction: 'pan-y', // Allow vertical scrolling only
+          pointerEvents: 'auto' // Ensure the component captures all pointer events
         }}
-        initial={{ x: 300, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 100 }}
-        dragElastic={0.2}
-        onDragEnd={(_, info) => {
-          if (info.offset.x > 80) {
-            onBack();
-          }
-        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        drag={false} // Explicitly disable drag on this component
       >
-        {/* Back button for navigation */}
-        <div className="flex items-center px-4 py-3 text-white/80">
-          <button 
-            className="flex items-center"
-            onClick={handleBackClick}
-          >
-            <ChevronLeft size={16} className="mr-1" />
-            <span className="text-xs">Events</span>
-          </button>
-        </div>
-        
         {/* Main content section */}
         <section 
-          className="px-3 py-1" 
+          className="p-6" 
           onClick={preventBubbling}
+          onMouseDown={preventBubbling}
+          onTouchStart={preventTouchBubbling}
+          onTouchMove={(e) => {
+            // Allow scrolling but prevent horizontal drag from propagating
+            const touchDeltaX = e.touches[0].clientX - e.touches[0].clientX;
+            if (Math.abs(touchDeltaX) > 10) {
+              preventTouchBubbling(e);
+            }
+          }}
         >
-          <div className="px-2 py-1">
+          <div className="py-1">
             {/* Header title without extra margin */}
             <motion.h1 
               className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" 
@@ -170,21 +237,21 @@ limited capacity! tell us what you'd share 🫶🏼`;
               <span className="summary" style={{ fontStretch: 'expanded', letterSpacing: '0.08em' }}>mental static</span>
             </motion.h1>
             
-            {/* Event image with square corners - slightly smaller to fit more content */}
+            {/* Event image with square corners - expanded to match text width */}
             <motion.div 
               className="w-full flex justify-center mb-3"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="w-full max-w-md h-[220px] overflow-hidden">
+              <div className="w-full overflow-hidden">
                 <picture>
                   <source srcSet="/images/partiful/ms-giphy.webp" type="image/webp" />
                   <img 
                     src="/images/partiful/ms-fallback.jpg" 
                     alt="Mental Static Event" 
-                    className="w-full h-full" 
-                    style={{ objectFit: 'contain' }}
+                    className="w-full" 
+                    style={{ objectFit: 'cover', maxHeight: '280px' }}
                   />
                 </picture>
               </div>
@@ -381,6 +448,65 @@ limited capacity! tell us what you'd share 🫶🏼`;
                   {approvedCount} approved
                 </div>
               </motion.div>
+              
+              {/* Indicator arrow for expanding content */}
+              <motion.div 
+                className="flex justify-center my-6 cursor-pointer"
+                onClick={toggleExpanded}
+              >
+                <motion.div 
+                  className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"
+                  whileHover={{ 
+                    scale: 1.1, 
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)' 
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={isExpanded ? "expanded" : "initial"}
+                  variants={arrowVariants}
+                >
+                  <ChevronDown className="text-white/70" size={18} strokeWidth={2} />
+                </motion.div>
+              </motion.div>
+              
+              {/* Expandable content section */}
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    className="overflow-hidden"
+                    variants={expandedContentVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                  >
+                    <div className="pt-2 pb-6 px-1">
+                      <div className="mb-4">
+                        <h3 className="text-white text-sm font-medium mb-2">Location</h3>
+                        <p className="text-white/70 text-xs">
+                          123 Creative Space<br />
+                          San Francisco, CA 94110
+                        </p>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <h3 className="text-white text-sm font-medium mb-2">RSVP Details</h3>
+                        <p className="text-white/70 text-xs">
+                          Please tell us what obscure knowledge you'll share when you RSVP.<br />
+                          Capacity is limited to 35 people.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-white text-sm font-medium mb-2">What to bring</h3>
+                        <ul className="text-white/70 text-xs list-disc pl-4 space-y-1">
+                          <li>Your curious mind</li>
+                          <li>A drink to share (optional)</li>
+                          <li>Any visual aids for your knowledge share</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </section>

@@ -356,6 +356,17 @@ function App() {
   const handleClose = () => {
     if (isAnimating) return;
     
+    // Check if there's a specific screen back handler active
+    // This allows screens like NotesScreen to handle internal navigation
+    if (activeApp === 'notes' && window.noteScreenBackHandler && window.noteScreenBackHandler()) {
+      return; // If the screen handler returns true, it handled the back action
+    }
+    
+    // Check for event screen handler (partiful)
+    if (activeApp === 'partiful' && window.eventScreenBackHandler && window.eventScreenBackHandler()) {
+      return; // If the event screen handler returns true, it handled the back action
+    }
+    
     setIsAnimating(true);
     
     // Start closing animation
@@ -449,8 +460,8 @@ function App() {
   };
 
   // Handle navigation between apps
-  const navigateToNextApp = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const navigateToNextApp = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (isAnimating || !activeApp) return;
     
     const currentIndex = apps.findIndex(app => app.id === activeApp);
@@ -463,8 +474,8 @@ function App() {
     }, 300); // Wait for the close animation to finish
   };
   
-  const navigateToPrevApp = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const navigateToPrevApp = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (isAnimating || !activeApp) return;
     
     const currentIndex = apps.findIndex(app => app.id === activeApp);
@@ -479,10 +490,18 @@ function App() {
 
   // Handle back swipe gesture
   const handleSwipeGesture = (info: PanInfo) => {
+    // Don't handle drag if the disable-app-drag class is present
+    if (document.body.classList.contains('disable-app-drag')) return;
+    
     // Only go back if swiping right (positive x) with enough force
     if (activeApp && !isAnimating && info.offset.x > 100) {
       handleClose();
     }
+  };
+
+  // Check if app dragging should be disabled
+  const shouldDisableDrag = () => {
+    return document.body.classList.contains('disable-app-drag');
   };
 
   return (
@@ -500,7 +519,7 @@ function App() {
         bottom: 0
       }}
       onClick={activeApp && !isAnimating ? handleClose : undefined}
-      drag={!!activeApp && !isAnimating}
+      drag={!!activeApp && !isAnimating && !shouldDisableDrag()}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={0.1}
       dragMomentum={true}
@@ -586,85 +605,152 @@ function App() {
       </div>
 
       <div 
-        className="relative flex flex-col items-center will-change-transform z-10"
+        className="absolute flex flex-col items-center will-change-transform z-10"
         ref={mainContainerRef}
         onClick={(e) => e.stopPropagation()}
         style={{
           opacity: isLoaded ? 1 : 0,
           transform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
           WebkitTransform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
-          transition: "opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1), transform 1.6s cubic-bezier(0.22, 1, 0.36, 1)"
+          transition: "opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1), transform 1.6s cubic-bezier(0.22, 1, 0.36, 1)",
+          top: '50%',
+          left: '50%',
+          marginLeft: '-145px', // Half of the container width (290px/2)
+          marginTop: '-145px', // Half of the container height for square aspect
         }}
       >
-        {/* App name with back button - consistently displayed outside the container */}
+        {/* App name above the container - returning to original position */}
         <div 
-          className="absolute top-[-40px] w-full flex justify-center items-center"
+          className="absolute top-[-60px] w-full flex justify-center items-center"
           style={{
             opacity: isLoaded ? 1 : 0,
             transform: `translateY(${isLoaded ? '0' : '-10px'})`,
             transition: "opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1), transform 1.4s cubic-bezier(0.22, 1, 0.36, 1)",
-            transitionDelay: "0.2s"
+            transitionDelay: "0.2s",
+            height: "60px",
+            pointerEvents: "none"
           }}
         >
           {activeApp ? (
-            <>
-              {/* Back button + app name for active apps */}
-              <motion.div 
-                className="absolute left-0 ml-1 cursor-pointer"
-                initial={{ opacity: 0, x: -5 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -5 }}
-                transition={{ duration: 0.2 }}
-                onClick={!isAnimating ? handleClose : undefined}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <ChevronLeft size={20} className="text-white" strokeWidth={1.5} />
-              </motion.div>
-              <h2 className="text-xl text-white font-medium tracking-wide text-center text-shadow-sm">
-                {activeAppName}
-        </h2>
-            </>
+            <h2 className="text-xl text-white font-medium tracking-wide text-center text-shadow-sm">
+              {activeAppName}
+            </h2>
           ) : (
             /* Home screen title with enhanced styling */
             <motion.h2 
-              className="text-3xl text-white font-medium tracking-wide text-center relative z-30"
+              className="text-2xl text-white font-medium tracking-wide text-right relative z-30 pointer-events-auto"
               initial={{ y: 0 }}
-              animate={{ y: 0 }}
+              animate={{ 
+                y: [0, 12, 0],
+                opacity: [1, 0.92, 1],
+                transition: {
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  duration: 5,
+                  ease: "easeInOut",
+                  times: [0, 0.5, 1]
+                }
+              }}
               style={{ 
-                position: 'relative',
-                textShadow: '0 0 15px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3)',
-                filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.25))',
-                marginBottom: '-15px',
-                transform: 'translateY(-10px)',
-                zIndex: 30
+                position: 'absolute',
+                textShadow: '0 0 8px rgba(255, 255, 255, 0.3)',
+                filter: 'drop-shadow(0 1px 2px rgba(255, 255, 255, 0.1))',
+                bottom: '0',
+                zIndex: 30,
+                letterSpacing: '0.02em',
+                right: '0'
               }}
             >
-              fareeha's cloud
+              <span className="relative inline-block">
+                hi, it's fareeha 🫶
+                <motion.span 
+                  className="absolute inset-0 w-full h-full bg-gradient-to-t from-transparent to-white/5 opacity-0"
+                  animate={{
+                    opacity: [0, 0.3, 0],
+                    transition: {
+                      repeat: Infinity,
+                      duration: 3,
+                      ease: "easeInOut",
+                      repeatType: "reverse",
+                      delay: 0.5
+                    }
+                  }}
+                />
+              </span>
             </motion.h2>
           )}
         </div>
-
-        {/* Main container - with iOS style blur effect */}
+        
+        {/* Main container - with glass solid effect instead of blur */}
         <motion.div 
-          className={`${activeApp === 'partiful' ? 'w-[290px] aspect-auto h-[420px]' : 'w-[290px] aspect-square'} rounded-[24px] overflow-hidden shadow-xl relative z-20 will-change-transform ${
-            isLoaded ? (activeApp ? 'app-container-blur-animation app-container-bg-animation app-container-blur-active-animation app-container-bg-active-animation' : 'app-container-blur-animation app-container-bg-animation') : ''
+          className={`w-[290px] aspect-square rounded-[24px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid ${
+            activeApp ? 'glass-solid-shine' : ''
+          } ${
+            activeApp === 'notes' ? 'glass-solid-orange' : 
+            activeApp === 'socials' ? 'glass-solid-blue' : 
+            activeApp === 'partiful' ? 'glass-solid-purple' : 
+            activeApp === 'spotify' ? 'glass-solid-green' : ''
           }`}
           onClick={(e) => {
             e.stopPropagation();
             if (activeApp && !isAnimating) handleClose();
           }}
           style={{
-            boxShadow: activeApp && activeApp !== 'socials' ? '0 25px 50px -12px rgba(0, 0, 0, 0.4)' : '0 10px 15px -3px rgba(0, 0, 0, 0.2)',
-            backgroundColor: activeApp === 'socials' ? 'transparent' : 'rgba(0, 0, 0, 0.02)',
-            backdropFilter: activeApp === 'socials' ? 'none' : 'blur(0px)',
-            WebkitBackdropFilter: activeApp === 'socials' ? 'none' : 'blur(0px)',
-            border: activeApp === 'socials' ? 'none' : activeApp ? 'none' : '1px solid rgba(255, 255, 255, 0.3)',
+            boxShadow: activeApp && activeApp !== 'socials' ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset' : '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.12) inset',
+            backgroundColor: activeApp === 'socials' ? undefined : undefined,
             transform: 'translateZ(0)',
             WebkitTransform: 'translateZ(0)',
-            opacity: activeApp === 'socials' ? 0 : activeApp ? 1 : 1
+            opacity: 1
           }}
         >
+          {/* Light reflection effects */}
+          <div 
+            className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] opacity-[0.06] rounded-full z-10 pointer-events-none" 
+            style={{
+              background: activeApp === 'notes' ? "radial-gradient(circle, rgba(255, 127, 80, 0.4) 0%, rgba(255, 127, 80, 0) 70%)" :
+                         activeApp === 'socials' ? "radial-gradient(circle, rgba(244, 114, 182, 0.4) 0%, rgba(244, 114, 182, 0) 70%)" :
+                         activeApp === 'partiful' ? "radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, rgba(124, 58, 237, 0) 70%)" :
+                         "radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%)",
+              transform: "rotate(-15deg)"
+            }}
+          />
+          <div 
+            className="absolute bottom-[5%] right-[5%] w-[30%] h-[30%] opacity-[0.05] rounded-full z-10 pointer-events-none" 
+            style={{
+              background: activeApp === 'notes' ? "radial-gradient(circle, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 70%)" :
+                         activeApp === 'socials' ? "radial-gradient(circle, rgba(244, 114, 182, 0.5) 0%, rgba(244, 114, 182, 0) 70%)" :
+                         activeApp === 'partiful' ? "radial-gradient(circle, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 70%)" :
+                         "radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%)",
+              transform: "rotate(15deg)"
+            }}
+          />
+          
+          {/* Edge highlights - diagonal light streaks */}
+          <div 
+            className="absolute top-[-5%] left-[-20%] w-[40%] h-[10%] opacity-[0.04] z-10 pointer-events-none" 
+            style={{
+              background: activeApp === 'notes' ? "linear-gradient(45deg, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 100%)" :
+                         activeApp === 'socials' ? "linear-gradient(45deg, rgba(244, 114, 182, 0.5) 0%, rgba(244, 114, 182, 0) 100%)" :
+                         activeApp === 'partiful' ? "linear-gradient(45deg, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 100%)" :
+                         "linear-gradient(45deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)",
+              transform: "rotate(35deg)",
+              borderRadius: "50%"
+            }}
+          />
+          
+          {/* Bottom edge highlight */}
+          <div 
+            className="absolute bottom-[0%] left-[10%] right-[10%] h-[5%] opacity-[0.04] z-10 pointer-events-none" 
+            style={{
+              background: activeApp === 'notes' ? "linear-gradient(to top, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 100%)" :
+                         activeApp === 'socials' ? "linear-gradient(to top, rgba(244, 114, 182, 0.5) 0%, rgba(244, 114, 182, 0) 100%)" :
+                         activeApp === 'partiful' ? "linear-gradient(to top, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 100%)" :
+                         "linear-gradient(to top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)",
+              borderRadius: "50%",
+              filter: "blur(2px)"
+            }}
+          />
+          
           {/* Home Screen Layer - Always present */}
           <div 
             className={`absolute inset-0 z-10 ${activeApp ? 'pointer-events-none' : ''}`}
@@ -710,20 +796,30 @@ function App() {
                   WebkitTransform: 'translateZ(0)'
                 }}
               >
-                <div className="flex items-center mb-2">
-                  <div className="bg-[#8797a3]/80 w-9 h-9 rounded-full flex items-center justify-center mr-2.5">
-                    <Music className="w-5 h-5 text-white" strokeWidth={1.5} />
+                <div className="flex items-center mb-3">
+                  <div className="w-11 h-11 rounded-md flex items-center justify-center mr-3 shadow-sm bg-black/20">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
+                      <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" fill="black"/>
+                      <path d="M16.7535 17.0767C16.4914 17.0767 16.2546 16.9954 15.9928 16.8328C14.7702 16.0949 13.3598 15.6682 11.9494 15.6682C11.0171 15.6682 10.0848 15.8308 9.17715 16.1359C9.07089 16.1767 8.96463 16.2175 8.85837 16.2175C8.43171 16.2175 8.10463 15.8715 8.10463 15.4449C8.10463 15.0996 8.31715 14.7944 8.66886 14.713C9.77927 14.3262 10.8897 14.1229 11.9747 14.1229C13.6382 14.1229 15.2763 14.6312 16.6867 15.5255C16.9738 15.7288 17.134 15.9728 17.134 16.3389C17.1088 16.7655 16.7535 17.0767 16.7535 17.0767Z" fill="white"/>
+                      <path d="M18.0925 13.8799C17.7853 13.8799 17.5484 13.7579 17.3369 13.6359C15.809 12.7008 13.7928 12.1516 11.5194 12.1516C10.3838 12.1516 9.19817 12.2736 8.11237 12.5176C7.95298 12.5584 7.8214 12.5992 7.69097 12.5992C7.17671 12.5992 6.75006 12.1924 6.75006 11.6432C6.75006 11.1756 6.98789 10.8051 7.38854 10.6831C8.69097 10.3372 9.9934 10.1748 11.5002 10.1748C14.1446 10.1748 16.4978 10.7647 18.2925 11.9007C18.6173 12.0228 18.8097 12.3687 18.8097 12.7551C18.8097 13.3451 18.4329 13.8799 18.0925 13.8799Z" fill="white"/>
+                      <path d="M19.5278 10.1338C19.2206 10.1338 19.0349 10.053 18.7278 9.89097C16.9135 8.87513 14.2944 8.28517 11.5349 8.28517C10.212 8.28517 8.90962 8.44756 7.66032 8.73315C7.53104 8.77396 7.42562 8.81478 7.29634 8.81478C6.6754 8.81478 6.19043 8.32967 6.19043 7.66052C6.19043 7.05975 6.52842 6.61546 6.99897 6.49388C8.46611 6.1283 10.001 5.94753 11.5552 5.94753C14.669 5.94753 17.6595 6.61546 19.8349 7.84515C20.2643 8.04673 20.4944 8.4096 20.4944 8.87513C20.4746 9.60347 20.0373 10.1338 19.5278 10.1338Z" fill="white"/>
+                    </svg>
                   </div>
-                  <div>
-                    <h3 className="text-[11px] font-normal text-white">now playing</h3>
-                    <p className="text-[9px] text-white/80 font-light">music</p>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-[12px] font-medium text-white">Spotify</h3>
+                      <p className="text-[10px] text-white/60">1:48</p>
+                    </div>
+                    <p className="text-[10px] text-white/70 font-light">Recently Played</p>
                   </div>
                 </div>
-                <div className="space-y-1.5">
-                  <p className="text-[13px] text-white font-medium truncate">canada</p>
-                  <p className="text-[11px] text-white/90 font-light truncate">wallows</p>
-                  <div className="w-full bg-white/30 h-1 rounded-full mt-2.5">
-                    <div className="bg-white w-2/3 h-1 rounded-full"></div>
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-[13px] text-white font-medium truncate pr-2">Canada</p>
+                    <p className="text-[10px] text-white/60 font-light whitespace-nowrap">Wallows</p>
+                  </div>
+                  <div className="w-full bg-white/20 h-[3px] rounded-full">
+                    <div className="bg-white h-full rounded-full" style={{ width: '37%' }}></div>
                   </div>
                 </div>
               </motion.div>
@@ -743,7 +839,7 @@ function App() {
               }}
               animate={{
                 width: '100%',
-                height: clonedAppIcon.app?.id === 'partiful' ? '420px' : '100%',
+                height: '100%',
                 x: 0,
                 y: 0,
                 borderRadius: 24,
@@ -771,7 +867,7 @@ function App() {
               >
                 <div className={`bg-gradient-to-br ${clonedAppIcon.app.color} h-full w-full rounded-[12px] flex items-center justify-center`}>
                   {clonedAppIcon.app.icon === 'Partiful' ? (
-                    <img src="/icons/partiful.png" alt="Partiful" className="w-6 h-6" />
+                    <img src="/icons/apps/partiful.png" alt="Partiful" className="w-6 h-6" />
                   ) : (
                     <AppIcon
                       icon={clonedAppIcon.app.icon}
@@ -786,8 +882,8 @@ function App() {
             </motion.div>
           )}
           
-          {/* App Content Layer - For non-socials apps */}
-          {activeApp && ActiveComponent && activeApp !== 'socials' && (
+          {/* App Content Layer - For all apps */}
+          {activeApp && ActiveComponent && (
             <div 
               className="absolute inset-0 z-30 overflow-hidden flex items-center justify-center"
               style={{ 
@@ -796,23 +892,41 @@ function App() {
                 transitionDelay: '0.1s'
               }}
             >
-              <ActiveComponent />
+              <AnimatePresence mode="wait">
+                <ActiveComponent key={activeApp} />
+              </AnimatePresence>
             </div>
           )}
         </motion.div>
-
-        {/* Socials Content Layer - Outside the container for cleaner look */}
-        {activeApp === 'socials' && ActiveComponent && (
-          <motion.div 
-            className="absolute w-[290px] aspect-square z-30 overflow-hidden flex items-center justify-center"
-            style={{ 
-              opacity: 1,
-              transition: 'opacity 0.15s ease-in',
-              transitionDelay: '0.1s'
+        
+        {/* Navigation arrows - positioned absolutely to not affect container positioning */}
+        {activeApp && (
+          <div 
+            className="absolute w-full mt-4 px-1"
+            style={{
+              opacity: isLoaded ? 1 : 0,
+              transition: "opacity 0.3s ease-in-out",
+              pointerEvents: "auto",
+              bottom: '-50px',
+              right: '0',
+              display: 'flex',
+              justifyContent: 'flex-end'
             }}
           >
-            <ActiveComponent />
-          </motion.div>
+            {/* Back button - always goes back to home - moved to right side for thumb navigation */}
+            <motion.div 
+              className="cursor-pointer"
+              initial={{ opacity: 0, x: -5 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -5 }}
+              transition={{ duration: 0.2 }}
+              onClick={!isAnimating ? handleClose : undefined}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <ChevronLeft size={28} className="text-white" strokeWidth={1.5} />
+            </motion.div>
+          </div>
         )}
       </div>
     </motion.div>
