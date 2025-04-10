@@ -19,14 +19,14 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
   const socials: SocialApp[] = [
     {
       name: "instagram",
-      icon: "/icons/instagram.png",
+      icon: "/icons/apps/instagram.png",
       url: "https://instagram.com/fareehasala",
       position: 1,
       isCustomIcon: true
     },
     {
       name: "retro",
-      icon: "/icons/retro.jpg",
+      icon: "/icons/apps/retro.jpg",
       url: "https://retro.app",
       position: 2,
       isCustomIcon: true
@@ -39,17 +39,17 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       customStyles: "bg-white/15 backdrop-blur-lg border border-white/20"
     },
     {
+      name: "corner",
+      icon: "/icons/apps/corner.jpg",
+      url: "https://www.corner.inc/fareeha?sid=db7c68ce-dad2-40e7-bdd7-547a523f1708",
+      position: 4,
+      isCustomIcon: true
+    },
+    {
       name: "empty1",
       icon: null,
       url: "#",
-      position: 4
-    },
-    {
-      name: "corner",
-      icon: "/icons/corner.jpg",
-      url: "https://www.corner.inc/fareeha?sid=db7c68ce-dad2-40e7-bdd7-547a523f1708",
-      position: 5,
-      isCustomIcon: true
+      position: 5
     },
     {
       name: "empty2",
@@ -58,22 +58,22 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       position: 6
     },
     {
-      name: "empty3",
-      icon: null,
-      url: "#",
-      position: 7
-    },
-    {
-      name: "airbuds",
-      icon: "/icons/airbuds.png",
-      url: "https://i.airbuds.fm/fareehas/pC4Nm0VR4i",
-      position: 8,
+      name: "strava",
+      icon: "/icons/apps/strava.png",
+      url: "https://strava.app.link/PzFPfOvKpSb",
+      position: 7,
       isCustomIcon: true
     },
     {
-      name: "strava",
-      icon: "/icons/strava.png",
-      url: "https://strava.app.link/PzFPfOvKpSb",
+      name: "empty3",
+      icon: null,
+      url: "#",
+      position: 8
+    },
+    {
+      name: "airbuds",
+      icon: "/icons/apps/airbuds.png",
+      url: "https://i.airbuds.fm/fareehas/pC4Nm0VR4i",
       position: 9,
       isCustomIcon: true
     }
@@ -96,7 +96,7 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.08,
+        staggerChildren: 0,
         delayChildren: 0.05
       }
     }
@@ -110,9 +110,9 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       scale: 1,
       transition: {
         type: "spring",
-        stiffness: 300, 
-        damping: 30,
-        duration: 0.3
+        stiffness: 350,
+        damping: 25,
+        duration: 0.25
       }
     }
   };
@@ -126,33 +126,42 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       onClick={(e) => e.stopPropagation()}
     >
       <div className="grid grid-cols-3 grid-rows-3 gap-6 mx-auto">
-        {socials.map((social, index) => (
-          <motion.a
-            key={index}
-            href={social.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={social.icon ? { scale: 1.05 } : {}}
-            whileTap={social.icon ? { scale: 0.95 } : {}}
-            transition={{
-              ...springTransition,
-              duration: prefersReducedMotion ? 0 : undefined
-            }}
-            className="flex items-center justify-center will-change-transform"
-            onClick={(e) => {
-              if (social.icon) {
+        {socials.map((social, index) => {
+          // If there's no icon, render a placeholder div instead of a link
+          if (!social.icon) {
+            return (
+              <motion.div
+                key={index}
+                className="w-[60px] h-[60px]" // Just takes space but not interactive
+                variants={itemVariants}
+              />
+            );
+          }
+          
+          // For items with icons, render the clickable links
+          return (
+            <motion.a
+              key={index}
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{
+                ...springTransition,
+                duration: prefersReducedMotion ? 0 : undefined
+              }}
+              className="flex items-center justify-center will-change-transform"
+              onClick={(e) => {
                 e.stopPropagation();
                 createTactileEffect();
-              }
-            }}
-            variants={itemVariants}
-            style={{ 
-              willChange: 'transform, opacity'
-            }}
-          >
-            {/* Only render if there's an icon */}
-            {social.icon && (
-              social.customStyles ? (
+              }}
+              variants={itemVariants}
+              style={{ 
+                willChange: 'transform, opacity'
+              }}
+            >
+              {social.customStyles ? (
                 <motion.div
                   className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center ${social.customStyles}`}
                   whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
@@ -180,10 +189,10 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
                 >
                   {social.icon}
                 </motion.div>
-              )
-            )}
-          </motion.a>
-        ))}
+              )}
+            </motion.a>
+          );
+        })}
       </div>
     </motion.div>
   );

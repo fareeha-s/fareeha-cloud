@@ -4,6 +4,13 @@ import { motion, useAnimation, useReducedMotion } from 'framer-motion';
 import { ChevronRight, Clock, ChevronLeft } from 'lucide-react';
 import { createTactileEffect } from '../App';
 
+// Declare the global window property for TypeScript
+declare global {
+  interface Window {
+    noteScreenBackHandler?: () => boolean;
+  }
+}
+
 type NoteItem = {
   id: number;
   title: string;
@@ -16,6 +23,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   const prefersReducedMotion = useReducedMotion();
   const [hasInteracted, setHasInteracted] = useState(false);
   const chevronControls = useAnimation();
+  const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
   
   // Run a subtle animation sequence on first render
   useEffect(() => {
@@ -42,11 +50,33 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     }
   }, [chevronControls, prefersReducedMotion, hasInteracted]);
 
+  // Set up back handler - MOVED OUTSIDE the conditional rendering
+  useEffect(() => {
+    // If we have a selected note and the App's back button is clicked,
+    // we should close the note view first instead of closing the app
+    const handleAppBackClick = () => {
+      if (selectedNote) {
+        closeNote();
+        return true; // Event was handled
+      }
+      return false; // Let App handle the default behavior
+    };
+    
+    // Add this handler to window to be accessible by the App component
+    window.noteScreenBackHandler = handleAppBackClick;
+    
+    // Clean up
+    return () => {
+      // @ts-ignore
+      delete window.noteScreenBackHandler;
+    };
+  }, [selectedNote]);
+
   const [notes] = useState<NoteItem[]>([
     { 
       id: 1, 
       title: "canada", 
-      content: "no, we're not the US, we never should be, and we never will be. thank you <3", 
+      content: "no, we're not the US. we never should be, and we never will be. thank you 🤍🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🍁🍁🍁🍁🍁", 
       date: "05/04/25",
       timeframe: 'recent' 
     },
@@ -72,8 +102,6 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       timeframe: 'older' 
     }
   ]);
-  
-  const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
   
   // Simple helper function to format date
   const getRelativeDate = (dateStr: string) => {
@@ -118,6 +146,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
           className="h-full w-full rounded-lg backdrop-blur-sm bg-black/10" 
           initial={{ x: 300, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 300, opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           drag="x"
           dragConstraints={{ left: 0, right: 100 }}
@@ -128,26 +157,19 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             }
           }}
         >
-          <div className="flex items-center px-4 py-3 text-white/80">
-            <button 
-              className="flex items-center"
-              onClick={closeNote}
-            >
-              <ChevronLeft size={16} className="mr-1" />
-              <span className="text-xs">Notes</span>
-            </button>
+          <div className="flex items-center justify-end px-6 pt-6 pb-1 text-white/80">
+            <div className="flex items-center">
+              <Clock size={12} className="text-white/60 mr-1" />
+              <span className="text-xs text-white/60">{getRelativeDate(selectedNote.date)}</span>
+            </div>
           </div>
           
-          <div className="h-[calc(100%-44px)] flex flex-col p-4">
+          <div className="h-[calc(100%-44px)] flex flex-col p-4 pt-2">
             <div className="px-2">
-              <div className="flex items-start justify-between mb-3 pt-1">
-                <h2 className="text-white text-lg font-medium pr-3">
+              <div className="mb-3 pt-0">
+                <h2 className="text-white text-lg font-medium">
                   {selectedNote.title}
                 </h2>
-                <div className="flex items-center flex-shrink-0 pt-1">
-                  <Clock size={12} className="text-white/60 mr-1" />
-                  <span className="text-xs text-white/60">{getRelativeDate(selectedNote.date)}</span>
-                </div>
               </div>
               <div className="text-white/90 text-sm leading-relaxed overflow-y-auto max-h-[calc(100vh-130px)] scrollbar-subtle">
                 {selectedNote.content}
@@ -197,7 +219,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                         <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
                       </motion.div>
                     </div>
-                    <div className="ml-2 flex-1 flex justify-between">
+                    <div className="ml-1 flex-1 flex justify-between">
                       <div className="flex-1 pr-3">
                         <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                           {note.title}
@@ -258,7 +280,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                         <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
                       </motion.div>
                     </div>
-                    <div className="ml-2 flex-1 flex justify-between">
+                    <div className="ml-1 flex-1 flex justify-between">
                       <div className="flex-1 pr-3">
                         <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                           {note.title}
