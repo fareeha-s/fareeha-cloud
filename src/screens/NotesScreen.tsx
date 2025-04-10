@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { AppScreenProps } from '../types';
-import { motion } from 'framer-motion';
+import { motion, useAnimation, useReducedMotion } from 'framer-motion';
 import { ChevronRight, Clock, ChevronLeft } from 'lucide-react';
 import { createTactileEffect } from '../App';
 
@@ -13,6 +13,35 @@ type NoteItem = {
 };
 
 export const NotesScreen: React.FC<AppScreenProps> = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const chevronControls = useAnimation();
+  
+  // Run a subtle animation sequence on first render
+  useEffect(() => {
+    if (!hasInteracted && !prefersReducedMotion) {
+      // Subtle chevron pulse animation for the first note
+      const pulseAnimation = async () => {
+        await chevronControls.start({
+          x: [0, 3, 0],
+          opacity: [0.5, 0.8, 0.5],
+          transition: { duration: 1.4, ease: "easeInOut", times: [0, 0.5, 1] }
+        });
+        
+        // Wait a bit then do it again, more subtly
+        setTimeout(async () => {
+          await chevronControls.start({
+            x: [0, 2, 0],
+            opacity: [0.5, 0.7, 0.5],
+            transition: { duration: 1, ease: "easeInOut", times: [0, 0.5, 1] }
+          });
+        }, 3000);
+      };
+      
+      pulseAnimation();
+    }
+  }, [chevronControls, prefersReducedMotion, hasInteracted]);
+
   const [notes] = useState<NoteItem[]>([
     { 
       id: 1, 
@@ -60,12 +89,25 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
 
   const openNote = (note: NoteItem) => {
     setSelectedNote(note);
+    setHasInteracted(true);
     createTactileEffect();
   };
 
   const closeNote = () => {
     setSelectedNote(null);
     createTactileEffect();
+  };
+
+  // Animation variants
+  const chevronVariants = {
+    initial: { x: 0 },
+    hover: { x: 2, transition: { repeat: 0, duration: 0.3 } }
+  };
+
+  const handleInteraction = () => {
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
   };
 
   // Simple version with conditional rendering
@@ -119,7 +161,14 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
 
   // Otherwise, show the list view
   return (
-    <div className="h-full w-full" onClick={(e) => e.stopPropagation()}>
+    <div 
+      className="h-full w-full" 
+      onClick={(e) => {
+        e.stopPropagation();
+        handleInteraction();
+      }}
+      onTouchStart={handleInteraction}
+    >
       <div className="h-full overflow-y-auto scrollbar-subtle">
         <div className="space-y-4 p-6">
           {/* Recent notes section */}
@@ -129,14 +178,24 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 Previous 7 days
               </h2>
               <div className="space-y-1">
-                {recentNotes.map((note) => (
-                  <div 
+                {recentNotes.map((note, index) => (
+                  <motion.div 
                     key={note.id}
                     className="flex cursor-pointer group px-1 py-1 rounded-md hover:bg-white/5 active:bg-white/10 relative" 
                     onClick={() => openNote(note)}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
                   >
                     <div className="w-5 h-5 flex-shrink-0 flex items-start justify-center pt-0.5 text-white/50">
-                      <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                      <motion.div
+                        variants={chevronVariants}
+                        initial="initial"
+                        whileHover="hover"
+                        animate={index === 0 && !hasInteracted ? chevronControls : undefined}
+                      >
+                        <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                      </motion.div>
                     </div>
                     <div className="ml-2 flex-1 flex justify-between">
                       <div className="flex-1 pr-3">
@@ -150,7 +209,25 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                         </span>
                       </div>
                     </div>
-                  </div>
+                    {!hasInteracted && index === 0 && (
+                      <div className="absolute right-3" style={{ position: 'absolute', width: '10px', height: '10px' }}>
+                        <motion.div 
+                          className="w-2 h-2 rounded-full bg-white/70" 
+                          initial={{ opacity: 0.7 }}
+                          animate={{ 
+                            opacity: [0.5, 0.9, 0.5],
+                            scale: [1, 1.2, 1]
+                          }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            repeatType: "reverse", 
+                            duration: 1.5,
+                            repeatDelay: 1
+                          }}
+                        />
+                      </div>
+                    )}
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -163,14 +240,23 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 Previous 30 days
               </h2>
               <div className="space-y-1">
-                {olderNotes.map((note) => (
-                  <div 
+                {olderNotes.map((note, index) => (
+                  <motion.div 
                     key={note.id}
                     className="flex cursor-pointer group px-1 py-1 rounded-md hover:bg-white/5 active:bg-white/10 relative" 
                     onClick={() => openNote(note)}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
                   >
                     <div className="w-5 h-5 flex-shrink-0 flex items-start justify-center pt-0.5 text-white/50">
-                      <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                      <motion.div
+                        variants={chevronVariants}
+                        initial="initial"
+                        whileHover="hover"
+                      >
+                        <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                      </motion.div>
                     </div>
                     <div className="ml-2 flex-1 flex justify-between">
                       <div className="flex-1 pr-3">
@@ -184,7 +270,25 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                         </span>
                       </div>
                     </div>
-                  </div>
+                    {!hasInteracted && note.title === "\"so...tell me about yourself\"" && (
+                      <div className="absolute right-3" style={{ position: 'absolute', width: '10px', height: '10px' }}>
+                        <motion.div 
+                          className="w-2 h-2 rounded-full bg-white/70" 
+                          initial={{ opacity: 0.7 }}
+                          animate={{ 
+                            opacity: [0.5, 0.9, 0.5],
+                            scale: [1, 1.2, 1]
+                          }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            repeatType: "reverse", 
+                            duration: 1.5,
+                            repeatDelay: 1
+                          }}
+                        />
+                      </div>
+                    )}
+                  </motion.div>
                 ))}
               </div>
             </div>
