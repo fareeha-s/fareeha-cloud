@@ -5,7 +5,9 @@ import { NotesScreen } from './screens/NotesScreen';
 import { SocialsScreen } from './screens/SocialsScreen';
 import { EventScreen } from './screens/EventScreen';
 import type { AppIcon as AppIconType } from './types';
-import { Music, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Music, ChevronLeft, ChevronRight, StickyNote } from 'lucide-react';
+import axios from 'axios';
+import { getSession } from 'next-auth/react';
 
 // Global tactile effect function for better performance
 export const createTactileEffect = () => {
@@ -54,37 +56,69 @@ const createParticles = (containerEl: HTMLElement | null, count: number = 15) =>
   existingParticles.forEach(p => p.remove());
   
   // Create new particles
+  const fragment = document.createDocumentFragment(); // Use document fragment for better performance
+  
   for (let i = 0; i < count; i++) {
     const particle = document.createElement('div');
     particle.className = 'magic-particle absolute rounded-full pointer-events-none';
     
-    // Randomize properties
-    const size = Math.random() * 4 + 1; // 1-5px
-    const xPos = Math.random() * 100; // 0-100%
-    const yPos = Math.random() * 100; // 0-100%
-    const opacity = Math.random() * 0.2 + 0.1; // 0.1-0.3
-    const delay = Math.random() * 10; // 0-10s
-    const duration = Math.random() * 10 + 15; // 15-25s
+    // Simplified randomization with fewer calculations
+    const size = Math.random() * 3 + 1; // 1-4px (reduced max size)
+    const xPos = Math.random() * 100;
+    const yPos = Math.random() * 100;
+    const opacity = Math.random() * 0.15 + 0.05; // 0.05-0.2 (reduced opacity)
+    const delay = Math.random() * 8; // 0-8s (reduced max delay)
+    const duration = Math.random() * 8 + 12; // 12-20s (reduced animation duration)
     
-    // Apply styles - simplified for Safari compatibility
+    // Optimize styles - reduced box-shadow and simpler animation
     particle.style.cssText = `
       width: ${size}px;
       height: ${size}px;
       left: ${xPos}%;
       top: ${yPos}%;
-      opacity: ${opacity * 0.3}; /* Reduced opacity */
-      background-color: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 0 ${size/2}px ${size / 4}px rgba(255, 255, 255, 0.1);
-      animation-name: safari-particle-${Math.floor(Math.random() * 3)};
-      animation-duration: ${duration * 1.5}s; /* Slower animation */
+      opacity: ${opacity};
+      background-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 ${size/4}px rgba(255, 255, 255, 0.1);
+      animation-name: safari-particle-${Math.floor(Math.random() * 2)};
+      animation-duration: ${duration}s;
       animation-delay: ${delay}s;
       animation-iteration-count: infinite;
       animation-direction: alternate;
       animation-timing-function: ease-in-out;
     `;
     
-    containerEl.appendChild(particle);
+    fragment.appendChild(particle);
   }
+  
+  containerEl.appendChild(fragment);
+};
+
+// Define a proper type for Spotify tracks
+type SpotifyTrack = {
+  track: {
+    name: string;
+    artists: Array<{ name: string }>;
+    album?: {
+      name: string;
+      images?: Array<{ url: string }>;
+    };
+    duration_ms: number;
+    external_urls?: {
+      spotify: string;
+    };
+  };
+  played_at: string;
+};
+
+// Define types for our various widgets
+type WidgetData = {
+  type: 'notes' | 'partiful' | 'workout';
+  title: string;
+  subtitle: string;
+  timestamp: string;
+  timestampLabel: string;
+  progress: number;
+  iconBgColor: string;
 };
 
 function App() {
@@ -101,19 +135,104 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [fullyLoaded, setFullyLoaded] = useState(false);
   const [isParticlesAdded, setIsParticlesAdded] = useState(false);
+  const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
+  const [recentTracks, setRecentTracks] = useState<SpotifyTrack[]>([]);
+  const [currentWidgetIndex, setCurrentWidgetIndex] = useState(0);
   
-  // Initialize particles with simpler approach
+  // Sample widget data - you would replace this with real data from your apps
+  const widgets: WidgetData[] = [
+    {
+      type: 'workout',
+      title: 'Barrys - Lift x Run',
+      subtitle: '45 min',
+      timestamp: 'Today',
+      timestampLabel: 'Latest workout',
+      progress: 80,
+      iconBgColor: 'bg-teal-500/20'
+    },
+    {
+      type: 'notes',
+      title: 'Project ideas for next quarter',
+      subtitle: '2 min read',
+      timestamp: new Date().toLocaleDateString([], {month: 'short', day: 'numeric'}),
+      timestampLabel: 'Latest update',
+      progress: 65,
+      iconBgColor: 'bg-orange-500/20'
+    },
+    {
+      type: 'partiful',
+      title: 'Summer Game Night',
+      subtitle: '8 attendees',
+      timestamp: 'June 15th',
+      timestampLabel: 'Latest event',
+      progress: 25,
+      iconBgColor: 'bg-purple-500/20'
+    }
+  ];
+  
+  // Progress percentage for visual effect
+  const [progressPercent, setProgressPercent] = useState(37);
+
+  // Update progress when tracks change
+  useEffect(() => {
+    if (recentTracks.length > 0) {
+      const newProgress = Math.floor(Math.random() * 80) + 10;
+      setProgressPercent(newProgress);
+    }
+  }, [recentTracks]);
+  
+  // Rotate widgets every 8 seconds (longer to give more time to read)
+  useEffect(() => {
+    if (!prefersReducedMotion) {
+      const rotationInterval = setInterval(() => {
+        setCurrentWidgetIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % widgets.length;
+          return nextIndex;
+        });
+      }, 8000); // Increased from 5000 to 8000ms for better readability
+      
+      return () => clearInterval(rotationInterval);
+    }
+  }, [widgets.length, prefersReducedMotion]);
+  
+  // Detect device performance
+  useEffect(() => {
+    // Check if the device has been classified as high-performance by the script in index.html
+    const isHighPerf = document.documentElement.classList.contains('high-performance-device');
+    setIsHighPerformanceDevice(isHighPerf);
+    
+    // Also check for iPads and other larger screen tablets which typically have better performance
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isTablet = /ipad/.test(userAgent) || 
+                    (window.innerWidth >= 768 && /android/.test(userAgent)) ||
+                    (/macintosh/.test(userAgent) && navigator.maxTouchPoints > 1);
+    
+    if (isTablet) {
+      setIsHighPerformanceDevice(true);
+    }
+  }, []);
+  
+  // Initialize particles with optimized approach
   useEffect(() => {
     if (fullyLoaded && !prefersReducedMotion && !isParticlesAdded) {
-      // Small delay to ensure the container is rendered
-      const timer = setTimeout(() => {
-        createParticles(particlesContainerRef.current, 10); // Reduced count for better performance
-        setIsParticlesAdded(true);
-      }, 500);
-      
-      return () => clearTimeout(timer);
+      // Skip particles on low-performance devices or add fewer
+      if (!isHighPerformanceDevice) {
+        // Add minimal particles for low-end devices
+        const timer = setTimeout(() => {
+          createParticles(particlesContainerRef.current, 3); // Minimal particles
+          setIsParticlesAdded(true);
+        }, 300);
+        return () => clearTimeout(timer);
+      } else {
+        // Full particles for high-end devices
+        const timer = setTimeout(() => {
+          createParticles(particlesContainerRef.current, 6);
+          setIsParticlesAdded(true);
+        }, 200);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [fullyLoaded, prefersReducedMotion, isParticlesAdded]);
+  }, [fullyLoaded, prefersReducedMotion, isParticlesAdded, isHighPerformanceDevice]);
   
   // Set body to prevent scrolling and get actual window height
   useEffect(() => {
@@ -147,17 +266,17 @@ function App() {
     // Additional event for mobile browsers
     window.addEventListener('touchmove', () => setHeight(), { passive: true });
     
-    // Set loaded state after a short delay to coordinate with CSS transitions
+    // Optimize loading sequence - reduce initial delay to 100ms
     const initialTimer = setTimeout(() => {
       setIsLoaded(true);
-      // Set fully loaded after the main transitions complete
+      // Reduce secondary delay to 600ms
       const fullLoadTimer = setTimeout(() => {
         setFullyLoaded(true);
         // Force recompute height to ensure proper display
         setHeight();
-      }, 1200);
+      }, 600); // Reduced from 1200ms
       return () => clearTimeout(fullLoadTimer);
-    }, 500);
+    }, 100); // Reduced from 500ms
     
     return () => {
       window.removeEventListener('resize', setHeight);
@@ -190,6 +309,7 @@ function App() {
         padding: 0 !important;
         position: fixed !important;
         overflow: hidden !important;
+        font-family: var(--font-sans) !important;
       }
       
       /* Fix for mobile browsers and notches */
@@ -204,6 +324,7 @@ function App() {
         position: fixed !important;
         inset: 0 !important;
         overflow: hidden !important;
+        font-family: var(--font-sans) !important;
       }
       
       /* Viewport height fix for mobile browsers */
@@ -212,6 +333,7 @@ function App() {
           height: 100% !important;
           min-height: 100% !important;
           max-height: 100% !important;
+          font-family: var(--font-sans) !important;
         }
       }
       
@@ -488,20 +610,78 @@ function App() {
     }, 300); // Wait for the close animation to finish
   };
 
-  // Handle back swipe gesture
-  const handleSwipeGesture = (info: PanInfo) => {
-    // Don't handle drag if the disable-app-drag class is present
-    if (document.body.classList.contains('disable-app-drag')) return;
+  // Load Spotify data from localStorage on mount and listen for updates
+  useEffect(() => {
+    // Try to load data from localStorage first
+    const savedData = localStorage.getItem('spotifyRecentlyPlayed');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        if (parsedData.items && parsedData.items.length > 0) {
+          setRecentTracks(parsedData.items);
+        }
+      } catch (e) {
+        console.error('Error parsing saved Spotify data:', e);
+      }
+    }
+
+    // Create a function to handle the custom event
+    const handleSpotifyDataUpdated = () => {
+      const updatedData = localStorage.getItem('spotifyRecentlyPlayed');
+      if (updatedData) {
+        try {
+          const parsedData = JSON.parse(updatedData);
+          if (parsedData.items && parsedData.items.length > 0) {
+            setRecentTracks(parsedData.items);
+          }
+        } catch (e) {
+          console.error('Error parsing updated Spotify data:', e);
+        }
+      }
+    };
+
+    // Add event listener for the custom event
+    window.addEventListener('spotify-data-updated', handleSpotifyDataUpdated);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('spotify-data-updated', handleSpotifyDataUpdated);
+    };
+  }, []);
+
+  // Function to authenticate with Spotify
+  const authenticateWithSpotify = () => {
+    // Open the Spotify authentication page in a popup
+    const popup = window.open('/spotify-widget', 'Spotify Authentication', 'width=800,height=600');
     
-    // Only go back if swiping right (positive x) with enough force
-    if (activeApp && !isAnimating && info.offset.x > 100) {
-      handleClose();
+    // Check if the popup is still open periodically
+    const checkPopup = setInterval(() => {
+      if (!popup || popup.closed) {
+        clearInterval(checkPopup);
+      }
+    }, 1000);
+  };
+
+  // Function to open Spotify track
+  const openSpotifyTrack = () => {
+    if (recentTracks.length > 0 && recentTracks[0].track?.external_urls?.spotify) {
+      window.open(recentTracks[0].track.external_urls.spotify, '_self');
+    } else {
+      // If no track is available or no external URL, authenticate with Spotify
+      authenticateWithSpotify();
     }
   };
 
-  // Check if app dragging should be disabled
-  const shouldDisableDrag = () => {
-    return document.body.classList.contains('disable-app-drag');
+  // Function to handle widget click
+  const handleWidgetClick = (widgetType: string) => {
+    // Special case for workout widget to navigate to kineship.com
+    if (widgetType === 'workout') {
+      window.open('https://kineship.com', '_blank');
+      return;
+    }
+    
+    // Navigate to the appropriate app screen for other widget types
+    handleAppClick(widgetType);
   };
 
   return (
@@ -519,11 +699,7 @@ function App() {
         bottom: 0
       }}
       onClick={activeApp && !isAnimating ? handleClose : undefined}
-      drag={!!activeApp && !isAnimating && !shouldDisableDrag()}
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.1}
-      dragMomentum={true}
-      onDragEnd={(e, info) => handleSwipeGesture(info)}
+      drag={false}
     >
       {/* Background Wrapper - Ensures full coverage */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
@@ -534,7 +710,7 @@ function App() {
             transform: 'translateZ(0)', 
             WebkitTransform: 'translateZ(0)',
             opacity: isLoaded ? 0.38 : 0,
-            transition: 'opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1)'
+            transition: 'opacity 1s cubic-bezier(0.22, 1, 0.36, 1)'
           }}
         ></div>
         <div 
@@ -543,7 +719,7 @@ function App() {
             transform: 'translateZ(0)', 
             WebkitTransform: 'translateZ(0)',
             opacity: isLoaded ? 0.3 : 0,
-            transition: 'opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1)'
+            transition: 'opacity 1s cubic-bezier(0.22, 1, 0.36, 1)'
           }}
         ></div>
         
@@ -552,14 +728,14 @@ function App() {
           className="absolute top-[20vh] left-[10vw] w-[35vw] h-[35vw] rounded-full bg-[#a0d8ef]/10 blur-[100px]" 
           style={{ 
             opacity: isLoaded ? 0.25 : 0,
-            transition: 'opacity 2.5s ease'
+            transition: 'opacity 1.2s ease'
           }}
         ></div>
         <div 
           className="absolute bottom-[25vh] right-[5vw] w-[30vw] h-[30vw] rounded-full bg-[#d4a5e5]/10 blur-[80px]" 
           style={{ 
             opacity: isLoaded ? 0.2 : 0,
-            transition: 'opacity 2.5s ease'
+            transition: 'opacity 1.2s ease'
           }}
         ></div>
         
@@ -583,7 +759,7 @@ function App() {
         <div 
           className="absolute inset-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNMzAgMzBoMzB2MzBIMzB6TTAgMGgzMHYzMEgweiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA0KSIvPjxwYXRoIGQ9Ik0zMCAwaDMwdjMwSDMwek0wIDMwaDMwdjMwSDB6IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIi8+PC9nPjwvc3ZnPg==')]" 
           style={{
-            opacity: isLoaded ? 0.12 : 0,
+            opacity: isLoaded ? (isHighPerformanceDevice ? 0.12 : 0.08) : 0,
             transition: 'opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1)'
           }}
         ></div>
@@ -597,11 +773,13 @@ function App() {
           }}
         ></div>
         
-        {/* Particles container */}
-        <div 
-          ref={particlesContainerRef}
-          className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-10"
-        ></div>
+        {/* Particles container - conditionally rendered based on device performance */}
+        {(!prefersReducedMotion && (isHighPerformanceDevice || isAppleDevice)) && (
+          <div 
+            ref={particlesContainerRef}
+            className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-10"
+          ></div>
+        )}
       </div>
 
       <div 
@@ -612,7 +790,7 @@ function App() {
           opacity: isLoaded ? 1 : 0,
           transform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
           WebkitTransform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
-          transition: "opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1), transform 1.6s cubic-bezier(0.22, 1, 0.36, 1)",
+          transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
           top: '50%',
           left: '50%',
           marginLeft: '-145px', // Half of the container width (290px/2)
@@ -625,14 +803,14 @@ function App() {
           style={{
             opacity: isLoaded ? 1 : 0,
             transform: `translateY(${isLoaded ? '0' : '-10px'})`,
-            transition: "opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1), transform 1.4s cubic-bezier(0.22, 1, 0.36, 1)",
-            transitionDelay: "0.2s",
+            transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+            transitionDelay: "0.1s",
             height: "60px",
             pointerEvents: "none"
           }}
         >
           {activeApp ? (
-            <h2 className="text-xl text-white font-medium tracking-wide text-center text-shadow-sm">
+            <h2 className="text-xl text-white font-medium tracking-wide text-shadow-sm">
               {activeAppName}
             </h2>
           ) : (
@@ -687,7 +865,7 @@ function App() {
             activeApp ? 'glass-solid-shine' : ''
           } ${
             activeApp === 'notes' ? 'glass-solid-orange' : 
-            activeApp === 'socials' ? 'glass-solid-blue' : 
+            activeApp === 'socials' ? 'glass-solid-sage' : 
             activeApp === 'partiful' ? 'glass-solid-purple' : 
             activeApp === 'spotify' ? 'glass-solid-green' : ''
           }`}
@@ -708,7 +886,7 @@ function App() {
             className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] opacity-[0.06] rounded-full z-10 pointer-events-none" 
             style={{
               background: activeApp === 'notes' ? "radial-gradient(circle, rgba(255, 127, 80, 0.4) 0%, rgba(255, 127, 80, 0) 70%)" :
-                         activeApp === 'socials' ? "radial-gradient(circle, rgba(244, 114, 182, 0.4) 0%, rgba(244, 114, 182, 0) 70%)" :
+                         activeApp === 'socials' ? "radial-gradient(circle, rgba(134, 166, 134, 0.4) 0%, rgba(134, 166, 134, 0) 70%)" :
                          activeApp === 'partiful' ? "radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, rgba(124, 58, 237, 0) 70%)" :
                          "radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%)",
               transform: "rotate(-15deg)"
@@ -718,7 +896,7 @@ function App() {
             className="absolute bottom-[5%] right-[5%] w-[30%] h-[30%] opacity-[0.05] rounded-full z-10 pointer-events-none" 
             style={{
               background: activeApp === 'notes' ? "radial-gradient(circle, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 70%)" :
-                         activeApp === 'socials' ? "radial-gradient(circle, rgba(244, 114, 182, 0.5) 0%, rgba(244, 114, 182, 0) 70%)" :
+                         activeApp === 'socials' ? "radial-gradient(circle, rgba(134, 166, 134, 0.5) 0%, rgba(134, 166, 134, 0) 70%)" :
                          activeApp === 'partiful' ? "radial-gradient(circle, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 70%)" :
                          "radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%)",
               transform: "rotate(15deg)"
@@ -730,7 +908,7 @@ function App() {
             className="absolute top-[-5%] left-[-20%] w-[40%] h-[10%] opacity-[0.04] z-10 pointer-events-none" 
             style={{
               background: activeApp === 'notes' ? "linear-gradient(45deg, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 100%)" :
-                         activeApp === 'socials' ? "linear-gradient(45deg, rgba(244, 114, 182, 0.5) 0%, rgba(244, 114, 182, 0) 100%)" :
+                         activeApp === 'socials' ? "linear-gradient(45deg, rgba(134, 166, 134, 0.5) 0%, rgba(134, 166, 134, 0) 100%)" :
                          activeApp === 'partiful' ? "linear-gradient(45deg, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 100%)" :
                          "linear-gradient(45deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)",
               transform: "rotate(35deg)",
@@ -743,7 +921,7 @@ function App() {
             className="absolute bottom-[0%] left-[10%] right-[10%] h-[5%] opacity-[0.04] z-10 pointer-events-none" 
             style={{
               background: activeApp === 'notes' ? "linear-gradient(to top, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 100%)" :
-                         activeApp === 'socials' ? "linear-gradient(to top, rgba(244, 114, 182, 0.5) 0%, rgba(244, 114, 182, 0) 100%)" :
+                         activeApp === 'socials' ? "linear-gradient(to top, rgba(134, 166, 134, 0.5) 0%, rgba(134, 166, 134, 0) 100%)" :
                          activeApp === 'partiful' ? "linear-gradient(to top, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 100%)" :
                          "linear-gradient(to top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)",
               borderRadius: "50%",
@@ -780,49 +958,136 @@ function App() {
               {/* Empty space to push widget down */}
               <div className="flex-grow"></div>
               
-              {/* Music Widget */}
-              <motion.div 
-                className={`w-full mt-auto rounded-[16px] overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-blur-animation music-widget-bg-animation' : ''}`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={springTransition}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(0px)',
-                  WebkitBackdropFilter: 'blur(0px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  padding: '14px',
-                  transform: 'translateZ(0)',
-                  WebkitTransform: 'translateZ(0)'
-                }}
-              >
-                <div className="flex items-center mb-3">
-                  <div className="w-11 h-11 rounded-md flex items-center justify-center mr-3 shadow-sm bg-black/20">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
-                      <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" fill="black"/>
-                      <path d="M16.7535 17.0767C16.4914 17.0767 16.2546 16.9954 15.9928 16.8328C14.7702 16.0949 13.3598 15.6682 11.9494 15.6682C11.0171 15.6682 10.0848 15.8308 9.17715 16.1359C9.07089 16.1767 8.96463 16.2175 8.85837 16.2175C8.43171 16.2175 8.10463 15.8715 8.10463 15.4449C8.10463 15.0996 8.31715 14.7944 8.66886 14.713C9.77927 14.3262 10.8897 14.1229 11.9747 14.1229C13.6382 14.1229 15.2763 14.6312 16.6867 15.5255C16.9738 15.7288 17.134 15.9728 17.134 16.3389C17.1088 16.7655 16.7535 17.0767 16.7535 17.0767Z" fill="white"/>
-                      <path d="M18.0925 13.8799C17.7853 13.8799 17.5484 13.7579 17.3369 13.6359C15.809 12.7008 13.7928 12.1516 11.5194 12.1516C10.3838 12.1516 9.19817 12.2736 8.11237 12.5176C7.95298 12.5584 7.8214 12.5992 7.69097 12.5992C7.17671 12.5992 6.75006 12.1924 6.75006 11.6432C6.75006 11.1756 6.98789 10.8051 7.38854 10.6831C8.69097 10.3372 9.9934 10.1748 11.5002 10.1748C14.1446 10.1748 16.4978 10.7647 18.2925 11.9007C18.6173 12.0228 18.8097 12.3687 18.8097 12.7551C18.8097 13.3451 18.4329 13.8799 18.0925 13.8799Z" fill="white"/>
-                      <path d="M19.5278 10.1338C19.2206 10.1338 19.0349 10.053 18.7278 9.89097C16.9135 8.87513 14.2944 8.28517 11.5349 8.28517C10.212 8.28517 8.90962 8.44756 7.66032 8.73315C7.53104 8.77396 7.42562 8.81478 7.29634 8.81478C6.6754 8.81478 6.19043 8.32967 6.19043 7.66052C6.19043 7.05975 6.52842 6.61546 6.99897 6.49388C8.46611 6.1283 10.001 5.94753 11.5552 5.94753C14.669 5.94753 17.6595 6.61546 19.8349 7.84515C20.2643 8.04673 20.4944 8.4096 20.4944 8.87513C20.4746 9.60347 20.0373 10.1338 19.5278 10.1338Z" fill="white"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-[12px] font-medium text-white">Spotify</h3>
-                      <p className="text-[10px] text-white/60">1:48</p>
+              {/* Rotating Widget */}
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={`widget-${currentWidgetIndex}`}
+                  className={`w-full mt-auto rounded-[16px] overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-blur-animation music-widget-bg-animation' : ''}`}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ 
+                    duration: 0.5, 
+                    ease: [0.32, 0.72, 0, 1] // Apple's default cubic-bezier easing
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleWidgetClick(widgets[currentWidgetIndex].type)}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    backdropFilter: 'blur(0px)',
+                    WebkitBackdropFilter: 'blur(0px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    padding: '14px',
+                    transform: 'translateZ(0)',
+                    WebkitTransform: 'translateZ(0)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div className="flex items-center mb-3">
+                    <div className={`w-11 h-11 rounded-md flex items-center justify-center mr-3 shadow-sm ${widgets[currentWidgetIndex].iconBgColor} overflow-hidden`}>
+                      {widgets[currentWidgetIndex].type === 'workout' && (
+                        <img 
+                          src="/icons/apps/kineship.svg" 
+                          alt="Kineship" 
+                          className="w-full h-full object-cover rounded-md" 
+                        />
+                      )}
+                      {widgets[currentWidgetIndex].type === 'notes' && (
+                        <StickyNote size={20} className="text-white" strokeWidth={1.5} />
+                      )}
+                      {widgets[currentWidgetIndex].type === 'partiful' && (
+                        <img 
+                          src="/icons/apps/partiful.png" 
+                          alt="Partiful" 
+                          className="w-6 h-6" 
+                        />
+                      )}
                     </div>
-                    <p className="text-[10px] text-white/70 font-light">Recently Played</p>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-[12px] font-medium text-white">
+                          {widgets[currentWidgetIndex].type === 'workout' ? 'Kineship' : 
+                           widgets[currentWidgetIndex].type === 'notes' ? 'Notes' : 
+                           'Partiful'}
+                        </h3>
+                        <p className="text-[10px] text-white/60">
+                          {widgets[currentWidgetIndex].timestamp}
+                        </p>
+                      </div>
+                      <p className="text-[10px] text-white/70 font-light">
+                        {widgets[currentWidgetIndex].timestampLabel}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <p className="text-[13px] text-white font-medium truncate pr-2">Canada</p>
-                    <p className="text-[10px] text-white/60 font-light whitespace-nowrap">Wallows</p>
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[13px] text-white font-medium truncate pr-2">
+                        {widgets[currentWidgetIndex].title}
+                      </p>
+                      <div className="flex items-center">
+                        {widgets[currentWidgetIndex].type === 'workout' ? (
+                          <div className="flex -space-x-1 mr-2">
+                            <div className="inline-block h-4 w-4 rounded-full ring-1 ring-white/10 bg-teal-400/30"></div>
+                            <div className="inline-block h-4 w-4 rounded-full ring-1 ring-white/10 bg-emerald-400/30"></div>
+                            <div className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-teal-500/30 text-[8px] text-white">+2</div>
+                          </div>
+                        ) : widgets[currentWidgetIndex].type === 'partiful' ? (
+                          <div className="flex -space-x-1 mr-2">
+                            <div className="inline-block h-4 w-4 rounded-full ring-1 ring-white/10 bg-purple-400/30"></div>
+                            <div className="inline-block h-4 w-4 rounded-full ring-1 ring-white/10 bg-pink-400/30"></div>
+                            <div className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-purple-500/30 text-[8px] text-white">+6</div>
+                          </div>
+                        ) : null}
+                        <p className="text-[10px] text-white/60 font-light whitespace-nowrap">
+                          {widgets[currentWidgetIndex].subtitle}
+                        </p>
+                      </div>
+                    </div>
+                    {/* Empty div to maintain original widget height */}
+                    <div className="h-[15px]"></div>
                   </div>
-                  <div className="w-full bg-white/20 h-[3px] rounded-full">
-                    <div className="bg-white h-full rounded-full" style={{ width: '37%' }}></div>
+                </motion.div>
+              </AnimatePresence>
+              
+              {/* Indicator Dots */}
+              <div className="flex items-center justify-center mt-3 space-x-2">
+                {widgets.map((_, index) => (
+                  <div
+                    key={`indicator-${index}`}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      // Apply smooth transition between widgets when dots are clicked
+                      const direction = index > currentWidgetIndex ? 1 : -1;
+                      
+                      // Create a smoother transition by animating through each widget
+                      const animateToIndex = () => {
+                        if (currentWidgetIndex !== index) {
+                          setCurrentWidgetIndex(prev => {
+                            const next = prev + direction;
+                            // Handle wrapping around the ends
+                            if (next < 0) return widgets.length - 1;
+                            if (next >= widgets.length) return 0;
+                            return next;
+                          });
+                        }
+                      };
+                      
+                      // Start the transition
+                      animateToIndex();
+                    }}
+                  >
+                    <div 
+                      className={`h-[6px] w-[6px] rounded-full ${
+                        currentWidgetIndex === index ? 'bg-white' : 'bg-white/20'
+                      }`}
+                      style={{
+                        transition: 'all 0.3s ease'
+                      }}
+                    />
                   </div>
-                </div>
-              </motion.div>
+                ))}
+              </div>
             </div>
           </div>
           
@@ -867,7 +1132,7 @@ function App() {
               >
                 <div className={`bg-gradient-to-br ${clonedAppIcon.app.color} h-full w-full rounded-[12px] flex items-center justify-center`}>
                   {clonedAppIcon.app.icon === 'Partiful' ? (
-                    <img src="/icons/apps/partiful.png" alt="Partiful" className="w-6 h-6" />
+                    <img src="./icons/apps/partiful.png" alt="Partiful" className="w-6 h-6" />
                   ) : (
                     <AppIcon
                       icon={clonedAppIcon.app.icon}

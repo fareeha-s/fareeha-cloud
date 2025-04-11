@@ -183,7 +183,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
         ref={containerRef}
         className="h-full w-full overflow-auto scrollbar-subtle relative"
         style={{ 
-          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Inter", sans-serif',
+          fontFamily: 'var(--font-sans)',
           backgroundColor: '#0e2b17',
           borderRadius: '8px',
           overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
@@ -219,7 +219,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               style={{ 
                 fontSize: '28px', 
-                fontFamily: 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif', 
+                fontFamily: 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif', /* Exception: Partiful event titles use Grotesk font */
                 lineHeight: 1.1, 
                 marginBottom: '12px', 
                 color: 'white', 
@@ -246,9 +246,9 @@ limited capacity! tell us what you'd share 🫶🏼`;
             >
               <div className="w-full overflow-hidden">
                 <picture>
-                  <source srcSet="/images/partiful/ms-giphy.webp" type="image/webp" />
+                  <source srcSet="./images/partiful/ms-giphy.webp" type="image/webp" />
                   <img 
-                    src="/images/partiful/ms-fallback.jpg" 
+                    src="./images/partiful/ms-fallback.jpg" 
                     alt="Mental Static Event" 
                     className="w-full" 
                     style={{ objectFit: 'cover', maxHeight: '280px' }}
@@ -455,7 +455,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                 onClick={toggleExpanded}
               >
                 <motion.div 
-                  className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"
+                  className="w-5 h-5 flex items-center justify-center bg-white/10 rounded-full"
                   whileHover={{ 
                     scale: 1.1, 
                     backgroundColor: 'rgba(255, 255, 255, 0.15)' 

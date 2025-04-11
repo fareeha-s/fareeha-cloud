@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
+/* No need to import here since we're preloading in the HTML */
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap'); */
 
 @tailwind base;
 @tailwind components;
@@ -6,19 +7,23 @@
 
 @layer base {
   html {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, 'Inter', sans-serif;
+    font-family: var(--font-sans);
     font-weight: 300;
     letter-spacing: 0.01em;
     color: white;
   }
   
+  /* No need to redeclare iOS devices font here - using CSS variables from HTML */
+  
   h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
     font-weight: 400;
     letter-spacing: -0.01em;
     color: white;
   }
   
   p {
+    font-family: var(--font-sans);
     font-weight: 300;
     color: rgba(255, 255, 255, 0.9);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -26,35 +31,42 @@
   
   /* Glass text */
   .text-glass {
+    font-family: var(--font-sans);
     color: white;
     font-weight: 300;
     letter-spacing: 0.02em;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  /* Glassmorphic UI effect */
+  /* Glassmorphic UI effect - optimized */
   .glass {
-    backdrop-filter: blur(16px);
     background-color: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
   
-  /* New non-transparent glass effect */
+  /* Support for browsers that can use backdrop-filter */
+  @supports (backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px)) {
+    .glass {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+  }
+  
+  /* New optimized non-transparent glass effect - simplified */
   .glass-solid {
     background: linear-gradient(135deg, #ffffff10 0%, #ffffff05 100%);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 
-      0 5px 15px rgba(0, 0, 0, 0.15),
-      0 1px 2px rgba(255, 255, 255, 0.2) inset,
-      0 -1px 2px rgba(0, 0, 0, 0.1) inset;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     position: relative;
     overflow: hidden;
+    will-change: transform;
+    transform: translateZ(0);
   }
   
-  /* Glass edge highlight effect - now at the bottom */
+  /* Simplified glass edge highlight effect */
   .glass-solid::before {
     content: '';
     position: absolute;
@@ -64,89 +76,51 @@
     height: 40%;
     background: linear-gradient(to top, 
       rgba(255, 255, 255, 0.15) 0%, 
-      rgba(255, 255, 255, 0.05) 40%, 
       rgba(255, 255, 255, 0) 100%);
     pointer-events: none;
   }
   
-  /* Glass edge reflection effect - now at the top */
+  /* Optimized glass edge reflection effect - simpler */
   .glass-solid::after {
     content: '';
     position: absolute;
     top: 0;
     left: 20%;
     right: 20%;
-    height: 20px;
+    height: 15px;
     background: linear-gradient(to bottom, 
       rgba(255, 255, 255, 0.05) 0%, 
       rgba(255, 255, 255, 0) 100%);
     border-radius: 50%;
-    filter: blur(3px);
     pointer-events: none;
   }
   
-  /* Glass color variations */
-  .glass-solid-blue {
-    background: linear-gradient(135deg, rgba(244, 114, 182, 0.08) 0%, rgba(219, 39, 119, 0.06) 100%);
-    border-top-color: rgba(244, 114, 182, 0.35);
-    border-left-color: rgba(244, 114, 182, 0.25);
-    border-bottom-color: rgba(219, 39, 119, 0.15);
-    border-right-color: rgba(219, 39, 119, 0.15);
-  }
-  
-  .glass-solid-blue::before {
-    background: linear-gradient(to top, 
-      rgba(244, 114, 182, 0.15) 0%, 
-      rgba(244, 114, 182, 0.08) 40%, 
-      rgba(244, 114, 182, 0) 100%);
+  /* Glass color variations - using opacity classes and simplified gradients */
+  .glass-solid-sage {
+    background: linear-gradient(135deg, rgba(134, 166, 134, 0.08) 0%, rgba(100, 130, 100, 0.06) 100%);
+    border-top-color: rgba(134, 166, 134, 0.35);
+    border-left-color: rgba(134, 166, 134, 0.25);
   }
   
   .glass-solid-orange {
     background: linear-gradient(135deg, rgba(255, 127, 80, 0.08) 0%, rgba(250, 92, 75, 0.06) 100%);
     border-top-color: rgba(255, 127, 80, 0.35);
     border-left-color: rgba(255, 127, 80, 0.25);
-    border-bottom-color: rgba(250, 92, 75, 0.15);
-    border-right-color: rgba(250, 92, 75, 0.15);
-  }
-  
-  .glass-solid-orange::before {
-    background: linear-gradient(to top, 
-      rgba(255, 127, 80, 0.15) 0%, 
-      rgba(255, 127, 80, 0.08) 40%, 
-      rgba(255, 127, 80, 0) 100%);
   }
   
   .glass-solid-purple {
     background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(91, 33, 182, 0.06) 100%);
     border-top-color: rgba(124, 58, 237, 0.35);
     border-left-color: rgba(124, 58, 237, 0.25);
-    border-bottom-color: rgba(91, 33, 182, 0.15);
-    border-right-color: rgba(91, 33, 182, 0.15);
-  }
-  
-  .glass-solid-purple::before {
-    background: linear-gradient(to top, 
-      rgba(124, 58, 237, 0.15) 0%, 
-      rgba(124, 58, 237, 0.08) 40%, 
-      rgba(124, 58, 237, 0) 100%);
   }
   
   .glass-solid-green {
     background: linear-gradient(135deg, rgba(110, 231, 183, 0.07) 0%, rgba(59, 130, 114, 0.05) 100%);
     border-top-color: rgba(110, 231, 183, 0.3);
     border-left-color: rgba(110, 231, 183, 0.2);
-    border-bottom-color: rgba(59, 130, 114, 0.1);
-    border-right-color: rgba(59, 130, 114, 0.1);
   }
   
-  .glass-solid-green::before {
-    background: linear-gradient(to top, 
-      rgba(110, 231, 183, 0.12) 0%, 
-      rgba(110, 231, 183, 0.06) 40%, 
-      rgba(110, 231, 183, 0) 100%);
-  }
-  
-  /* Enhanced glass effect with edge shine */
+  /* Enhanced glass effect with edge shine - simplified */
   .glass-solid-shine {
     position: relative;
   }
@@ -157,10 +131,10 @@
     bottom: -10px;
     left: -10px;
     right: -10px;
-    height: 40px;
+    height: 30px;
     background: linear-gradient(45deg, 
       rgba(255, 255, 255, 0) 0%, 
-      rgba(255, 255, 255, 0.1) 50%, 
+      rgba(255, 255, 255, 0.08) 50%, 
       rgba(255, 255, 255, 0) 100%);
     transform: rotate(45deg);
     pointer-events: none;

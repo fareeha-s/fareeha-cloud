@@ -34,7 +34,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
     'StickyNote': <StickyNote className={`w-7 h-7 ${iconColors['StickyNote']}`} strokeWidth={1.5} />,
     'AtSign': <AtSign className={`w-7 h-7 ${iconColors['AtSign']}`} strokeWidth={1.5} />,
     'PartyPopper': <PartyPopper className={`w-7 h-7 ${iconColors['PartyPopper']}`} strokeWidth={1.5} />,
-    'Partiful': <img src="/icons/apps/partiful.png" alt="Partiful" className="w-7 h-7" />,
+    'Partiful': <img src="./icons/apps/partiful.png" alt="Partiful" className="w-7 h-7" />,
   };
 
   // Apple-like spring animation
@@ -98,7 +98,18 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
         {iconMap[icon] || <div className="w-7 h-7 text-white">?</div>}
       </motion.div>
       {showLabel && (
-        <span className="text-[11px] text-white font-normal mt-[5px] tracking-wide text-center">{displayName}</span>
+        <span 
+          className="text-[11px] text-white mt-[5px] text-center" 
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontWeight: 500,
+            letterSpacing: '0.01em',
+            WebkitFontSmoothing: 'antialiased',
+            textRendering: 'optimizeLegibility'
+          }}
+        >
+          {displayName}
+        </span>
       )}
     </motion.div>
   );
