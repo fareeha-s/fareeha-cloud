@@ -43,18 +43,10 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     // Add this handler to window to be accessible by the App component
     window.eventScreenBackHandler = handleAppBackClick;
     
-    // Add a class to the document body to disable drag in the App component
-    if (showPartiful) {
-      document.body.classList.add('disable-app-drag');
-    } else {
-      document.body.classList.remove('disable-app-drag');
-    }
-    
     // Clean up
     return () => {
       // @ts-ignore
       delete window.eventScreenBackHandler;
-      document.body.classList.remove('disable-app-drag');
     };
   }, [showPartiful]);
   
@@ -167,7 +159,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
   }
 
   // Filter events by timeframe
-  const upcomingEvents = events.filter(event => event.timeframe === 'upcoming');
+  const upcomingEvents = events.filter(event => event.timeframe === '');
   const pastEvents = events.filter(event => event.timeframe === 'past');
 
   return (
@@ -225,8 +217,8 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                           {event.title}
                         </h3>
                       </div>
-                      <div className="flex-shrink-0 self-start pt-0.5">
-                        <span className="text-xs text-white/40 whitespace-nowrap">
+                      <div className="flex-shrink-0 self-start">
+                        <span className="text-xs text-white/40 whitespace-nowrap pt-0.5">
                           {event.date}
                         </span>
                       </div>
@@ -277,8 +269,8 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                           {event.title}
                         </h3>
                       </div>
-                      <div className="flex-shrink-0 self-start pt-0.5">
-                        <span className="text-xs text-white/40 whitespace-nowrap">
+                      <div className="flex-shrink-0 self-start">
+                        <span className="text-xs text-white/40 whitespace-nowrap pt-0.5">
                           {event.date}
                         </span>
                       </div>

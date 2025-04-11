@@ -25,11 +25,10 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       isCustomIcon: true
     },
     {
-      name: "retro",
-      icon: "/icons/apps/retro.jpg",
-      url: "https://retro.app",
-      position: 2,
-      isCustomIcon: true
+      name: "empty1",
+      icon: null,
+      url: "#",
+      position: 2
     },
     {
       name: "email",
@@ -39,41 +38,43 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       customStyles: "bg-white/15 backdrop-blur-lg border border-white/20"
     },
     {
-      name: "corner",
-      icon: "/icons/apps/corner.jpg",
-      url: "https://www.corner.inc/fareeha?sid=db7c68ce-dad2-40e7-bdd7-547a523f1708",
+      name: "retro",
+      icon: "/icons/apps/retro.jpg",
+      url: "https://retro.app",
       position: 4,
       isCustomIcon: true
     },
     {
-      name: "empty1",
-      icon: null,
-      url: "#",
-      position: 5
-    },
-    {
-      name: "empty2",
-      icon: null,
-      url: "#",
-      position: 6
-    },
-    {
-      name: "strava",
-      icon: "/icons/apps/strava.png",
-      url: "https://strava.app.link/PzFPfOvKpSb",
-      position: 7,
+      name: "kineship",
+      icon: "/icons/apps/kineship.svg",
+      url: "https://kineship.com",
+      position: 5,
       isCustomIcon: true
     },
     {
       name: "empty3",
       icon: null,
       url: "#",
-      position: 8
+      position: 6
+    },
+    {
+      name: "corner",
+      icon: "/icons/apps/corner.jpg",
+      url: "https://www.corner.inc/fareeha?sid=db7c68ce-dad2-40e7-bdd7-547a523f1708",
+      position: 7,
+      isCustomIcon: true
     },
     {
       name: "airbuds",
       icon: "/icons/apps/airbuds.png",
       url: "https://i.airbuds.fm/fareehas/pC4Nm0VR4i",
+      position: 8,
+      isCustomIcon: true
+    },
+    {
+      name: "strava",
+      icon: "/icons/apps/strava.png",
+      url: "https://strava.app.link/PzFPfOvKpSb",
       position: 9,
       isCustomIcon: true
     }

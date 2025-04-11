@@ -7,7 +7,7 @@ export default {
         xs: '2px',
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'SF Pro Display', 'system-ui', 'Inter', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'SF Pro Display', 'system-ui', 'sans-serif'],
       },
       transitionTimingFunction: {
         'ios-spring': 'cubic-bezier(0.17, 0.67, 0.83, 0.67)',
