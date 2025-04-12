@@ -10,38 +10,75 @@ body.partiful-event-active [id*="nav"],
 body.partiful-event-active [class*="menu"],
 body.partiful-event-active [class*="dock"],
 body.partiful-event-active [class*="toolbar"] {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  width: 0 !important;
-  height: 0 !important;
-  position: absolute !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  margin: -1px !important;
-  padding: 0 !important;
-  border: 0 !important;
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  margin: -1px;
+  padding: 0;
+  border: 0;
 }
 
 body.partiful-event-active {
-  overflow: hidden !important;
-  background-color: #0e2b17 !important; /* Match the Partiful background color */
+  overflow: hidden;
+  background-color: transparent;
 }
 
 /* Aggressively hide all elements except our partiful component */
 body.partiful-event-active > *:not([class*="z-[9999]"]) {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Ensure our partiful component is visible and positioned above everything else */
 body.partiful-event-active [class*="z-[9999]"] {
-  z-index: 9999 !important;
-  position: fixed !important;
-  inset: 0 !important;
+  z-index: 9999;
+  position: fixed;
+  inset: 0;
+}
+
+/* Force the Partiful event to overlay the sidebar on desktop */
+body.partiful-event-active .main-container {
+  position: absolute;
+  z-index: 9999;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure the Partiful event card is centered and overlays everything */
+body.partiful-event-active .portrait-container {
+  position: absolute;
+  z-index: 9999;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+}
+
+/* Create a full-screen overlay for the Partiful event */
+body.partiful-event-active::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  pointer-events: none;
 }
 
 /* Import Inter font from Google Fonts */

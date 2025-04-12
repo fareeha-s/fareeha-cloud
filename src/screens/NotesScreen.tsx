@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { AppScreenProps } from '../types';
 import { motion, useAnimation, useReducedMotion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Clock, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { createTactileEffect } from '../App';
 import { notes, NoteItem } from '../data/notes';
 
@@ -54,6 +54,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const chevronControls = useAnimation();
   const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
+  const [widgetNoteId, setWidgetNoteId] = useState<number | null>(null);
   
   // Run a subtle animation sequence on first render
   useEffect(() => {
@@ -104,13 +105,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
 
   // Add effect to check for initialNoteId
   useEffect(() => {
-    // Check if we have an initial note ID to open from the widget
+    // Check if we have an initial note ID to highlight from the widget
     if (window.initialNoteId) {
-      const noteToOpen = notes.find(note => note.id === window.initialNoteId);
-      if (noteToOpen) {
-        setSelectedNote(noteToOpen);
-        setHasInteracted(true);
-      }
+      setWidgetNoteId(window.initialNoteId);
       // Clear the initialNoteId after using it
       window.initialNoteId = undefined;
     }
@@ -171,10 +168,6 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     return dateStr;
   };
 
-  // Filter notes by timeframe
-  const recentNotes = notes.filter(note => note.timeframe === 'recent');
-  const olderNotes = notes.filter(note => note.timeframe === 'older');
-
   // New filters for pinned notes and all notes
   const pinnedNotes = notes.filter(note => note.pinned);
   
@@ -191,12 +184,6 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       if (monthB !== monthA) return monthB - monthA;
       return dayB - dayA;
     });
-
-  const openNote = (note: NoteItem) => {
-    setSelectedNote(note);
-    setHasInteracted(true);
-    createTactileEffect();
-  };
 
   const closeNote = () => {
     setSelectedNote(null);
@@ -215,13 +202,50 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     }
   };
 
+  // Helper function to determine if a note should have a pulsing dot
+  const shouldShowPulsingDot = (noteId: number) => {
+    return widgetNoteId === noteId;
+  };
+
+  // Animation variants for staggered entrance
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.02
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15, scale: 0.95 },
+    show: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300, 
+        damping: 30,
+        duration: 0.3
+      }
+    }
+  };
+
+  const handleNoteClick = (note: NoteItem) => {
+    setSelectedNote(note);
+    createTactileEffect();
+  };
+
   return (
     <div 
       className="h-full w-full" 
       onClick={(e) => {
         e.stopPropagation();
         if (selectedNote) {
-          closeNote(); // Close note when clicking the background
+          closeNote();
         }
         handleInteraction();
       }}
@@ -233,33 +257,106 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             key="note-detail"
             className="h-full w-full" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the note
-            initial={{ x: 300, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 300, opacity: 0, transition: { type: "spring", damping: 25, stiffness: 300, velocity: 2 } }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className="h-full w-full rounded-lg backdrop-blur-sm bg-black/10">
-              <div className="flex items-center justify-between px-6 pt-6 pb-1 text-white/80">
-                <div className="flex items-center">
-                  {/* Empty div to maintain spacing */}
-                </div>
-                <div className="flex items-center">
-                  <span className="text-xs text-white/60">{getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}</span>
-                </div>
-              </div>
-              
-              <div className="h-[calc(100%-44px)] flex flex-col p-4 pt-2">
-                <div className="px-2">
-                  <div className="mb-3 pt-0">
-                    <h2 className="text-white text-lg font-medium">
-                      {selectedNote?.title}
-                    </h2>
+            <div 
+              className="h-full w-full rounded-lg backdrop-blur-sm bg-black/10"
+              style={{ 
+                touchAction: 'pan-y',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                overflow: 'hidden'
+              }}
+            >
+              <motion.div 
+                className="h-full w-full overflow-auto scrollbar-subtle relative p-6"
+                style={{ 
+                  overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
+                  maxHeight: '100%',  // Make sure content stays within the container height
+                  touchAction: 'pan-y', // Allow vertical scrolling only
+                  pointerEvents: 'auto' // Ensure the component captures all pointer events
+                }}
+              >
+                <div className="flex items-center justify-between mb-1 text-white/80">
+                  <div className="flex items-center">
+                    {/* Empty div to maintain spacing */}
                   </div>
-                  <div className="text-white/90 text-sm leading-relaxed overflow-y-auto max-h-[calc(100vh-130px)] scrollbar-subtle">
-                    {selectedNote?.content}
+                  <div className="flex items-center">
+                    <span className="text-xs text-white/60">{getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}</span>
                   </div>
                 </div>
-              </div>
+                
+                <motion.div 
+                  className="flex flex-col"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                >
+                  <motion.div 
+                    className="flex flex-col"
+                    variants={itemVariants}
+                  >
+                    <div className="mb-2">
+                      <h2 className="text-white text-lg font-medium">
+                        {selectedNote?.title}
+                      </h2>
+                    </div>
+                    
+                    {/* Show full content without preview/expand */}
+                    <motion.div 
+                      className="text-white/90 text-sm leading-relaxed whitespace-pre-line"
+                      variants={itemVariants}
+                      style={{ 
+                        whiteSpace: 'pre-line'
+                      }}
+                    >
+                      {selectedNote?.content.split(/(__[^_]+__)|\[([^\]]+)\]\(([^)]+)\)/).map((part, index) => {
+                        if (!part) return null;
+                        
+                        // Check if this part is an underlined section
+                        if (part.startsWith('__') && part.endsWith('__')) {
+                          return (
+                            <span 
+                              key={index}
+                              className="underline decoration-white/90"
+                            >
+                              {part.slice(2, -2)}
+                            </span>
+                          );
+                        }
+                        
+                        // Check if this is a link text part
+                        if (index % 4 === 2) {
+                          const url = selectedNote?.content.split(/\[([^\]]+)\]\(([^)]+)\)/)[Math.floor(index/4) * 2 + 2];
+                          return (
+                            <a 
+                              key={index}
+                              href={url}
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-400 hover:text-blue-300"
+                              onClick={e => e.stopPropagation()}
+                            >
+                              {part}
+                            </a>
+                          );
+                        }
+                        
+                        // Skip URL parts
+                        if (index % 4 === 3) return null;
+                        
+                        // Return regular text
+                        return part;
+                      })}
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
             </div>
           </motion.div>
         ) : (
@@ -288,7 +385,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             createTactileEffect();
-                            setSelectedNote(note);
+                            handleNoteClick(note);
                           }}
                           whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.98 }}
@@ -316,8 +413,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                               </span>
                             </div>
                           </div>
-                          {note.title.includes("who am i again") && !hasInteracted && (
-                            <div className="absolute right-3" style={{ position: 'absolute', width: '10px', height: '10px' }}>
+                          {shouldShowPulsingDot(note.id) && (
+                            <div 
+                              className="absolute -right-1 top-1/3 -translate-y-1/2" 
+                            >
                               <motion.div 
                                 className="w-2 h-2 rounded-full bg-white/70" 
                                 initial={{ opacity: 0.7 }}
@@ -340,7 +439,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                   </div>
                 )}
 
-                {/* All notes section changed to Last edited */}
+                {/* All notes section */}
                 {allNotes.length > 0 && (
                   <div>
                     <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2">
@@ -354,7 +453,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             createTactileEffect();
-                            setSelectedNote(note);
+                            handleNoteClick(note);
                           }}
                           whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.98 }}
@@ -381,6 +480,26 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                               </span>
                             </div>
                           </div>
+                          {shouldShowPulsingDot(note.id) && (
+                            <div 
+                              className="absolute -right-1 top-1/3 -translate-y-1/2" 
+                            >
+                              <motion.div 
+                                className="w-2 h-2 rounded-full bg-white/70" 
+                                initial={{ opacity: 0.7 }}
+                                animate={{ 
+                                  opacity: [0.5, 0.9, 0.5],
+                                  scale: [1, 1.2, 1]
+                                }}
+                                transition={{ 
+                                  repeat: Infinity, 
+                                  repeatType: "reverse", 
+                                  duration: 1.5,
+                                  repeatDelay: 1
+                                }}
+                              />
+                            </div>
+                          )}
                         </motion.div>
                       ))}
                     </div>

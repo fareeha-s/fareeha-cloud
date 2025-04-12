@@ -166,7 +166,6 @@ function App() {
   const [windowHeight, setWindowHeight] = useState('100vh');
   const [isAppleDevice, setIsAppleDevice] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [fullyLoaded, setFullyLoaded] = useState(false);
   const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
   const [recentTracks, setRecentTracks] = useState<SpotifyTrack[]>([]);
   const [currentWidgetIndex, setCurrentWidgetIndex] = useState(0);
@@ -174,7 +173,10 @@ function App() {
   const [isWidgetHovered, setIsWidgetHovered] = useState(false);
   const [swipeStartX, setSwipeStartX] = useState<number | null>(null);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [isSwiping, setIsSwiping] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
+  const [hasShownFirstDisplay, setHasShownFirstDisplay] = useState(false);
+  const [lastManualNavigation, setLastManualNavigation] = useState<number | null>(null);
   
   // Check if this is the first visit
   useEffect(() => {
@@ -256,30 +258,42 @@ function App() {
     }
   ];
   
-  // Progress percentage for visual effect
-  const [progressPercent, setProgressPercent] = useState(37);
-
   // Update progress when tracks change
   useEffect(() => {
     if (recentTracks.length > 0) {
       const newProgress = Math.floor(Math.random() * 80) + 10;
-      setProgressPercent(newProgress);
+      // setProgressPercent(newProgress);
     }
   }, [recentTracks]);
   
   // Rotate widgets every 8 seconds (longer to give more time to read)
   useEffect(() => {
-    if (!prefersReducedMotion && !isWidgetHovered) {
+    if (!prefersReducedMotion && !isWidgetHovered && !isSwiping) {
+      // Use 1 second for the first display after page load, 6 seconds for all others
+      const interval = !hasShownFirstDisplay ? 1000 : 5000;
+      
+      // Set up the interval
       const rotationInterval = setInterval(() => {
+        // Check if we should pause rotation due to recent manual navigation
+        const now = Date.now();
+        if (lastManualNavigation && now - lastManualNavigation < 5000) {
+          return; // Skip this rotation cycle if manual navigation was recent
+        }
+        
         setCurrentWidgetIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % widgets.length;
           return nextIndex;
         });
-      }, 8000); // Increased from 5000 to 8000ms for better readability
+        
+        // Mark that we've shown the first display
+        if (!hasShownFirstDisplay) {
+          setHasShownFirstDisplay(true);
+        }
+      }, interval);
       
       return () => clearInterval(rotationInterval);
     }
-  }, [widgets.length, prefersReducedMotion, isWidgetHovered]);
+  }, [widgets.length, prefersReducedMotion, isWidgetHovered, hasShownFirstDisplay, lastManualNavigation, isSwiping]);
   
   // Detect device performance
   useEffect(() => {
@@ -335,7 +349,7 @@ function App() {
       setIsLoaded(true);
       // Reduce secondary delay to 600ms
       const fullLoadTimer = setTimeout(() => {
-        setFullyLoaded(true);
+        // setFullyLoaded(true);
         // Force recompute height to ensure proper display
         setHeight();
       }, 600); // Reduced from 1200ms
@@ -580,14 +594,6 @@ function App() {
     (activeApp === 'partiful' ? 'partifolio 🎉' : apps.find(app => app.id === activeApp)?.name) 
     : null;
   
-  // Apple-like spring animation for subtle movements
-  const springTransition = {
-    type: "spring",
-    damping: 30,
-    stiffness: 400,
-    mass: 0.8,
-  };
-  
   // Precise iOS app opening animation timing
   const appOpeningTransition = {
     type: "spring",
@@ -596,108 +602,8 @@ function App() {
     mass: 1.2,
     duration: 0.3
   };
-  
-  // Special transition for the taller partiful container
-  const partifulOpeningTransition = {
-    type: "spring",
-    stiffness: 300,
-    damping: 40,
-    mass: 1.3,
-    duration: 0.4
-  };
 
   // Handle navigation between apps
-  const navigateToNextApp = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (isAnimating || !activeApp) return;
-    
-    const currentIndex = apps.findIndex(app => app.id === activeApp);
-    const nextIndex = (currentIndex + 1) % apps.length;
-    
-    // Close current app and open the next one
-    handleClose();
-    setTimeout(() => {
-      handleAppClick(apps[nextIndex].id);
-    }, 300); // Wait for the close animation to finish
-  };
-  
-  const navigateToPrevApp = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (isAnimating || !activeApp) return;
-    
-    const currentIndex = apps.findIndex(app => app.id === activeApp);
-    const prevIndex = (currentIndex - 1 + apps.length) % apps.length;
-    
-    // Close current app and open the previous one
-    handleClose();
-    setTimeout(() => {
-      handleAppClick(apps[prevIndex].id);
-    }, 300); // Wait for the close animation to finish
-  };
-
-  // Load Spotify data from localStorage on mount and listen for updates
-  useEffect(() => {
-    // Try to load data from localStorage first
-    const savedData = localStorage.getItem('spotifyRecentlyPlayed');
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        if (parsedData.items && parsedData.items.length > 0) {
-          setRecentTracks(parsedData.items);
-        }
-      } catch (e) {
-        console.error('Error parsing saved Spotify data:', e);
-      }
-    }
-
-    // Create a function to handle the custom event
-    const handleSpotifyDataUpdated = () => {
-      const updatedData = localStorage.getItem('spotifyRecentlyPlayed');
-      if (updatedData) {
-        try {
-          const parsedData = JSON.parse(updatedData);
-          if (parsedData.items && parsedData.items.length > 0) {
-            setRecentTracks(parsedData.items);
-          }
-        } catch (e) {
-          console.error('Error parsing updated Spotify data:', e);
-        }
-      }
-    };
-
-    // Add event listener for the custom event
-    window.addEventListener('spotify-data-updated', handleSpotifyDataUpdated);
-
-    // Clean up the event listener
-    return () => {
-      window.removeEventListener('spotify-data-updated', handleSpotifyDataUpdated);
-    };
-  }, []);
-
-  // Function to authenticate with Spotify
-  const authenticateWithSpotify = () => {
-    // Open the Spotify authentication page in a popup
-    const popup = window.open('/spotify-widget', 'Spotify Authentication', 'width=800,height=600');
-    
-    // Check if the popup is still open periodically
-    const checkPopup = setInterval(() => {
-      if (!popup || popup.closed) {
-        clearInterval(checkPopup);
-      }
-    }, 1000);
-  };
-
-  // Function to open Spotify track
-  const openSpotifyTrack = () => {
-    if (recentTracks.length > 0 && recentTracks[0].track?.external_urls?.spotify) {
-      window.open(recentTracks[0].track.external_urls.spotify, '_self');
-    } else {
-      // If no track is available or no external URL, authenticate with Spotify
-      authenticateWithSpotify();
-    }
-  };
-
-  // Function to handle widget click
   const handleWidgetClick = (widgetType: string) => {
     // Special case for workout widget to navigate to kineship.com
     if (widgetType === 'workout') {
@@ -708,10 +614,12 @@ function App() {
       return;
     }
     
-    // Special case for notes widget to open the specific note
+    // Special case for notes widget to open the notes list
     if (widgetType === 'notes') {
-      // Set up global variable to tell NotesScreen which note to open
+      // Set up global variable to tell NotesScreen which note to highlight
       window.initialNoteId = selectedNote.id;
+      handleAppClick(widgetType);
+      return;
     }
     
     // Special case for partiful widget to open the specific event
@@ -1052,6 +960,7 @@ function App() {
                   onTouchStart={(e) => {
                     setSwipeStartX(e.touches[0].clientX);
                     setSwipeDirection(null);
+                    setIsSwiping(true);
                   }}
                   onTouchMove={(e) => {
                     if (swipeStartX === null) return;
@@ -1083,11 +992,16 @@ function App() {
                     
                     setSwipeStartX(null);
                     setSwipeDirection(null);
+                    setIsSwiping(false);
+                    
+                    // Record the time of manual navigation for swipe
+                    setLastManualNavigation(Date.now());
                   }}
                   // Also handle mouse-based swipes for desktop
                   onMouseDown={(e) => {
                     setSwipeStartX(e.clientX);
                     setSwipeDirection(null);
+                    setIsSwiping(true);
                   }}
                   onMouseMove={(e) => {
                     if (swipeStartX === null) return;
@@ -1117,6 +1031,18 @@ function App() {
                     
                     setSwipeStartX(null);
                     setSwipeDirection(null);
+                    setIsSwiping(false);
+                    
+                    // Record the time of manual navigation for swipe
+                    setLastManualNavigation(Date.now());
+                  }}
+                  onMouseLeave={(e) => {
+                    // If mouse leaves while swiping, reset the state
+                    if (swipeStartX !== null) {
+                      setSwipeStartX(null);
+                      setSwipeDirection(null);
+                      setIsSwiping(false);
+                    }
                   }}
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.04)',
@@ -1135,7 +1061,7 @@ function App() {
                     <div className={`w-10 h-10 rounded-md flex items-center justify-center mr-3 shadow-md ${widgets[currentWidgetIndex].iconBgColor} overflow-hidden border border-white/10`}>
                       {widgets[currentWidgetIndex].type === 'workout' && (
                         <img 
-                          src="/icons/apps/kineship.svg" 
+                          src="/icons/apps/kineship.png" 
                           alt="Kineship" 
                           className="w-full h-full object-cover" 
                           style={{ borderRadius: '0.375rem' }}
@@ -1200,18 +1126,30 @@ function App() {
                         {/* Workout circles */}
                         {widgets[currentWidgetIndex].type === 'workout' && (
                           <div className="flex -space-x-1">
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#62BE9C]/40 shadow-sm z-30"></div>
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#62BE9C]/30 shadow-sm z-20"></div>
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#62BE9C]/20 shadow-sm z-10"></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/20 bg-gradient-to-br from-[#62BE9C]/60 to-[#62BE9C]/30 shadow-md z-30 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                            </div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/20 bg-gradient-to-br from-[#62BE9C]/50 to-[#62BE9C]/20 shadow-md z-20 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent"></div>
+                            </div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/20 bg-gradient-to-br from-[#62BE9C]/40 to-[#62BE9C]/10 shadow-md z-10 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                            </div>
                           </div>
                         )}
                         {/* Partiful attendee circles */}
                         {widgets[currentWidgetIndex].type === 'partiful' && (
                           <div className="flex -space-x-1">
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#FF4081]/40 shadow-sm z-10"></div>
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#FF4081]/30 shadow-sm z-20"></div>
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#FF4081]/20 shadow-sm z-30"></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/20 bg-gradient-to-br from-[#FF4081]/60 to-[#FF4081]/30 shadow-md z-10 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                             </div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/20 bg-gradient-to-br from-[#FF4081]/50 to-[#FF4081]/20 shadow-md z-20 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent"></div>
+                            </div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/20 bg-gradient-to-br from-[#FF4081]/40 to-[#FF4081]/10 shadow-md z-30 relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                            </div>
+                          </div>
                         )}
                         {/* Notes icon - removed circles, using just a single note icon instead */}
                         {widgets[currentWidgetIndex].type === 'notes' && (
@@ -1266,6 +1204,9 @@ function App() {
                   <div
                     key={`indicator-${index}`}
                     onClick={() => {
+                      // Record the time of manual navigation
+                      setLastManualNavigation(Date.now());
+                      
                       // Apply smooth transition between widgets when dots are clicked
                       const direction = index > currentWidgetIndex ? 1 : -1;
                       
