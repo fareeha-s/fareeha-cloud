@@ -128,7 +128,7 @@ const createWidgetSwipeFeedback = () => {
   }
 };
 
-// Format date to relative terms (today, yesterday, or day of week)
+// Format date to relative terms with three-letter day abbreviations
 const getRelativeDate = (dateStr: string) => {
   // Get current date
   const now = new Date();
@@ -143,42 +143,16 @@ const getRelativeDate = (dateStr: string) => {
   const [day, month, year] = dateStr.split('/').map(Number);
   const dateObj = new Date(2000 + year, month - 1, day);
   
-  // Get day of week
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  // Get day of week with 3-letter abbreviation
+  const daysOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const dayOfWeek = daysOfWeek[dateObj.getDay()];
   
-  // Calculate difference in days
-  const diffTime = now.getTime() - dateObj.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
-  // Calculate difference in weeks and months
-  const diffWeeks = Math.floor(diffDays / 7);
-  const diffMonths = (now.getFullYear() - dateObj.getFullYear()) * 12 + now.getMonth() - dateObj.getMonth();
-  
+  // Special cases for today and yesterday
   if (dateStr === today) return 'today';
   if (dateStr === yesterday) return 'yesterday';
   
-  // Within a week, use day names
-  if (diffDays < 7) return dayOfWeek.toLowerCase();
-  
-  // Within two weeks
-  if (diffDays < 14) return 'last week';
-  
-  // Within a month
-  if (diffDays < 31) {
-    if (diffWeeks === 2) return '2 weeks ago';
-    if (diffWeeks === 3) return '3 weeks ago';
-    return `${diffWeeks} weeks ago`;
-  }
-  
-  // Within 3 months
-  if (diffMonths <= 3) {
-    if (diffMonths === 1) return '1 month ago';
-    return `${diffMonths} months ago`;
-  }
-  
-  // Older dates
-  return dateStr;
+  // For all other dates, simply return the 3-letter day
+  return dayOfWeek;
 };
 
 function App() {
@@ -247,10 +221,20 @@ function App() {
       type: 'workout',
       title: 'barry\'s - lift x run',
       subtitle: '',
-      timestamp: 'today',
+      timestamp: (() => {
+        // Calculate date from two days ago
+        const twoDaysAgo = new Date();
+        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+        // Format as DD/MM/YY to match getRelativeDate's expected format
+        const day = String(twoDaysAgo.getDate()).padStart(2, '0');
+        const month = String(twoDaysAgo.getMonth() + 1).padStart(2, '0');
+        const year = String(twoDaysAgo.getFullYear()).slice(-2);
+        const formattedDate = `${day}/${month}/${year}`;
+        return getRelativeDate(formattedDate);
+      })(),
       timestampLabel: 'kineship',
       progress: 80,
-      iconBgColor: 'bg-teal-500/20'
+      iconBgColor: 'bg-[#62BE9C]/20'
     },
     {
       type: 'notes',
@@ -259,7 +243,7 @@ function App() {
       timestamp: getRelativeDate(selectedNote.date),
       timestampLabel: 'Last edited',
       progress: 65,
-      iconBgColor: 'bg-orange-500/20'
+      iconBgColor: 'bg-[#FF8A5B]/20'
     },
     {
       type: 'partiful',
@@ -268,7 +252,7 @@ function App() {
       timestamp: getRelativeDate(selectedEvent.date),
       timestampLabel: 'latest event',
       progress: 25,
-      iconBgColor: 'bg-purple-500/20'
+      iconBgColor: 'bg-[#FF4081]/20'
     }
   ];
   
@@ -838,10 +822,10 @@ function App() {
           transform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
           WebkitTransform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
           transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
-          top: '50%',
+          top: '45%',
           left: '50%',
           marginLeft: '-145px', // Half of the container width (290px/2)
-          marginTop: '-145px', // Half of the container height for square aspect
+          marginTop: '-170px',
         }}
       >
         {/* App name above the container - returning to original position */}
@@ -1054,8 +1038,8 @@ function App() {
                     duration: 0.4, 
                     ease: [0.32, 0.72, 0, 1] // Apple's default cubic-bezier easing
                   }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                   onClick={() => handleWidgetClick(widgets[currentWidgetIndex].type)}
                   onMouseEnter={() => setIsWidgetHovered(true)}
                   onMouseLeave={(e) => {
@@ -1134,18 +1118,18 @@ function App() {
                     setSwipeStartX(null);
                     setSwipeDirection(null);
                   }}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    backdropFilter: 'none',
-                    WebkitBackdropFilter: 'none',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    padding: '14px',
-                    transform: 'translateZ(0)',
-                    WebkitTransform: 'translateZ(0)',
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  backdropFilter: 'none',
+                  WebkitBackdropFilter: 'none',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  padding: '14px',
+                  transform: 'translateZ(0)',
+                  WebkitTransform: 'translateZ(0)',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
                     touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal swipes
                     cursor: swipeStartX !== null ? (swipeDirection === 'right' ? 'w-resize' : swipeDirection === 'left' ? 'e-resize' : 'grab') : 'pointer' 
-                  }}
+                }}
               >
                 <div className="flex items-center mb-3">
                     <div className={`w-10 h-10 rounded-md flex items-center justify-center mr-3 shadow-md ${widgets[currentWidgetIndex].iconBgColor} overflow-hidden border border-white/10`}>
@@ -1153,7 +1137,8 @@ function App() {
                         <img 
                           src="/icons/apps/kineship.svg" 
                           alt="Kineship" 
-                          className="w-6 h-6 object-contain" 
+                          className="w-full h-full object-cover" 
+                          style={{ borderRadius: '0.375rem' }}
                         />
                       )}
                       {widgets[currentWidgetIndex].type === 'notes' && (
@@ -1165,30 +1150,33 @@ function App() {
                           alt="Partiful" 
                           className="w-6 h-6 object-contain" 
                         />
-                      )}
-                    </div>
+                    )}
+                  </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-[13px] font-medium text-white text-sharp truncate mr-2" style={{ 
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-[15px] font-medium text-white text-sharp truncate mr-2" style={{ 
                           WebkitFontSmoothing: 'antialiased', 
                           MozOsxFontSmoothing: 'grayscale',
                           fontWeight: 400,
-                          maxWidth: 'calc(100% - 45px)'
+                          maxWidth: widgets[currentWidgetIndex].type === 'notes' ? '100%' : 'calc(100% - 45px)'
                         }}>
                           {widgets[currentWidgetIndex].type === 'workout' ? 'barry\'s - lift x run' : 
                            widgets[currentWidgetIndex].type === 'notes' ? selectedNote.title : 
                            selectedEvent.title}
                         </h3>
-                        <p className="text-[11px] text-white/70 text-sharp ml-1 flex-shrink-0" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 350 }}>
-                          {widgets[currentWidgetIndex].timestamp}
-                        </p>
-                      </div>
-                      <p className="text-[10px] text-white/60 font-normal text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 300 }}>
-                        {widgets[currentWidgetIndex].type === 'notes' ? 
-                          'notes' : 
-                          widgets[currentWidgetIndex].timestampLabel}
+                        {/* Show timestamp for all widgets, including notes */}
+                        <p className="text-[12px] text-white/70 text-sharp ml-1 flex-shrink-0" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 350 }}>
+                          {widgets[currentWidgetIndex].type === 'notes' 
+                            ? getRelativeDate(selectedNote.date) // Show 3-letter day for notes in the top right
+                            : widgets[currentWidgetIndex].timestamp}
                       </p>
                     </div>
+                      <p className="text-[12px] text-white/60 font-normal text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 300 }}>
+                        {widgets[currentWidgetIndex].type === 'notes' ? 
+                          'notes' : // Show "notes" in the subtitle position
+                          widgets[currentWidgetIndex].timestampLabel}
+                    </p>
+                  </div>
                 </div>
                 <div>
                     <div className="flex items-center justify-between mb-1">
@@ -1205,25 +1193,25 @@ function App() {
                             '' : // Remove duplicate title for notes widget
                             widgets[currentWidgetIndex].type === 'partiful' ?
                             `${selectedEvent.attendees} approved` :
-                            'with megan and sam'}
+                            'with megan, sam'}
                         </p>
                       </div>
                       <div className="flex items-center flex-shrink-0">
                         {/* Workout circles */}
                         {widgets[currentWidgetIndex].type === 'workout' && (
                           <div className="flex -space-x-1">
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-emerald-500/50 shadow-sm" style={{ zIndex: 10 }}></div>
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-teal-400/50 shadow-sm" style={{ zIndex: 20 }}></div>
-                            <div className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-600/50 text-[10px] text-white text-sharp shadow-sm" style={{ zIndex: 30 }}>+2</div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#62BE9C]/40 shadow-sm z-30"></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#62BE9C]/30 shadow-sm z-20"></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#62BE9C]/20 shadow-sm z-10"></div>
                           </div>
                         )}
                         {/* Partiful attendee circles */}
                         {widgets[currentWidgetIndex].type === 'partiful' && (
                           <div className="flex -space-x-1">
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-purple-500/50 shadow-sm z-10"></div>
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-pink-500/50 shadow-sm z-20"></div>
-                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-fuchsia-600/50 shadow-sm z-30"></div>
-                          </div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#FF4081]/40 shadow-sm z-10"></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#FF4081]/30 shadow-sm z-20"></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-[#FF4081]/20 shadow-sm z-30"></div>
+                            </div>
                         )}
                         {/* Notes icon - removed circles, using just a single note icon instead */}
                         {widgets[currentWidgetIndex].type === 'notes' && (
@@ -1233,17 +1221,17 @@ function App() {
                         )}
                         {/* Only show subtitle if it exists */}
                         {widgets[currentWidgetIndex].subtitle && (
-                          <p className="text-[10px] text-white/70 font-normal whitespace-nowrap pr-2 text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textShadow: 'none' }}>
+                          <p className="text-[12px] text-white/70 font-normal whitespace-nowrap pr-2 text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textShadow: 'none' }}>
                             {widgets[currentWidgetIndex].subtitle}
                           </p>
                         )}
-                      </div>
-                    </div>
+                  </div>
+                  </div>
                     
                     {/* Content preview area - consistent height across all widgets */}
-                    <div className={`${widgets[currentWidgetIndex].type === 'notes' ? 'min-h-[2.8em]' : 'min-h-[3.0em]'} mb-2`}>
+                    <div className={`${widgets[currentWidgetIndex].type === 'notes' ? 'min-h-[3.0em]' : 'min-h-[3.0em]'} mb-2`}>
                       {/* Apply consistent styling to all widget content */}
-                      <p className="text-[12px] text-white/65 font-normal px-1 text-sharp leading-relaxed overflow-hidden" style={{ 
+                      <p className="text-white/65 font-normal px-1 text-sharp leading-relaxed overflow-hidden" style={{ 
                         WebkitFontSmoothing: 'antialiased', 
                         MozOsxFontSmoothing: 'grayscale', 
                         textShadow: 'none',
@@ -1252,16 +1240,13 @@ function App() {
                         WebkitLineClamp: '2',
                         WebkitBoxOrient: 'vertical',
                         letterSpacing: '0.01em',
-                        lineHeight: widgets[currentWidgetIndex].type === 'notes' ? '1.4' : '1.45',
+                        lineHeight: '1.45',
                         fontWeight: 350,
-                        marginTop: widgets[currentWidgetIndex].type === 'notes' ? '-4px' : '0px',
-                        marginBottom: widgets[currentWidgetIndex].type === 'notes' ? '10px' : '6px',
-                        paddingBottom: widgets[currentWidgetIndex].type === 'notes' ? '5px' : '8px',
+                        marginTop: widgets[currentWidgetIndex].type === 'notes' ? '-6px' : '0px',
+                        marginBottom: widgets[currentWidgetIndex].type === 'notes' ? '6px' : '8px',
+                        paddingBottom: widgets[currentWidgetIndex].type === 'notes' ? '8px' : '8px',
                         maxWidth: '100%',
-                        ...(widgets[currentWidgetIndex].type === 'notes' ? { 
-                          position: 'relative',
-                          top: '-2px'
-                        } : {})
+                        fontSize: '12px'
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes' 
                           ? selectedNote.content 
