@@ -6,11 +6,20 @@
 @tailwind utilities;
 
 @layer base {
+  /* Disable cursor pointer globally */
+  a, button, [role="button"], [type="button"], [type="submit"], [type="reset"],
+  [style*="cursor: pointer"], [style*="cursor:pointer"], .cursor-pointer,
+  *[onclick], *[role="link"] {
+    cursor: default !important;
+  }
+  
   html {
     font-family: var(--font-sans);
     font-weight: 300;
     letter-spacing: 0.01em;
     color: white;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   /* No need to redeclare iOS devices font here - using CSS variables from HTML */
@@ -20,6 +29,8 @@
     font-weight: 400;
     letter-spacing: -0.01em;
     color: white;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   p {
@@ -27,6 +38,16 @@
     font-weight: 300;
     color: rgba(255, 255, 255, 0.9);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Sharp text rendering for widgets */
+  .text-sharp {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-shadow: none;
+    letter-spacing: 0;
   }
   
   /* Glass text */
@@ -36,6 +57,18 @@
     font-weight: 300;
     letter-spacing: 0.02em;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Keyframe definition for music widget background only, no blur */
+  @keyframes music-widget-bg-fade {
+    0% { background-color: rgba(255, 255, 255, 0.03); }
+    50% { background-color: rgba(255, 255, 255, 0.05); }
+    100% { background-color: rgba(255, 255, 255, 0.07); }
+  }
+  
+  .music-widget-bg-animation {
+    animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    -webkit-animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
   
   /* Glassmorphic UI effect - optimized */
@@ -55,7 +88,7 @@
   
   /* New optimized non-transparent glass effect - simplified */
   .glass-solid {
-    background: linear-gradient(135deg, #ffffff10 0%, #ffffff05 100%);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.08) 100%);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -75,7 +108,7 @@
     right: 0;
     height: 40%;
     background: linear-gradient(to top, 
-      rgba(255, 255, 255, 0.15) 0%, 
+      rgba(255, 255, 255, 0.2) 0%, 
       rgba(255, 255, 255, 0) 100%);
     pointer-events: none;
   }
@@ -89,7 +122,7 @@
     right: 20%;
     height: 15px;
     background: linear-gradient(to bottom, 
-      rgba(255, 255, 255, 0.05) 0%, 
+      rgba(255, 255, 255, 0.03) 0%, 
       rgba(255, 255, 255, 0) 100%);
     border-radius: 50%;
     pointer-events: none;
@@ -97,27 +130,35 @@
   
   /* Glass color variations - using opacity classes and simplified gradients */
   .glass-solid-sage {
-    background: linear-gradient(135deg, rgba(134, 166, 134, 0.08) 0%, rgba(100, 130, 100, 0.06) 100%);
-    border-top-color: rgba(134, 166, 134, 0.35);
-    border-left-color: rgba(134, 166, 134, 0.25);
+    background: linear-gradient(135deg, rgba(64, 224, 208, 0.03) 0%, rgba(36, 180, 170, 0.12) 100%);
+    border-bottom-color: rgba(64, 224, 208, 0.5);
+    border-right-color: rgba(64, 224, 208, 0.3);
+    border-top-color: rgba(255, 255, 255, 0.05);
+    border-left-color: rgba(255, 255, 255, 0.05);
   }
   
   .glass-solid-orange {
-    background: linear-gradient(135deg, rgba(255, 127, 80, 0.08) 0%, rgba(250, 92, 75, 0.06) 100%);
-    border-top-color: rgba(255, 127, 80, 0.35);
-    border-left-color: rgba(255, 127, 80, 0.25);
+    background: linear-gradient(135deg, rgba(255, 80, 80, 0.03) 0%, rgba(240, 70, 70, 0.12) 100%);
+    border-bottom-color: rgba(255, 80, 80, 0.5);
+    border-right-color: rgba(255, 80, 80, 0.3);
+    border-top-color: rgba(255, 255, 255, 0.05);
+    border-left-color: rgba(255, 255, 255, 0.05);
   }
   
   .glass-solid-purple {
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(91, 33, 182, 0.06) 100%);
-    border-top-color: rgba(124, 58, 237, 0.35);
-    border-left-color: rgba(124, 58, 237, 0.25);
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.03) 0%, rgba(91, 33, 182, 0.12) 100%);
+    border-bottom-color: rgba(124, 58, 237, 0.5);
+    border-right-color: rgba(124, 58, 237, 0.3);
+    border-top-color: rgba(255, 255, 255, 0.05);
+    border-left-color: rgba(255, 255, 255, 0.05);
   }
   
   .glass-solid-green {
-    background: linear-gradient(135deg, rgba(110, 231, 183, 0.07) 0%, rgba(59, 130, 114, 0.05) 100%);
-    border-top-color: rgba(110, 231, 183, 0.3);
-    border-left-color: rgba(110, 231, 183, 0.2);
+    background: linear-gradient(135deg, rgba(110, 231, 183, 0.03) 0%, rgba(59, 130, 114, 0.12) 100%);
+    border-bottom-color: rgba(110, 231, 183, 0.5);
+    border-right-color: rgba(110, 231, 183, 0.3);
+    border-top-color: rgba(255, 255, 255, 0.05);
+    border-left-color: rgba(255, 255, 255, 0.05);
   }
   
   /* Enhanced glass effect with edge shine - simplified */
@@ -237,4 +278,36 @@
   .scrollbar-subtle::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
   }
+}
+
+/* Portrait container for event details */
+.portrait-container {
+  aspect-ratio: 3/4 !important;
+  height: 390px !important;
+  width: 290px !important;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Position the container's parent element correctly */
+.portrait-container ~ div[style*="marginTop"] {
+  margin-top: -195px !important; /* Half of the height */
+  transition: margin-top 0.2s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* Make sure even the parent container without portrait-container yet has a smooth transition */
+div[style*="marginTop"] {
+  transition: margin-top 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Smooth transition between aspect ratios */
+.main-container {
+  transition: aspect-ratio 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              height 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              width 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Ensure text stays readable during transition */
+.portrait-container .h-full {
+  height: 100% !important;
+  transition: height 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }

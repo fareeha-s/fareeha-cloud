@@ -1,13 +1,18 @@
-import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion, useReducedMotion, PanInfo } from 'framer-motion';
 import { AppIcon } from './components/AppIcon';
 import { NotesScreen } from './screens/NotesScreen';
 import { SocialsScreen } from './screens/SocialsScreen';
 import { EventScreen } from './screens/EventScreen';
 import type { AppIcon as AppIconType } from './types';
-import { Music, ChevronLeft, ChevronRight, StickyNote } from 'lucide-react';
+import { Music, ChevronLeft, ChevronRight, StickyNote, ChevronDown } from 'lucide-react';
 import axios from 'axios';
 import { getSession } from 'next-auth/react';
+
+// Import shared notes data
+import { notes } from './data/notes';
+// Import shared events data
+import { events } from './data/events';
 
 // Global tactile effect function for better performance
 export const createTactileEffect = () => {
@@ -39,6 +44,47 @@ export const createTactileEffect = () => {
   }
 };
 
+// Haptic feedback function specifically for widget swiping
+export const createSwipeHapticFeedback = (intensity: 'light' | 'medium' | 'heavy' = 'light') => {
+  if (typeof window !== 'undefined') {
+    // Attempt to use native haptic feedback if available
+    if (window.navigator && window.navigator.vibrate) {
+      switch (intensity) {
+        case 'light':
+          window.navigator.vibrate(2);
+          break;
+        case 'medium':
+          window.navigator.vibrate(5);
+          break;
+        case 'heavy':
+          window.navigator.vibrate(8);
+          break;
+      }
+    }
+    
+    // Also create a visual feedback (more subtle than tactile effect)
+    requestAnimationFrame(() => {
+      const element = document.createElement('div');
+      element.className = 'fixed inset-0 bg-white/3 pointer-events-none z-50 swipe-effect';
+      element.style.willChange = 'opacity';
+      document.body.appendChild(element);
+      
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          element.style.transition = 'opacity 40ms ease';
+          element.style.opacity = '0';
+          
+          setTimeout(() => {
+            if (document.body.contains(element)) {
+              document.body.removeChild(element);
+            }
+          }, 40);
+        }, 10);
+      });
+    });
+  }
+};
+
 // Animation coordinates for Apple-like expansion
 interface AnimationPosition {
   x: number;
@@ -46,52 +92,6 @@ interface AnimationPosition {
   width: number;
   height: number;
 }
-
-// Function to create floating particles
-const createParticles = (containerEl: HTMLElement | null, count: number = 15) => {
-  if (!containerEl || typeof document === 'undefined') return;
-  
-  // Clear any existing particles
-  const existingParticles = containerEl.querySelectorAll('.magic-particle');
-  existingParticles.forEach(p => p.remove());
-  
-  // Create new particles
-  const fragment = document.createDocumentFragment(); // Use document fragment for better performance
-  
-  for (let i = 0; i < count; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'magic-particle absolute rounded-full pointer-events-none';
-    
-    // Simplified randomization with fewer calculations
-    const size = Math.random() * 3 + 1; // 1-4px (reduced max size)
-    const xPos = Math.random() * 100;
-    const yPos = Math.random() * 100;
-    const opacity = Math.random() * 0.15 + 0.05; // 0.05-0.2 (reduced opacity)
-    const delay = Math.random() * 8; // 0-8s (reduced max delay)
-    const duration = Math.random() * 8 + 12; // 12-20s (reduced animation duration)
-    
-    // Optimize styles - reduced box-shadow and simpler animation
-    particle.style.cssText = `
-      width: ${size}px;
-      height: ${size}px;
-      left: ${xPos}%;
-      top: ${yPos}%;
-      opacity: ${opacity};
-      background-color: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 0 ${size/4}px rgba(255, 255, 255, 0.1);
-      animation-name: safari-particle-${Math.floor(Math.random() * 2)};
-      animation-duration: ${duration}s;
-      animation-delay: ${delay}s;
-      animation-iteration-count: infinite;
-      animation-direction: alternate;
-      animation-timing-function: ease-in-out;
-    `;
-    
-    fragment.appendChild(particle);
-  }
-  
-  containerEl.appendChild(fragment);
-};
 
 // Define a proper type for Spotify tracks
 type SpotifyTrack = {
@@ -121,11 +121,70 @@ type WidgetData = {
   iconBgColor: string;
 };
 
+// Simplified tactile effect for widget swipes
+const createWidgetSwipeFeedback = () => {
+  if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+    window.navigator.vibrate(3); // Subtle vibration feedback
+  }
+};
+
+// Format date to relative terms (today, yesterday, or day of week)
+const getRelativeDate = (dateStr: string) => {
+  // Get current date
+  const now = new Date();
+  const today = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getFullYear()).slice(-2)}`;
+  
+  // Get yesterday's date
+  const yesterdayDate = new Date(now);
+  yesterdayDate.setDate(now.getDate() - 1);
+  const yesterday = `${String(yesterdayDate.getDate()).padStart(2, '0')}/${String(yesterdayDate.getMonth() + 1).padStart(2, '0')}/${String(yesterdayDate.getFullYear()).slice(-2)}`;
+  
+  // Parse the provided date to get the day of week
+  const [day, month, year] = dateStr.split('/').map(Number);
+  const dateObj = new Date(2000 + year, month - 1, day);
+  
+  // Get day of week
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayOfWeek = daysOfWeek[dateObj.getDay()];
+  
+  // Calculate difference in days
+  const diffTime = now.getTime() - dateObj.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  // Calculate difference in weeks and months
+  const diffWeeks = Math.floor(diffDays / 7);
+  const diffMonths = (now.getFullYear() - dateObj.getFullYear()) * 12 + now.getMonth() - dateObj.getMonth();
+  
+  if (dateStr === today) return 'today';
+  if (dateStr === yesterday) return 'yesterday';
+  
+  // Within a week, use day names
+  if (diffDays < 7) return dayOfWeek.toLowerCase();
+  
+  // Within two weeks
+  if (diffDays < 14) return 'last week';
+  
+  // Within a month
+  if (diffDays < 31) {
+    if (diffWeeks === 2) return '2 weeks ago';
+    if (diffWeeks === 3) return '3 weeks ago';
+    return `${diffWeeks} weeks ago`;
+  }
+  
+  // Within 3 months
+  if (diffMonths <= 3) {
+    if (diffMonths === 1) return '1 month ago';
+    return `${diffMonths} months ago`;
+  }
+  
+  // Older dates
+  return dateStr;
+};
+
 function App() {
   const [activeApp, setActiveApp] = useState<string | null>(null);
   const appsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  const particlesContainerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [appPosition, setAppPosition] = useState<AnimationPosition | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -134,37 +193,80 @@ function App() {
   const [isAppleDevice, setIsAppleDevice] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [fullyLoaded, setFullyLoaded] = useState(false);
-  const [isParticlesAdded, setIsParticlesAdded] = useState(false);
   const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
   const [recentTracks, setRecentTracks] = useState<SpotifyTrack[]>([]);
   const [currentWidgetIndex, setCurrentWidgetIndex] = useState(0);
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [isWidgetHovered, setIsWidgetHovered] = useState(false);
+  const [swipeStartX, setSwipeStartX] = useState<number | null>(null);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const widgetRef = useRef<HTMLDivElement>(null);
   
-  // Sample widget data - you would replace this with real data from your apps
+  // Check if this is the first visit
+  useEffect(() => {
+    // Check localStorage for previous visits
+    const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
+    if (hasVisitedBefore) {
+      setIsFirstVisit(false);
+    } else {
+      // Mark as visited for future
+      localStorage.setItem('hasVisitedBefore', 'true');
+      setIsFirstVisit(true);
+    }
+  }, []);
+  
+  // Select notes based on visit history
+  const selectedNote = useMemo(() => {
+    // For first visit - show the "who am i again?" note
+    if (isFirstVisit) {
+      return notes.find(note => note.title.includes("who am i again")) || notes[0];
+    } 
+    // For subsequent visits - show random notes
+    else {
+      const randomIndex = Math.floor(Math.random() * notes.length);
+      return notes[randomIndex];
+    }
+  }, [isFirstVisit]);
+  
+  // Select events based on visit history
+  const selectedEvent = useMemo(() => {
+    if (isFirstVisit) {
+      // For first visit - show the most recent upcoming event
+      const upcomingEvents = events.filter(event => event.timeframe === 'upcoming');
+      return upcomingEvents[0] || events[0];
+    } else {
+      // For subsequent visits - show random events
+      const randomIndex = Math.floor(Math.random() * events.length);
+      return events[randomIndex];
+    }
+  }, [isFirstVisit]);
+  
+  // Use real notes data for the widgets
   const widgets: WidgetData[] = [
     {
       type: 'workout',
-      title: 'Barrys - Lift x Run',
-      subtitle: '45 min',
-      timestamp: 'Today',
-      timestampLabel: 'Latest workout',
+      title: 'barry\'s - lift x run',
+      subtitle: '',
+      timestamp: 'today',
+      timestampLabel: 'kineship',
       progress: 80,
       iconBgColor: 'bg-teal-500/20'
     },
     {
       type: 'notes',
-      title: 'Project ideas for next quarter',
-      subtitle: '2 min read',
-      timestamp: new Date().toLocaleDateString([], {month: 'short', day: 'numeric'}),
-      timestampLabel: 'Latest update',
+      title: selectedNote.title,
+      subtitle: '',
+      timestamp: getRelativeDate(selectedNote.date),
+      timestampLabel: 'Last edited',
       progress: 65,
       iconBgColor: 'bg-orange-500/20'
     },
     {
       type: 'partiful',
-      title: 'Summer Game Night',
-      subtitle: '8 attendees',
-      timestamp: 'June 15th',
-      timestampLabel: 'Latest event',
+      title: selectedEvent.title,
+      subtitle: '',
+      timestamp: getRelativeDate(selectedEvent.date),
+      timestampLabel: 'latest event',
       progress: 25,
       iconBgColor: 'bg-purple-500/20'
     }
@@ -183,7 +285,7 @@ function App() {
   
   // Rotate widgets every 8 seconds (longer to give more time to read)
   useEffect(() => {
-    if (!prefersReducedMotion) {
+    if (!prefersReducedMotion && !isWidgetHovered) {
       const rotationInterval = setInterval(() => {
         setCurrentWidgetIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % widgets.length;
@@ -193,7 +295,7 @@ function App() {
       
       return () => clearInterval(rotationInterval);
     }
-  }, [widgets.length, prefersReducedMotion]);
+  }, [widgets.length, prefersReducedMotion, isWidgetHovered]);
   
   // Detect device performance
   useEffect(() => {
@@ -211,28 +313,6 @@ function App() {
       setIsHighPerformanceDevice(true);
     }
   }, []);
-  
-  // Initialize particles with optimized approach
-  useEffect(() => {
-    if (fullyLoaded && !prefersReducedMotion && !isParticlesAdded) {
-      // Skip particles on low-performance devices or add fewer
-      if (!isHighPerformanceDevice) {
-        // Add minimal particles for low-end devices
-        const timer = setTimeout(() => {
-          createParticles(particlesContainerRef.current, 3); // Minimal particles
-          setIsParticlesAdded(true);
-        }, 300);
-        return () => clearTimeout(timer);
-      } else {
-        // Full particles for high-end devices
-        const timer = setTimeout(() => {
-          createParticles(particlesContainerRef.current, 6);
-          setIsParticlesAdded(true);
-        }, 200);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [fullyLoaded, prefersReducedMotion, isParticlesAdded, isHighPerformanceDevice]);
   
   // Set body to prevent scrolling and get actual window height
   useEffect(() => {
@@ -337,49 +417,6 @@ function App() {
         }
       }
       
-      /* Safari-compatible particle animations - predefined to avoid dynamic values */
-      @keyframes safari-particle-0 {
-        0% { transform: translate(0, 0) scale(1); opacity: 0.05; }
-        100% { transform: translate(5px, 3px) scale(0.9); opacity: 0.08; }
-      }
-      
-      @keyframes safari-particle-1 {
-        0% { transform: translate(0, 0) scale(1); opacity: 0.03; }
-        100% { transform: translate(-4px, 5px) scale(0.95); opacity: 0.06; }
-      }
-      
-      @keyframes safari-particle-2 {
-        0% { transform: translate(0, 0) scale(1); opacity: 0.04; }
-        100% { transform: translate(2px, -5px) scale(0.92); opacity: 0.07; }
-      }
-      
-      /* Magic stars effect */
-      .magic-star {
-        position: absolute;
-        background-color: white;
-        width: 1px;
-        height: 1px;
-        border-radius: 50%;
-        opacity: 0;
-        animation: twinkle-safari 4s ease-in-out infinite;
-      }
-      
-      @keyframes twinkle-safari {
-        0% { opacity: 0; transform: scale(1); }
-        50% { opacity: 0.3; transform: scale(1.1); }
-        100% { opacity: 0; transform: scale(1); }
-      }
-      
-      /* Ambient light glow - simplified for Safari */
-      .ambient-glow {
-        position: absolute;
-        border-radius: 100%;
-        background-color: rgba(255, 255, 255, 0.05);
-        mix-blend-mode: screen;
-        pointer-events: none;
-        z-index: 1;
-      }
-      
       /* Keyframe animations for blur and background */
       @keyframes app-container-blur {
         0% { backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
@@ -437,9 +474,9 @@ function App() {
       }
       
       @keyframes music-widget-bg-fade {
-        0% { background-color: rgba(255, 255, 255, 0.05); }
-        50% { background-color: rgba(255, 255, 255, 0.08); }
-        100% { background-color: rgba(255, 255, 255, 0.12); }
+        0% { background-color: rgba(255, 255, 255, 0.03); }
+        50% { background-color: rgba(255, 255, 255, 0.05); }
+        100% { background-color: rgba(255, 255, 255, 0.07); }
       }
       
       .music-widget-blur-animation {
@@ -553,7 +590,11 @@ function App() {
   };
 
   const ActiveComponent = activeApp ? apps.find(app => app.id === activeApp)?.component : null;
-  const activeAppName = activeApp ? apps.find(app => app.id === activeApp)?.name : null;
+  
+  // Get the display name for the active app, with a special case for partiful to show as parti-folio
+  const activeAppName = activeApp ? 
+    (activeApp === 'partiful' ? 'partifolio 🎉' : apps.find(app => app.id === activeApp)?.name) 
+    : null;
   
   // Apple-like spring animation for subtle movements
   const springTransition = {
@@ -676,12 +717,42 @@ function App() {
   const handleWidgetClick = (widgetType: string) => {
     // Special case for workout widget to navigate to kineship.com
     if (widgetType === 'workout') {
-      window.open('https://kineship.com', '_blank');
+      // Remove the link to kineship.com
+      // window.open('https://kineship.com', '_blank');
+      // Simply navigate to the app screen instead
+      handleAppClick(widgetType);
       return;
+    }
+    
+    // Special case for notes widget to open the specific note
+    if (widgetType === 'notes') {
+      // Set up global variable to tell NotesScreen which note to open
+      window.initialNoteId = selectedNote.id;
+    }
+    
+    // Special case for partiful widget to open the specific event
+    if (widgetType === 'partiful') {
+      // Set up global variable to tell EventScreen which event to open
+      window.initialEventId = selectedEvent.id;
     }
     
     // Navigate to the appropriate app screen for other widget types
     handleAppClick(widgetType);
+  };
+
+  // Function to handle swipe navigation - simpler approach
+  const handlePrevWidget = () => {
+    setCurrentWidgetIndex((prevIndex) => {
+      return (prevIndex - 1 + widgets.length) % widgets.length;
+    });
+    createWidgetSwipeFeedback();
+  };
+  
+  const handleNextWidget = () => {
+    setCurrentWidgetIndex((prevIndex) => {
+      return (prevIndex + 1) % widgets.length;
+    });
+    createWidgetSwipeFeedback();
   };
 
   return (
@@ -739,22 +810,6 @@ function App() {
           }}
         ></div>
         
-        {/* Safari-friendly magic stars (static positioned) - but fewer and more subtle */}
-        {isLoaded && Array.from({ length: 10 }).map((_, i) => (
-          <div 
-            key={`star-${i}`}
-            className="magic-star"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${Math.random() * 1.5 + 0.5}px`,
-              height: `${Math.random() * 1.5 + 0.5}px`,
-              animationDelay: `${Math.random() * 10}s`, // More spread out timing
-              boxShadow: `0 0 ${Math.random() * 1.5 + 1}px ${Math.random() * 0.5 + 0.5}px rgba(255,255,255,0.4)`
-            }}
-          />
-        ))}
-        
         {/* Subtle grid overlay for depth - extends to all edges */}
         <div 
           className="absolute inset-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNMzAgMzBoMzB2MzBIMzB6TTAgMGgzMHYzMEgweiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA0KSIvPjxwYXRoIGQ9Ik0zMCAwaDMwdjMwSDMwek0wIDMwaDMwdjMwSDB6IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIi8+PC9nPjwvc3ZnPg==')]" 
@@ -772,14 +827,6 @@ function App() {
             transition: 'opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1)'
           }}
         ></div>
-        
-        {/* Particles container - conditionally rendered based on device performance */}
-        {(!prefersReducedMotion && (isHighPerformanceDevice || isAppleDevice)) && (
-          <div 
-            ref={particlesContainerRef}
-            className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-10"
-          ></div>
-        )}
       </div>
 
       <div 
@@ -810,9 +857,42 @@ function App() {
           }}
         >
           {activeApp ? (
-            <h2 className="text-xl text-white font-medium tracking-wide text-shadow-sm">
+            <motion.h2 
+              className="text-xl text-white font-medium tracking-wide text-shadow-sm"
+              initial={{ y: 0 }}
+              animate={{ 
+                y: [0, 10, 0],
+                opacity: [1, 0.96, 1],
+                transition: {
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  duration: 4,
+                  ease: "easeInOut",
+                  times: [0, 0.5, 1]
+                }
+              }}
+              style={{ 
+                textShadow: '0 0 6px rgba(255, 255, 255, 0.2)',
+                filter: 'drop-shadow(0 1px 1px rgba(255, 255, 255, 0.08))',
+                position: 'relative',
+                top: '2px'
+              }}
+            >
               {activeAppName}
-            </h2>
+              <motion.span 
+                className="absolute inset-0 w-full h-full bg-gradient-to-t from-transparent to-white/5 opacity-0"
+                animate={{
+                  opacity: [0, 0.15, 0],
+                  transition: {
+                    repeat: Infinity,
+                    duration: 3,
+                    ease: "easeInOut",
+                    repeatType: "reverse",
+                    delay: 0.5
+                  }
+                }}
+              />
+            </motion.h2>
           ) : (
             /* Home screen title with enhanced styling */
             <motion.h2 
@@ -861,69 +941,72 @@ function App() {
         
         {/* Main container - with glass solid effect instead of blur */}
         <motion.div 
-          className={`w-[290px] aspect-square rounded-[24px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid ${
+          className={`w-[290px] aspect-square rounded-[24px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container ${
             activeApp ? 'glass-solid-shine' : ''
-          } ${
-            activeApp === 'notes' ? 'glass-solid-orange' : 
-            activeApp === 'socials' ? 'glass-solid-sage' : 
-            activeApp === 'partiful' ? 'glass-solid-purple' : 
-            activeApp === 'spotify' ? 'glass-solid-green' : ''
-          }`}
+          } ${activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail ? 'portrait-container' : ''}`}
           onClick={(e) => {
             e.stopPropagation();
             if (activeApp && !isAnimating) handleClose();
           }}
-          style={{
-            boxShadow: activeApp && activeApp !== 'socials' ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset' : '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.12) inset',
-            backgroundColor: activeApp === 'socials' ? undefined : undefined,
-            transform: 'translateZ(0)',
-            WebkitTransform: 'translateZ(0)',
-            opacity: 1
-          }}
+          style={(() => {
+            // Debug log for rendering
+            if (activeApp === 'partiful') {
+              console.log('App.tsx rendering - isViewingEventDetail:', typeof window !== 'undefined' ? window.isViewingEventDetail : 'undefined');
+            }
+            
+            // We need to ensure that when in event detail view, the portrait styles are applied
+            // This is a more reliable approach since window properties might be unreliable
+            if (activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail) {
+              return {
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset',
+                transform: 'translateZ(0)',
+                WebkitTransform: 'translateZ(0)',
+                opacity: 1,
+                aspectRatio: '3/4',
+                height: '390px',
+                width: '290px',
+              };
+            }
+            
+            return {
+              boxShadow: activeApp ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset' : '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.12) inset',
+              transform: 'translateZ(0)',
+              WebkitTransform: 'translateZ(0)',
+              opacity: 1,
+            };
+          })()}
         >
           {/* Light reflection effects */}
           <div 
-            className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] opacity-[0.06] rounded-full z-10 pointer-events-none" 
+            className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] opacity-[0.03] rounded-full z-10 pointer-events-none" 
             style={{
-              background: activeApp === 'notes' ? "radial-gradient(circle, rgba(255, 127, 80, 0.4) 0%, rgba(255, 127, 80, 0) 70%)" :
-                         activeApp === 'socials' ? "radial-gradient(circle, rgba(134, 166, 134, 0.4) 0%, rgba(134, 166, 134, 0) 70%)" :
-                         activeApp === 'partiful' ? "radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, rgba(124, 58, 237, 0) 70%)" :
-                         "radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%)",
+              background: "radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%)",
               transform: "rotate(-15deg)"
             }}
           />
           <div 
-            className="absolute bottom-[5%] right-[5%] w-[30%] h-[30%] opacity-[0.05] rounded-full z-10 pointer-events-none" 
+            className="absolute bottom-[5%] right-[5%] w-[30%] h-[30%] opacity-[0.12] rounded-full z-10 pointer-events-none" 
             style={{
-              background: activeApp === 'notes' ? "radial-gradient(circle, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 70%)" :
-                         activeApp === 'socials' ? "radial-gradient(circle, rgba(134, 166, 134, 0.5) 0%, rgba(134, 166, 134, 0) 70%)" :
-                         activeApp === 'partiful' ? "radial-gradient(circle, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 70%)" :
-                         "radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%)",
+              background: "radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 70%)",
               transform: "rotate(15deg)"
             }}
           />
           
           {/* Edge highlights - diagonal light streaks */}
           <div 
-            className="absolute top-[-5%] left-[-20%] w-[40%] h-[10%] opacity-[0.04] z-10 pointer-events-none" 
+            className="absolute top-[-5%] left-[-20%] w-[40%] h-[10%] opacity-[0.02] z-10 pointer-events-none" 
             style={{
-              background: activeApp === 'notes' ? "linear-gradient(45deg, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 100%)" :
-                         activeApp === 'socials' ? "linear-gradient(45deg, rgba(134, 166, 134, 0.5) 0%, rgba(134, 166, 134, 0) 100%)" :
-                         activeApp === 'partiful' ? "linear-gradient(45deg, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 100%)" :
-                         "linear-gradient(45deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)",
+              background: "linear-gradient(45deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%)",
               transform: "rotate(35deg)",
               borderRadius: "50%"
             }}
           />
           
-          {/* Bottom edge highlight */}
+          {/* Bottom edge highlight - now lighter */}
           <div 
-            className="absolute bottom-[0%] left-[10%] right-[10%] h-[5%] opacity-[0.04] z-10 pointer-events-none" 
+            className="absolute bottom-[0%] left-[5%] right-[5%] h-[10%] opacity-[0.08] z-10 pointer-events-none" 
             style={{
-              background: activeApp === 'notes' ? "linear-gradient(to top, rgba(255, 127, 80, 0.5) 0%, rgba(255, 127, 80, 0) 100%)" :
-                         activeApp === 'socials' ? "linear-gradient(to top, rgba(134, 166, 134, 0.5) 0%, rgba(134, 166, 134, 0) 100%)" :
-                         activeApp === 'partiful' ? "linear-gradient(to top, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 100%)" :
-                         "linear-gradient(to top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)",
+              background: "linear-gradient(to top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)",
               borderRadius: "50%",
               filter: "blur(2px)"
             }}
@@ -960,37 +1043,117 @@ function App() {
               
               {/* Rotating Widget */}
               <AnimatePresence mode="wait">
-                <motion.div 
+              <motion.div 
+                  ref={widgetRef}
                   key={`widget-${currentWidgetIndex}`}
-                  className={`w-full mt-auto rounded-[16px] overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-blur-animation music-widget-bg-animation' : ''}`}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
+                  className={`w-full mt-auto rounded-[16px] overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''}`}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
                   transition={{ 
-                    duration: 0.5, 
+                    duration: 0.4, 
                     ease: [0.32, 0.72, 0, 1] // Apple's default cubic-bezier easing
                   }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleWidgetClick(widgets[currentWidgetIndex].type)}
+                  onMouseEnter={() => setIsWidgetHovered(true)}
+                  onMouseLeave={(e) => {
+                    setIsWidgetHovered(false);
+                    // Also handle swipe-related cleanup
+                    setSwipeStartX(null);
+                    setSwipeDirection(null);
+                  }}
+                  // Implement a direct, simpler swipe detection system
+                  onTouchStart={(e) => {
+                    setSwipeStartX(e.touches[0].clientX);
+                    setSwipeDirection(null);
+                  }}
+                  onTouchMove={(e) => {
+                    if (swipeStartX === null) return;
+                    
+                    const currentX = e.touches[0].clientX;
+                    const diff = currentX - swipeStartX;
+                    
+                    // Set direction once we have a clear movement
+                    if (Math.abs(diff) > 10) {
+                      const newDirection = diff > 0 ? 'right' : 'left';
+                      if (swipeDirection !== newDirection) {
+                        setSwipeDirection(newDirection);
+                      }
+                    }
+                  }}
+                  onTouchEnd={(e) => {
+                    if (swipeStartX === null || swipeDirection === null) return;
+                    
+                    const endX = e.changedTouches[0].clientX;
+                    const diff = endX - swipeStartX;
+                    
+                    if (Math.abs(diff) > 50) { // Minimum swipe distance
+                      if (swipeDirection === 'right') {
+                        handlePrevWidget();
+                      } else {
+                        handleNextWidget();
+                      }
+                    }
+                    
+                    setSwipeStartX(null);
+                    setSwipeDirection(null);
+                  }}
+                  // Also handle mouse-based swipes for desktop
+                  onMouseDown={(e) => {
+                    setSwipeStartX(e.clientX);
+                    setSwipeDirection(null);
+                  }}
+                  onMouseMove={(e) => {
+                    if (swipeStartX === null) return;
+                    
+                    const diff = e.clientX - swipeStartX;
+                    
+                    // Set direction once we have a clear movement
+                    if (Math.abs(diff) > 10) {
+                      const newDirection = diff > 0 ? 'right' : 'left';
+                      if (swipeDirection !== newDirection) {
+                        setSwipeDirection(newDirection);
+                      }
+                    }
+                  }}
+                  onMouseUp={(e) => {
+                    if (swipeStartX === null || swipeDirection === null) return;
+                    
+                    const diff = e.clientX - swipeStartX;
+                    
+                    if (Math.abs(diff) > 50) { // Minimum swipe distance
+                      if (swipeDirection === 'right') {
+                        handlePrevWidget();
+                      } else {
+                        handleNextWidget();
+                      }
+                    }
+                    
+                    setSwipeStartX(null);
+                    setSwipeDirection(null);
+                  }}
                   style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(0px)',
-                    WebkitBackdropFilter: 'blur(0px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    backdropFilter: 'none',
+                    WebkitBackdropFilter: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
                     padding: '14px',
                     transform: 'translateZ(0)',
                     WebkitTransform: 'translateZ(0)',
-                    cursor: 'pointer'
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
+                    touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal swipes
+                    cursor: swipeStartX !== null ? (swipeDirection === 'right' ? 'w-resize' : swipeDirection === 'left' ? 'e-resize' : 'grab') : 'pointer' 
                   }}
-                >
-                  <div className="flex items-center mb-3">
-                    <div className={`w-11 h-11 rounded-md flex items-center justify-center mr-3 shadow-sm ${widgets[currentWidgetIndex].iconBgColor} overflow-hidden`}>
+              >
+                <div className="flex items-center mb-3">
+                    <div className={`w-10 h-10 rounded-md flex items-center justify-center mr-3 shadow-md ${widgets[currentWidgetIndex].iconBgColor} overflow-hidden border border-white/10`}>
                       {widgets[currentWidgetIndex].type === 'workout' && (
                         <img 
                           src="/icons/apps/kineship.svg" 
                           alt="Kineship" 
-                          className="w-full h-full object-cover rounded-md" 
+                          className="w-6 h-6 object-contain" 
                         />
                       )}
                       {widgets[currentWidgetIndex].type === 'notes' && (
@@ -1000,54 +1163,116 @@ function App() {
                         <img 
                           src="/icons/apps/partiful.png" 
                           alt="Partiful" 
-                          className="w-6 h-6" 
+                          className="w-6 h-6 object-contain" 
                         />
                       )}
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-[12px] font-medium text-white">
-                          {widgets[currentWidgetIndex].type === 'workout' ? 'Kineship' : 
-                           widgets[currentWidgetIndex].type === 'notes' ? 'Notes' : 
-                           'Partiful'}
+                        <h3 className="text-[13px] font-medium text-white text-sharp truncate mr-2" style={{ 
+                          WebkitFontSmoothing: 'antialiased', 
+                          MozOsxFontSmoothing: 'grayscale',
+                          fontWeight: 400,
+                          maxWidth: 'calc(100% - 45px)'
+                        }}>
+                          {widgets[currentWidgetIndex].type === 'workout' ? 'barry\'s - lift x run' : 
+                           widgets[currentWidgetIndex].type === 'notes' ? selectedNote.title : 
+                           selectedEvent.title}
                         </h3>
-                        <p className="text-[10px] text-white/60">
+                        <p className="text-[11px] text-white/70 text-sharp ml-1 flex-shrink-0" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 350 }}>
                           {widgets[currentWidgetIndex].timestamp}
                         </p>
                       </div>
-                      <p className="text-[10px] text-white/70 font-light">
-                        {widgets[currentWidgetIndex].timestampLabel}
+                      <p className="text-[10px] text-white/60 font-normal text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 300 }}>
+                        {widgets[currentWidgetIndex].type === 'notes' ? 
+                          'notes' : 
+                          widgets[currentWidgetIndex].timestampLabel}
                       </p>
                     </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-[13px] text-white font-medium truncate pr-2">
-                        {widgets[currentWidgetIndex].title}
-                      </p>
-                      <div className="flex items-center">
-                        {widgets[currentWidgetIndex].type === 'workout' ? (
-                          <div className="flex -space-x-1 mr-2">
-                            <div className="inline-block h-4 w-4 rounded-full ring-1 ring-white/10 bg-teal-400/30"></div>
-                            <div className="inline-block h-4 w-4 rounded-full ring-1 ring-white/10 bg-emerald-400/30"></div>
-                            <div className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-teal-500/30 text-[8px] text-white">+2</div>
-                          </div>
-                        ) : widgets[currentWidgetIndex].type === 'partiful' ? (
-                          <div className="flex -space-x-1 mr-2">
-                            <div className="inline-block h-4 w-4 rounded-full ring-1 ring-white/10 bg-purple-400/30"></div>
-                            <div className="inline-block h-4 w-4 rounded-full ring-1 ring-white/10 bg-pink-400/30"></div>
-                            <div className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-purple-500/30 text-[8px] text-white">+6</div>
-                          </div>
-                        ) : null}
-                        <p className="text-[10px] text-white/60 font-light whitespace-nowrap">
-                          {widgets[currentWidgetIndex].subtitle}
+                </div>
+                <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center max-w-[80%] min-w-0 overflow-hidden">
+                        {/* Show title for all widgets in the same format */}
+                        <p className="text-[14px] text-white/70 font-medium truncate pr-2 text-sharp leading-tight w-full" style={{ 
+                          WebkitFontSmoothing: 'antialiased', 
+                          MozOsxFontSmoothing: 'grayscale', 
+                          textShadow: 'none', 
+                          fontWeight: 400,
+                          letterSpacing: '0.01em'
+                        }}>
+                          {widgets[currentWidgetIndex].type === 'notes' ? 
+                            '' : // Remove duplicate title for notes widget
+                            widgets[currentWidgetIndex].type === 'partiful' ?
+                            `${selectedEvent.attendees} approved` :
+                            'with megan and sam'}
                         </p>
                       </div>
+                      <div className="flex items-center flex-shrink-0">
+                        {/* Workout circles */}
+                        {widgets[currentWidgetIndex].type === 'workout' && (
+                          <div className="flex -space-x-1">
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-emerald-500/50 shadow-sm" style={{ zIndex: 10 }}></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-teal-400/50 shadow-sm" style={{ zIndex: 20 }}></div>
+                            <div className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-600/50 text-[10px] text-white text-sharp shadow-sm" style={{ zIndex: 30 }}>+2</div>
+                          </div>
+                        )}
+                        {/* Partiful attendee circles */}
+                        {widgets[currentWidgetIndex].type === 'partiful' && (
+                          <div className="flex -space-x-1">
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-purple-500/50 shadow-sm z-10"></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-pink-500/50 shadow-sm z-20"></div>
+                            <div className="inline-block h-6 w-6 rounded-full ring-1 ring-white/10 bg-fuchsia-600/50 shadow-sm z-30"></div>
+                          </div>
+                        )}
+                        {/* Notes icon - removed circles, using just a single note icon instead */}
+                        {widgets[currentWidgetIndex].type === 'notes' && (
+                          <div className="flex items-center">
+                            {/* Removed the circle with the note icon */}
+                          </div>
+                        )}
+                        {/* Only show subtitle if it exists */}
+                        {widgets[currentWidgetIndex].subtitle && (
+                          <p className="text-[10px] text-white/70 font-normal whitespace-nowrap pr-2 text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textShadow: 'none' }}>
+                            {widgets[currentWidgetIndex].subtitle}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    {/* Empty div to maintain original widget height */}
-                    <div className="h-[15px]"></div>
-                  </div>
-                </motion.div>
+                    
+                    {/* Content preview area - consistent height across all widgets */}
+                    <div className={`${widgets[currentWidgetIndex].type === 'notes' ? 'min-h-[2.8em]' : 'min-h-[3.0em]'} mb-2`}>
+                      {/* Apply consistent styling to all widget content */}
+                      <p className="text-[12px] text-white/65 font-normal px-1 text-sharp leading-relaxed overflow-hidden" style={{ 
+                        WebkitFontSmoothing: 'antialiased', 
+                        MozOsxFontSmoothing: 'grayscale', 
+                        textShadow: 'none',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical',
+                        letterSpacing: '0.01em',
+                        lineHeight: widgets[currentWidgetIndex].type === 'notes' ? '1.4' : '1.45',
+                        fontWeight: 350,
+                        marginTop: widgets[currentWidgetIndex].type === 'notes' ? '-4px' : '0px',
+                        marginBottom: widgets[currentWidgetIndex].type === 'notes' ? '10px' : '6px',
+                        paddingBottom: widgets[currentWidgetIndex].type === 'notes' ? '5px' : '8px',
+                        maxWidth: '100%',
+                        ...(widgets[currentWidgetIndex].type === 'notes' ? { 
+                          position: 'relative',
+                          top: '-2px'
+                        } : {})
+                      }}>
+                        {widgets[currentWidgetIndex].type === 'notes' 
+                          ? selectedNote.content 
+                          : widgets[currentWidgetIndex].type === 'partiful'
+                            ? '' // Empty content for partiful as requested
+                            : '' // Empty content for workout
+                        }
+                      </p>
+                    </div>
+                </div>
+              </motion.div>
               </AnimatePresence>
               
               {/* Indicator Dots */}
@@ -1055,7 +1280,6 @@ function App() {
                 {widgets.map((_, index) => (
                   <div
                     key={`indicator-${index}`}
-                    className="cursor-pointer"
                     onClick={() => {
                       // Apply smooth transition between widgets when dots are clicked
                       const direction = index > currentWidgetIndex ? 1 : -1;
@@ -1079,7 +1303,7 @@ function App() {
                   >
                     <div 
                       className={`h-[6px] w-[6px] rounded-full ${
-                        currentWidgetIndex === index ? 'bg-white' : 'bg-white/20'
+                        currentWidgetIndex === index ? 'bg-white' : 'bg-white/40'
                       }`}
                       style={{
                         transition: 'all 0.3s ease'
@@ -1180,7 +1404,6 @@ function App() {
           >
             {/* Back button - always goes back to home - moved to right side for thumb navigation */}
             <motion.div 
-              className="cursor-pointer"
               initial={{ opacity: 0, x: -5 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -5 }}
