@@ -10,3 +10,12 @@ export interface AppScreenProps {
   onClose?: () => void;
   initialPosition?: { x: number; y: number; width: number; height: number };
 }
+
+// Add initialNoteId to the Window interface
+declare global {
+  interface Window {
+    initialNoteId?: number;
+    initialEventId?: number;
+    isViewingEventDetail?: boolean;
+  }
+}

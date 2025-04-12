@@ -3,21 +3,51 @@ import type { AppScreenProps } from '../types';
 import { motion, useAnimation, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Clock, ChevronLeft } from 'lucide-react';
 import { createTactileEffect } from '../App';
+import { notes, NoteItem } from '../data/notes';
 
 // Declare the global window property for TypeScript
 declare global {
   interface Window {
     noteScreenBackHandler?: () => boolean;
+    initialNoteId?: number;
   }
 }
 
-type NoteItem = {
-  id: number;
-  title: string;
-  content: string;
-  date: string;
-  timeframe: 'recent' | 'older';
-};
+// Custom Pin icon component
+const PinIcon = () => (
+  <svg 
+    width="10" 
+    height="10" 
+    viewBox="0 0 24 24" 
+    className="text-white/50 mr-1.5"
+    style={{ marginTop: "-1px" }}
+  >
+    <path 
+      d="M9 4v6l-2 4v2h10v-2l-2-4V4" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+    <path 
+      d="M12 16v5" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+    <path 
+      d="M8 4h8" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 export const NotesScreen: React.FC<AppScreenProps> = () => {
   const prefersReducedMotion = useReducedMotion();
@@ -72,48 +102,95 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     };
   }, [selectedNote]);
 
-  const [notes] = useState<NoteItem[]>([
-    { 
-      id: 1, 
-      title: "canada", 
-      content: "no, we're not the US. <br></br> we never should be, and we never will be. thank you 🤍🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🇨🇦🍁🍁🍁🍁🍁", 
-      date: "05/04/25",
-      timeframe: 'recent' 
-    },
-    { 
-      id: 2, 
-      title: "\"so... what's your story?\"", 
-      content: "an impossible question to answer briefly.", 
-      date: "17/03/25",
-      timeframe: 'older' 
-    },
-    { 
-      id: 3, 
-      title: "reshaping social culture for longevity", 
-      content: "strong connections lead to longer, healthier lives.", 
-      date: "25/03/25",
-      timeframe: 'older' 
-    },
-    { 
-      id: 4, 
-      title: "apples!", 
-      content: "sugarbee - 10/10, pink lady - 9/10, honeycrisp - 7/10", 
-      date: "12/03/25",
-      timeframe: 'older' 
+  // Add effect to check for initialNoteId
+  useEffect(() => {
+    // Check if we have an initial note ID to open from the widget
+    if (window.initialNoteId) {
+      const noteToOpen = notes.find(note => note.id === window.initialNoteId);
+      if (noteToOpen) {
+        setSelectedNote(noteToOpen);
+        setHasInteracted(true);
+      }
+      // Clear the initialNoteId after using it
+      window.initialNoteId = undefined;
     }
-  ]);
+  }, []);
+
+  // Use the shared notes data instead of local state
   
-  // Simple helper function to format date
+  // Enhanced helper function for more natural date formatting
   const getRelativeDate = (dateStr: string) => {
-    const today = "08/04/25";
-    if (dateStr === today) return "Today";
-    if (dateStr === "07/04/25") return "Yesterday";
+    // Get current date
+    const now = new Date();
+    const today = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getFullYear()).slice(-2)}`;
+    
+    // Get yesterday's date
+    const yesterdayDate = new Date(now);
+    yesterdayDate.setDate(now.getDate() - 1);
+    const yesterday = `${String(yesterdayDate.getDate()).padStart(2, '0')}/${String(yesterdayDate.getMonth() + 1).padStart(2, '0')}/${String(yesterdayDate.getFullYear()).slice(-2)}`;
+    
+    // Parse the provided date to get the day of week
+    const [day, month, year] = dateStr.split('/').map(Number);
+    const dateObj = new Date(2000 + year, month - 1, day);
+    
+    // Get day of week
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayOfWeek = daysOfWeek[dateObj.getDay()];
+    
+    // Calculate difference in days
+    const diffTime = now.getTime() - dateObj.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Calculate difference in weeks and months
+    const diffWeeks = Math.floor(diffDays / 7);
+    const diffMonths = (now.getFullYear() - dateObj.getFullYear()) * 12 + now.getMonth() - dateObj.getMonth();
+    
+    if (dateStr === today) return 'today';
+    if (dateStr === yesterday) return 'yesterday';
+    
+    // Within a week, use day names
+    if (diffDays < 7) return dayOfWeek.toLowerCase();
+    
+    // Within two weeks
+    if (diffDays < 14) return 'last week';
+    
+    // Within a month
+    if (diffDays < 31) {
+      if (diffWeeks === 2) return '2 weeks ago';
+      if (diffWeeks === 3) return '3 weeks ago';
+      return `${diffWeeks} weeks ago`;
+    }
+    
+    // Within 3 months
+    if (diffMonths <= 3) {
+      if (diffMonths === 1) return '1 month ago';
+      return `${diffMonths} months ago`;
+    }
+    
+    // Older dates
     return dateStr;
   };
 
   // Filter notes by timeframe
   const recentNotes = notes.filter(note => note.timeframe === 'recent');
   const olderNotes = notes.filter(note => note.timeframe === 'older');
+
+  // New filters for pinned notes and all notes
+  const pinnedNotes = notes.filter(note => note.pinned);
+  
+  // All notes sorted by date (newest first), excluding pinned notes
+  const allNotes = notes
+    .filter(note => !note.pinned) // Exclude pinned notes
+    .sort((a, b) => {
+      // Parse dates (assuming DD/MM/YY format)
+      const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+      const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+      
+      // Compare dates in reverse order (newest first)
+      if (yearB !== yearA) return yearB - yearA;
+      if (monthB !== monthA) return monthB - monthA;
+      return dayB - dayA;
+    });
 
   const openNote = (note: NoteItem) => {
     setSelectedNote(note);
@@ -195,46 +272,51 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             transition={{ duration: 0.2 }}
           >
             <div className="h-full overflow-y-auto scrollbar-subtle">
-              <div className="space-y-4 p-6">
-                {/* Recent notes section */}
-                {recentNotes.length > 0 && (
+              <div className="space-y-3 p-6">
+                {/* Pinned notes section */}
+                {pinnedNotes.length > 0 && (
                   <div>
-                    <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2">
-                      Previous 7 days
+                    <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2 flex items-center">
+                      <PinIcon />
+                      Pinned
                     </h2>
-                    <div className="space-y-1">
-                      {recentNotes.map((note, index) => (
+                    <div className="space-y-0.5">
+                      {pinnedNotes.map((note, index) => (
                         <motion.div 
-                          key={note.id}
-                          className="flex cursor-pointer group px-1 py-1 rounded-md hover:bg-white/5 active:bg-white/10 relative" 
-                          onClick={() => openNote(note)}
+                          key={`pinned-${note.id}`}
+                          className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            createTactileEffect();
+                            setSelectedNote(note);
+                          }}
                           whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <div className="w-5 h-5 flex-shrink-0 flex items-start justify-center pt-0.5 text-white/50">
+                          <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
                             <motion.div
                               variants={chevronVariants}
                               initial="initial"
                               whileHover="hover"
-                              animate={index === 0 && !hasInteracted ? chevronControls : undefined}
+                              animate={index === 0 && note.title.includes("who am i again") && !hasInteracted ? chevronControls : undefined}
                             >
                               <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
                             </motion.div>
                           </div>
-                          <div className="ml-1 flex-1 flex justify-between">
+                          <div className="ml-1 flex-1 flex justify-between items-center">
                             <div className="flex-1 pr-3">
                               <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                                 {note.title}
                               </h3>
                             </div>
-                            <div className="flex-shrink-0 self-start">
-                              <span className="text-xs text-white/40 whitespace-nowrap pt-0.5">
+                            <div className="flex-shrink-0 flex items-center">
+                              <span className="text-xs text-white/40 whitespace-nowrap">
                                 {getRelativeDate(note.date)}
                               </span>
                             </div>
                           </div>
-                          {!hasInteracted && index === 0 && (
+                          {note.title.includes("who am i again") && !hasInteracted && (
                             <div className="absolute right-3" style={{ position: 'absolute', width: '10px', height: '10px' }}>
                               <motion.div 
                                 className="w-2 h-2 rounded-full bg-white/70" 
@@ -258,23 +340,27 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                   </div>
                 )}
 
-                {/* Older notes section */}
-                {olderNotes.length > 0 && (
+                {/* All notes section changed to Last edited */}
+                {allNotes.length > 0 && (
                   <div>
                     <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2">
-                      Previous 30 days
+                      Last edited
                     </h2>
-                    <div className="space-y-1">
-                      {olderNotes.map((note, index) => (
+                    <div className="space-y-0.5">
+                      {allNotes.map((note, index) => (
                         <motion.div 
-                          key={note.id}
-                          className="flex cursor-pointer group px-1 py-1 rounded-md hover:bg-white/5 active:bg-white/10 relative" 
-                          onClick={() => openNote(note)}
+                          key={`all-${note.id}`}
+                          className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            createTactileEffect();
+                            setSelectedNote(note);
+                          }}
                           whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <div className="w-5 h-5 flex-shrink-0 flex items-start justify-center pt-0.5 text-white/50">
+                          <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
                             <motion.div
                               variants={chevronVariants}
                               initial="initial"
@@ -283,36 +369,18 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                               <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
                             </motion.div>
                           </div>
-                          <div className="ml-1 flex-1 flex justify-between">
+                          <div className="ml-1 flex-1 flex justify-between items-center">
                             <div className="flex-1 pr-3">
                               <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                                 {note.title}
                               </h3>
                             </div>
-                            <div className="flex-shrink-0 self-start">
-                              <span className="text-xs text-white/40 whitespace-nowrap pt-0.5">
+                            <div className="flex-shrink-0 flex items-center">
+                              <span className="text-xs text-white/40 whitespace-nowrap">
                                 {getRelativeDate(note.date)}
                               </span>
                             </div>
                           </div>
-                          {!hasInteracted && note.title === "\"so...tell me about yourself\"" && (
-                            <div className="absolute right-3" style={{ position: 'absolute', width: '10px', height: '10px' }}>
-                              <motion.div 
-                                className="w-2 h-2 rounded-full bg-white/70" 
-                                initial={{ opacity: 0.7 }}
-                                animate={{ 
-                                  opacity: [0.5, 0.9, 0.5],
-                                  scale: [1, 1.2, 1]
-                                }}
-                                transition={{ 
-                                  repeat: Infinity, 
-                                  repeatType: "reverse", 
-                                  duration: 1.5,
-                                  repeatDelay: 1
-                                }}
-                              />
-                            </div>
-                          )}
                         </motion.div>
                       ))}
                     </div>

@@ -1,17 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronDown } from 'lucide-react';
+import { EventItem } from '../data/events';
 
 type PartifulEventProps = {
   onBack: () => void;
+  eventData?: EventItem;
 };
 
-export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
+export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData }) => {
   // State to track if user has scrolled
   const [hasScrolled, setHasScrolled] = useState(false);
   // State to track if additional content is expanded
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Default event data if none provided
+  const eventTitle = eventData?.title || "mental static";
+  const attendeeCount = eventData?.attendees || 35;
+  const eventDate = eventData?.date || "31/03/25";
+  
+  // Parse the date string (format: DD/MM/YY)
+  const parseDateString = (dateStr: string) => {
+    const [day, month, year] = dateStr.split('/').map(Number);
+    return new Date(2000 + year, month - 1, day);
+  };
+  
+  const eventDateTime = parseDateString(eventDate);
+  
+  // Format date for display
+  const formattedDate = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric'
+  }).format(eventDateTime);
   
   // Add useEffect to handle sidebar visibility and scroll tracking
   useEffect(() => {
@@ -63,8 +85,8 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack }) => {
     { id: 3, image: 'https://i.pravatar.cc/100?img=33' },
   ];
   
-  // Approved attendees sample data - reduced to just 5 to prevent scrolling
-  const approvedCount = 35;
+  // Use the actual attendee count from the event data
+  const approvedCount = eventData?.attendees || 12;
   const attendeePhotos = [
     { id: 1, image: 'https://i.pravatar.cc/100?img=1' },
     { id: 2, image: 'https://i.pravatar.cc/100?img=2' },
@@ -234,7 +256,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                 overflow: 'hidden'
               }}
             >
-              <span className="summary" style={{ fontStretch: 'expanded', letterSpacing: '0.08em' }}>mental static</span>
+              <span className="summary" style={{ fontStretch: 'expanded', letterSpacing: '0.08em' }}>{eventTitle}</span>
             </motion.h1>
             
             {/* Event image with square corners - expanded to match text width */}
@@ -268,7 +290,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
               >
                 <div className="ptf-l-daxsj">
                   <div>
-                    <div className="ptf-l-EDGV-" style={{ color: 'white', fontSize: '24px', fontWeight: 500 }}>Monday, Mar 31</div>
+                    <div className="ptf-l-EDGV-" style={{ color: 'white', fontSize: '24px', fontWeight: 500 }}>{formattedDate}</div>
                     <div className="ptf-l-y64FO" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '18px' }}>7:30pm</div>
                   </div>
                 </div>
@@ -293,7 +315,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                   
                   <div className="ptf-l-STiwz ptf-l-cXv5O" style={{ marginLeft: '6px', display: 'flex', overflow: 'hidden' }}>
                     {hostPhotos.map((host, index) => (
-                      <div key={host.id} className="ptf-l-UZPE- ptf-l-QJYpB ptf-l-gEM83" style={{ cursor: 'pointer', marginRight: index === hostPhotos.length - 1 ? '0' : '6px' }}>
+                      <div key={host.id} className="ptf-l-UZPE- ptf-l-QJYpB ptf-l-gEM83" style={{ marginRight: index === hostPhotos.length - 1 ? '0' : '6px' }}>
                         <div className="ptf-l-sb2bo">
                           <div className="ptf-l-gt1XK" style={{ width: '26px', height: '26px', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
                             <img 
@@ -332,7 +354,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                     target="_blank"
                     rel="noopener noreferrer"
                     className="ptf-l-5a8R- ptf-l-4Jj6a"
-                    style={{ color: '#E6F8C1', fontSize: '14px', cursor: 'pointer' }}
+                    style={{ color: '#E6F8C1', fontSize: '14px' }}
                     onClick={handleExternalLinkClick}
                   >
                     surf it scroll it pause it click it cross it crack it ssswitch update it
@@ -376,7 +398,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
               {/* Approved attendees section - now with blurred photos and badge overlay */}
               <motion.div 
                 className="ptf-l-gQnpk mt-5" 
-                style={{ margin: '22px 0 10px', cursor: 'pointer', position: 'relative' }}
+                style={{ margin: '22px 0 10px', position: 'relative' }}
                 onClick={preventBubbling}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -451,7 +473,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
               
               {/* Indicator arrow for expanding content */}
               <motion.div 
-                className="flex justify-center my-6 cursor-pointer"
+                className="flex justify-center my-6"
                 onClick={toggleExpanded}
               >
                 <motion.div 
@@ -491,7 +513,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                         <h3 className="text-white text-sm font-medium mb-2">RSVP Details</h3>
                         <p className="text-white/70 text-xs">
                           Please tell us what obscure knowledge you'll share when you RSVP.<br />
-                          Capacity is limited to 35 people.
+                          Capacity is limited to {approvedCount} people.
                         </p>
                       </div>
                       

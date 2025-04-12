@@ -40,7 +40,7 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
     {
       name: "retro",
       icon: "/icons/apps/retro.jpg",
-      url: "https://retro.app",
+      url: "https://retro.app/@fareeha",
       position: 4,
       isCustomIcon: true
     },
@@ -60,7 +60,7 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
     {
       name: "corner",
       icon: "/icons/apps/corner.jpg",
-      url: "https://www.corner.inc/fareeha?sid=db7c68ce-dad2-40e7-bdd7-547a523f1708",
+      url: "https://www.corner.inc/fareeha",
       position: 7,
       isCustomIcon: true
     },
@@ -118,6 +118,12 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
     }
   };
 
+  // Common shadow style for all icons
+  const iconShadowStyle = "shadow-lg hover:shadow-xl transition-shadow";
+  
+  // Common 3D effect style for all icons
+  const icon3DStyle = "transform transition-transform will-change-transform";
+
   return (
     <motion.div 
       className="flex flex-col justify-center items-center h-full w-full"
@@ -146,8 +152,8 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
               href={social.url}
               target="_blank"
               rel="noopener noreferrer"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95, y: 2 }}
               transition={{
                 ...springTransition,
                 duration: prefersReducedMotion ? 0 : undefined
@@ -164,16 +170,20 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
             >
               {social.customStyles ? (
                 <motion.div
-                  className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center ${social.customStyles}`}
-                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
+                  className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center ${social.customStyles} ${iconShadowStyle} ${icon3DStyle}`}
+                  whileHover={{ 
+                    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(255, 255, 255, 0.1) inset" 
+                  }}
                   transition={springTransition}
                 >
                   {social.icon}
                 </motion.div>
               ) : social.isCustomIcon ? (
                 <motion.div
-                  className="w-[60px] h-[60px] rounded-[14px] overflow-hidden"
-                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
+                  className={`w-[60px] h-[60px] rounded-[14px] overflow-hidden border border-white/20 ${iconShadowStyle} ${icon3DStyle}`}
+                  whileHover={{ 
+                    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(255, 255, 255, 0.1) inset" 
+                  }}
                   transition={springTransition}
                 >
                   <img 
@@ -184,8 +194,10 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
                 </motion.div>
               ) : (
                 <motion.div
-                  className="w-[60px] h-[60px] rounded-[14px] bg-white/15 backdrop-blur-md flex items-center justify-center"
-                  whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.1)" }}
+                  className={`w-[60px] h-[60px] rounded-[14px] bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center ${iconShadowStyle} ${icon3DStyle}`}
+                  whileHover={{ 
+                    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(255, 255, 255, 0.1) inset" 
+                  }}
                   transition={springTransition}
                 >
                   {social.icon}
