@@ -11,7 +11,7 @@ export const notes: NoteItem[] = [
   { 
     id: 1, 
     title: "canada", 
-    content: "no, we're not the US. we never should be, and we never will be. thank you next 🤍🤍🤍🤍🤍🍁🍁🍁🍁🍁", 
+    content: "no, we're not the US. we never should be, and we never will be. sorry and thank you 🤍🤍🤍🤍🤍🍁🍁🍁🍁🍁", 
     date: "05/04/25",
     timeframe: 'recent',
     pinned: false
@@ -19,7 +19,24 @@ export const notes: NoteItem[] = [
   { 
     id: 2, 
     title: "who am i again?", 
-    content: "main quest: building kineship + early days in community at [stealth]. side quests: gala committee heart and stroke foundation, diabetes canada fashion show ", 
+    content: `__main quest__
+-> building [kineship](https://kineship.com)
+
+__side quests__
++ early community architect @ [stealth], $1M pre-seed
++ [gala committee](https://www.heartandstrokegala.ca/2024-highlights), heart and stroke foundation
++ [fashion show committee](https://crm2.diabetes.ca/site/SPageServer?pagename=2025_pumpcoutu), diabetes canada
+
+__mission__
++ connect people in healthy ways
+
+__vision__
++ longevity achieved for all humans
+
+__things i love__
++ workout classes
++ music
++ biking around sf with my friends`,
     date: "17/03/25",
     timeframe: 'older',
     pinned: true

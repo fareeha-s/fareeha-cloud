@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { AppScreenProps } from '../types';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Send } from 'lucide-react';
@@ -15,20 +15,22 @@ type SocialApp = {
 
 export const SocialsScreen: React.FC<AppScreenProps> = () => {
   const prefersReducedMotion = useReducedMotion();
+  const [randomizedSocials, setRandomizedSocials] = useState<SocialApp[]>([]);
   
   const socials: SocialApp[] = [
     {
-      name: "instagram",
-      icon: "/icons/apps/instagram.png",
-      url: "https://instagram.com/fareehasala",
+      name: "strava",
+      icon: "/icons/apps/strava.png",
+      url: "https://strava.app.link/PzFPfOvKpSb",
       position: 1,
       isCustomIcon: true
     },
     {
-      name: "empty1",
-      icon: null,
-      url: "#",
-      position: 2
+      name: "instagram",
+      icon: "/icons/apps/instagram.png",
+      url: "https://instagram.com/fareehasala",
+      position: 2,
+      isCustomIcon: true
     },
     {
       name: "email",
@@ -38,29 +40,28 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       customStyles: "bg-white/15 backdrop-blur-lg border border-white/20"
     },
     {
-      name: "retro",
-      icon: "/icons/apps/retro.jpg",
-      url: "https://retro.app/@fareeha",
-      position: 4,
-      isCustomIcon: true
+      name: "empty1",
+      icon: null,
+      url: "#",
+      position: 4
+    },
+    {
+      name: "empty2",
+      icon: null,
+      url: "#",
+      position: 5
     },
     {
       name: "kineship",
-      icon: "/icons/apps/kineship.svg",
+      icon: "/icons/apps/kineship.png",
       url: "https://kineship.com",
-      position: 5,
+      position: 6,
       isCustomIcon: true
     },
     {
-      name: "empty3",
-      icon: null,
-      url: "#",
-      position: 6
-    },
-    {
-      name: "corner",
-      icon: "/icons/apps/corner.jpg",
-      url: "https://www.corner.inc/fareeha",
+      name: "retro",
+      icon: "/icons/apps/retro.jpg",
+      url: "https://retro.app/@fareeha",
       position: 7,
       isCustomIcon: true
     },
@@ -72,16 +73,65 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       isCustomIcon: true
     },
     {
-      name: "strava",
-      icon: "/icons/apps/strava.png",
-      url: "https://strava.app.link/PzFPfOvKpSb",
+      name: "corner",
+      icon: "/icons/apps/corner.jpg",
+      url: "https://www.corner.inc/fareeha",
       position: 9,
       isCustomIcon: true
     }
   ];
 
-  // Reorder socials to ensure icons are in correct positions
-  socials.sort((a, b) => a.position - b.position);
+  // Track whether this is the first render
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
+  // Randomize social app positions after the first render
+  useEffect(() => {
+    // Skip randomization on first render to show aesthetic default layout
+    if (isFirstRender) {
+      setIsFirstRender(false);
+      setRandomizedSocials([...socials]);
+      return;
+    }
+
+    // Create a copy of the socials array
+    let socialsCopy = [...socials];
+    
+    // Find and remove the fixed position apps (email and corner)
+    const emailApp = socialsCopy.find(app => app.name === "email");
+    const cornerApp = socialsCopy.find(app => app.name === "corner");
+    socialsCopy = socialsCopy.filter(app => app.name !== "email" && app.name !== "corner");
+    
+    // Determine corner position for Corner app
+    const cornerPositions = [1, 3, 7, 9];
+    let availableCorners = cornerPositions.filter(pos => pos !== 3); // Remove position 3 as it's reserved for email
+    const randomCornerPosition = availableCorners[Math.floor(Math.random() * availableCorners.length)];
+    
+    // Create an array of available positions (excluding the chosen corner position and email position)
+    const availablePositions = [1, 2, 4, 5, 6, 7, 8, 9].filter(
+      pos => pos !== 3 && pos !== randomCornerPosition
+    );
+    
+    // Shuffle the available positions
+    const shuffledPositions = [...availablePositions].sort(() => Math.random() - 0.5);
+    
+    // Assign new random positions to each app
+    socialsCopy.forEach((app, index) => {
+      app.position = shuffledPositions[index];
+    });
+    
+    // Add back the fixed position apps
+    if (emailApp) socialsCopy.push(emailApp);
+    if (cornerApp) {
+      cornerApp.position = randomCornerPosition;
+      socialsCopy.push(cornerApp);
+    }
+    
+    // Sort by position to ensure correct rendering order
+    socialsCopy.sort((a, b) => a.position - b.position);
+    
+    // Update state with randomized socials
+    setRandomizedSocials(socialsCopy);
+  }, [isFirstRender]); // Only depend on isFirstRender
 
   // Apple-like spring animation
   const springTransition = {
@@ -133,7 +183,7 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       onClick={(e) => e.stopPropagation()}
     >
       <div className="grid grid-cols-3 grid-rows-3 gap-6 mx-auto">
-        {socials.map((social, index) => {
+        {(randomizedSocials.length > 0 ? randomizedSocials : socials).map((social, index) => {
           // If there's no icon, render a placeholder div instead of a link
           if (!social.icon) {
             return (
