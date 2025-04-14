@@ -197,6 +197,12 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
 
   // Helper function to determine if an event should have a pulsing dot
   const shouldShowPulsingDot = (eventId: number) => {
+    // Check if this event has been viewed before
+    const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '[]');
+    if (viewedEvents.includes(eventId)) {
+      return false;
+    }
+
     // If user came from widget, only highlight that specific event
     if (widgetEventId !== null) {
       return widgetEventId === eventId;
@@ -205,12 +211,28 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     return defaultHighlightEventId === eventId;
   };
 
+  // Add function to mark event as viewed
+  const markEventAsViewed = (eventId: number) => {
+    const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '[]');
+    if (!viewedEvents.includes(eventId)) {
+      viewedEvents.push(eventId);
+      localStorage.setItem('viewedEvents', JSON.stringify(viewedEvents));
+    }
+  };
+
   // Debug effect to monitor isViewingDetailRef changes
   useEffect(() => {
     console.log('showPartiful changed to:', showPartiful);
     console.log('isViewingDetailRef is now:', isViewingDetailRef.current);
     console.log('window.isViewingEventDetail is now:', window.isViewingEventDetail);
   }, [showPartiful]);
+
+  const handleEventPress = (event: EventItem) => {
+    markEventAsViewed(event.id);
+    setSelectedEventId(event.id);
+    setShowPartiful(true);
+    createTactileEffect();
+  };
 
   if (showPartiful) {
     // Find the selected event or default to the first clickable one
@@ -308,8 +330,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                         // Set flag BEFORE state changes for immediate effect
                         setIsViewingDetail(true);
                         console.log('Click handler: Setting isViewingEventDetail to true');
-                        setSelectedEventId(event.id);
-                        setShowPartiful(true);
+                        handleEventPress(event);
                       }
                     }}
                     whileHover={{ scale: 1.01 }}
@@ -381,8 +402,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                         // Set flag BEFORE state changes for immediate effect
                         setIsViewingDetail(true);
                         console.log('Click handler: Setting isViewingEventDetail to true');
-                        setSelectedEventId(event.id);
-                        setShowPartiful(true);
+                        handleEventPress(event);
                       }
                     }}
                     whileHover={{ scale: 1.01 }}

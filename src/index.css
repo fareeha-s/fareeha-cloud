@@ -285,29 +285,29 @@
   aspect-ratio: 3/4 !important;
   height: 390px !important;
   width: 290px !important;
-  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 0.15s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Position the container's parent element correctly */
 .portrait-container ~ div[style*="marginTop"] {
   margin-top: -195px !important; /* Half of the height */
-  transition: margin-top 0.2s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transition: margin-top 0.15s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 /* Make sure even the parent container without portrait-container yet has a smooth transition */
 div[style*="marginTop"] {
-  transition: margin-top 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: margin-top 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Smooth transition between aspect ratios */
 .main-container {
-  transition: aspect-ratio 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-              height 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-              width 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: aspect-ratio 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+              height 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+              width 0.15s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Ensure text stays readable during transition */
 .portrait-container .h-full {
   height: 100% !important;
-  transition: height 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: height 0.15s cubic-bezier(0.22, 1, 0.36, 1);
 }

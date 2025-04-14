@@ -344,17 +344,16 @@ function App() {
     // Additional event for mobile browsers
     window.addEventListener('touchmove', () => setHeight(), { passive: true });
     
-    // Optimize loading sequence - reduce initial delay to 100ms
+    // Optimize loading sequence - reduce initial delay to 50ms
     const initialTimer = setTimeout(() => {
       setIsLoaded(true);
-      // Reduce secondary delay to 600ms
+      // Reduce secondary delay to 300ms
       const fullLoadTimer = setTimeout(() => {
-        // setFullyLoaded(true);
         // Force recompute height to ensure proper display
         setHeight();
-      }, 600); // Reduced from 1200ms
+      }, 300); // Reduced from 600ms
       return () => clearTimeout(fullLoadTimer);
-    }, 100); // Reduced from 500ms
+    }, 50); // Reduced from 100ms
     
     return () => {
       window.removeEventListener('resize', setHeight);

@@ -204,7 +204,27 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
 
   // Helper function to determine if a note should have a pulsing dot
   const shouldShowPulsingDot = (noteId: number) => {
-    return widgetNoteId === noteId;
+    // Check if this note has been viewed before
+    const viewedNotes = JSON.parse(localStorage.getItem('viewedNotes') || '[]');
+    if (viewedNotes.includes(noteId)) {
+      return false;
+    }
+
+    // If user came from widget, only highlight that specific note
+    if (widgetNoteId !== null) {
+      return widgetNoteId === noteId;
+    }
+    // Otherwise, highlight the first note in the list
+    return notes.length > 0 && notes[0].id === noteId;
+  };
+
+  // Add function to mark note as viewed
+  const markNoteAsViewed = (noteId: number) => {
+    const viewedNotes = JSON.parse(localStorage.getItem('viewedNotes') || '[]');
+    if (!viewedNotes.includes(noteId)) {
+      viewedNotes.push(noteId);
+      localStorage.setItem('viewedNotes', JSON.stringify(viewedNotes));
+    }
   };
 
   // Animation variants for staggered entrance
@@ -237,6 +257,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   const handleNoteClick = (note: NoteItem) => {
     setSelectedNote(note);
     createTactileEffect();
+    markNoteAsViewed(note.id);
   };
 
   return (
@@ -283,14 +304,14 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 }}
               >
                 <div className="flex items-center justify-between mb-1 text-white/80">
-                  <div className="flex items-center">
-                    {/* Empty div to maintain spacing */}
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-xs text-white/60">{getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}</span>
-                  </div>
+                <div className="flex items-center">
+                  {/* Empty div to maintain spacing */}
                 </div>
-                
+                <div className="flex items-center">
+                  <span className="text-xs text-white/60">{getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}</span>
+                </div>
+              </div>
+              
                 <motion.div 
                   className="flex flex-col"
                   variants={containerVariants}
@@ -302,10 +323,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                     variants={itemVariants}
                   >
                     <div className="mb-2">
-                      <h2 className="text-white text-lg font-medium">
-                        {selectedNote?.title}
-                      </h2>
-                    </div>
+                    <h2 className="text-white text-lg font-medium">
+                      {selectedNote?.title}
+                    </h2>
+                  </div>
                     
                     {/* Show full content without preview/expand */}
                     <motion.div 
@@ -314,46 +335,32 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                       style={{ 
                         whiteSpace: 'pre-line'
                       }}
-                    >
-                      {selectedNote?.content.split(/(__[^_]+__)|\[([^\]]+)\]\(([^)]+)\)/).map((part, index) => {
-                        if (!part) return null;
-                        
-                        // Check if this part is an underlined section
-                        if (part.startsWith('__') && part.endsWith('__')) {
-                          return (
-                            <span 
-                              key={index}
-                              className="underline decoration-white/90"
-                            >
-                              {part.slice(2, -2)}
-                            </span>
-                          );
-                        }
-                        
-                        // Check if this is a link text part
-                        if (index % 4 === 2) {
-                          const url = selectedNote?.content.split(/\[([^\]]+)\]\(([^)]+)\)/)[Math.floor(index/4) * 2 + 2];
-                          return (
-                            <a 
-                              key={index}
-                              href={url}
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-400 hover:text-blue-300"
-                              onClick={e => e.stopPropagation()}
-                            >
-                              {part}
-                            </a>
-                          );
-                        }
-                        
-                        // Skip URL parts
-                        if (index % 4 === 3) return null;
-                        
-                        // Return regular text
-                        return part;
-                      })}
-                    </motion.div>
+                      dangerouslySetInnerHTML={{
+                        __html: selectedNote?.content
+                          .split(/(__[^_]+__)|\[([^\]]+)\]\(([^)]+)\)/)
+                          .map((part, index) => {
+                            if (!part) return '';
+                            
+                            // Check if this part is an underlined section
+                            if (part.startsWith('__') && part.endsWith('__')) {
+                              return `<span class="underline decoration-white/90">${part.slice(2, -2)}</span>`;
+                            }
+                            
+                            // Check if this is a link text part
+                            if (index % 4 === 2) {
+                              const url = selectedNote?.content.split(/\[([^\]]+)\]\(([^)]+)\)/)[Math.floor(index/4) * 2 + 2];
+                              return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300" onclick="event.stopPropagation()">${part}</a>`;
+                            }
+                            
+                            // Skip URL parts
+                            if (index % 4 === 3) return '';
+                            
+                            // Return regular text
+                            return part;
+                          })
+                          .join('')
+                      }}
+                    />
                   </motion.div>
                 </motion.div>
               </motion.div>
