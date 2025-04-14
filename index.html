@@ -91,21 +91,9 @@
           backdrop-filter: blur(0px); 
           -webkit-backdrop-filter: blur(0px); 
         }
-        20% { 
-          backdrop-filter: blur(2px); 
-          -webkit-backdrop-filter: blur(2px); 
-        }
-        40% { 
-          backdrop-filter: blur(4px); 
-          -webkit-backdrop-filter: blur(4px); 
-        }
-        60% { 
-          backdrop-filter: blur(6px); 
-          -webkit-backdrop-filter: blur(6px); 
-        }
-        80% { 
-          backdrop-filter: blur(8px); 
-          -webkit-backdrop-filter: blur(8px); 
+        50% { 
+          backdrop-filter: blur(5px); 
+          -webkit-backdrop-filter: blur(5px); 
         }
         100% { 
           backdrop-filter: blur(10px); 
@@ -118,17 +106,9 @@
           backdrop-filter: blur(0px); 
           -webkit-backdrop-filter: blur(0px); 
         }
-        25% { 
-          backdrop-filter: blur(3px); 
-          -webkit-backdrop-filter: blur(3px); 
-        }
         50% { 
           backdrop-filter: blur(6px); 
           -webkit-backdrop-filter: blur(6px); 
-        }
-        75% { 
-          backdrop-filter: blur(9px); 
-          -webkit-backdrop-filter: blur(9px); 
         }
         100% { 
           backdrop-filter: blur(12px); 
@@ -197,22 +177,22 @@
       }
     </style>
     <script>
-      // Preload the background image with gradual animation
+      // Preload the background image with faster animation
       const img = new Image();
       img.src = '/background.jpg';
       img.onload = function() {
-        // Add a delay to ensure everything is ready
+        // Reduce delay to ensure faster loading
         setTimeout(() => {
           document.body.classList.add('loaded');
-        }, 300);
+        }, 150);
       };
       
-      // Fallback in case image loading takes too long
+      // Reduce fallback timeout
       setTimeout(() => {
         if (!document.body.classList.contains('loaded')) {
           document.body.classList.add('loaded');
         }
-      }, 2000);
+      }, 1000);
 
       // Detect high-end devices for smoother animations
       function detectDevicePerformance() {

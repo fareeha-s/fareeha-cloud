@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronDown, Shirt, Utensils } from 'lucide-react';
 import { EventItem } from '../data/events';
 
 type PartifulEventProps = {
@@ -19,6 +19,16 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData 
   const eventTitle = eventData?.title || "mental static";
   const attendeeCount = eventData?.attendees || 35;
   const eventDate = eventData?.date || "31/03/25";
+  const eventTime = eventData?.time || "7:30pm";
+  const descriptionText = eventData?.description || `quick hits of obscure knowledge 💚
+
+bring that random wikipedia rabbithole only you seem to know about. weird nature stuff, unsolved mysteries, watershed moments, conspiracy theories, crazy undercover govt ops, cool people etc etc 🌀🌀🌀
+
+wiki page will go up on a projector. exactly two mins for you to brief us. +1 question from the rest of us
+
+limited capacity! tell us what you'd share 🫶🏼`;
+  const spotifyLink = eventData?.spotifyLink || "https://open.spotify.com/track/0LSLM0zuWRkEYemF7JcfEE?si=EhnHw1mWS1OOC9joykQgOA";
+  const spotifyLyrics = eventData?.spotifyLyrics || "surf it scroll it pause it click it cross it crack it ssswitch update it";
   
   // Parse the date string (format: DD/MM/YY)
   const parseDateString = (dateStr: string) => {
@@ -79,7 +89,7 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData 
   };
 
   // Host profile photos with smaller size to match screenshot
-  const hostPhotos = [
+  const hostPhotos = eventData?.hosts || [
     { id: 1, image: 'https://i.pravatar.cc/100?img=31' },
     { id: 2, image: 'https://i.pravatar.cc/100?img=32' },
     { id: 3, image: 'https://i.pravatar.cc/100?img=33' },
@@ -93,9 +103,6 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData 
     { id: 3, image: 'https://i.pravatar.cc/100?img=3' },
     { id: 4, image: 'https://i.pravatar.cc/100?img=4' },
   ];
-  
-  // Spotify link for Technologic by Daft Punk
-  const spotifyLink = "https://open.spotify.com/track/0LSLM0zuWRkEYemF7JcfEE?si=EhnHw1mWS1OOC9joykQgOA";
   
   // Function to handle external link clicks, prevents event propagation
   const handleExternalLinkClick = (e: React.MouseEvent) => {
@@ -178,17 +185,37 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData 
     }
   };
 
-  // Split the description text into words for animation
-  const descriptionText = `quick hits of obscure knowledge 💚
-
-bring that random wikipedia rabbithole only you seem to know about. weird nature stuff, unsolved mysteries, watershed moments, conspiracy theories, crazy undercover govt ops, cool people etc etc 🌀🌀🌀
-
-wiki page will go up on a projector. exactly two mins for you to brief us. +1 question from the rest of us
-
-limited capacity! tell us what you'd share 🫶🏼`;
-
-  const descriptionWords = descriptionText.split(' ');
+  // First split by newlines to preserve them, then split each line by spaces
+  const descriptionLines = descriptionText.split('\n').map(line => line.split(' '));
   
+  // Flatten the array but keep track of line breaks
+  const descriptionWords = descriptionLines.reduce((acc, line, lineIndex) => {
+    if (lineIndex > 0) {
+      acc.push('\n'); // Add line break between lines
+    }
+    return acc.concat(line);
+  }, [] as string[]);
+  
+  // Function to render icon with text
+  const renderIconWithText = (text: string) => {
+    if (text.startsWith('👕')) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Shirt size={16} color="white" />
+          <span>{text.replace('👕', '').trim()}</span>
+        </div>
+      );
+    } else if (text.startsWith('🍽️')) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Utensils size={16} color="white" />
+          <span>{text.replace('🍽️', '').trim()}</span>
+        </div>
+      );
+    }
+    return text;
+  };
+
   return (
     // Root container with height and width - capture and stop all events
     <div 
@@ -200,7 +227,10 @@ limited capacity! tell us what you'd share 🫶🏼`;
       onTouchEnd={preventTouchBubbling}
       style={{ 
         touchAction: 'pan-y',
-        backgroundColor: 'rgba(14, 43, 23, 0.7)', // Dark green with transparency
+        backgroundColor: eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.7)' : 
+                         eventTitle === "consumer social" ? 'rgba(10, 20, 40, 0.7)' : 
+                         eventTitle === "Watercolour" ? 'rgba(180, 175, 230, 0.7)' :
+                         'rgba(14, 43, 23, 0.7)', // Navy blue for strawberry hour, consumer social, and light lavender for Watercolour
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
         borderRadius: '8px',
@@ -212,13 +242,14 @@ limited capacity! tell us what you'd share 🫶🏼`;
       {/* Main content container - no drag or swipe functionality */}
       <motion.div 
         ref={containerRef}
-        className="h-full w-full overflow-auto scrollbar-subtle relative p-6"
+        className="h-full w-full overflow-auto scrollbar-subtle relative"
         style={{ 
           fontFamily: 'var(--font-sans)',
           overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
           maxHeight: '100%',  // Make sure content stays within the container height
           touchAction: 'pan-y', // Allow vertical scrolling only
-          pointerEvents: 'auto' // Ensure the component captures all pointer events
+          pointerEvents: 'auto', // Ensure the component captures all pointer events
+          padding: '24px'
         }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -233,22 +264,30 @@ limited capacity! tell us what you'd share 🫶🏼`;
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           style={{ 
             fontSize: '28px', 
-            fontFamily: 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif', /* Exception: Partiful event titles use Grotesk font */
+            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? 'Times New Roman, serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
             lineHeight: 1.1, 
             marginBottom: '12px', 
             color: 'white', 
             textAlign: 'center', 
-            fontWeight: 600, 
-            letterSpacing: '0.12em', 
+            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? 700 : 600,
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? '-0.03em' : '0.12em',
             paddingTop: '0px',
-            textTransform: 'lowercase',
+            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? 'none' : 'lowercase',
             fontStretch: '150%',
             fontStyle: 'normal',
             whiteSpace: 'nowrap',
             overflow: 'hidden'
           }}
         >
-          <span className="summary" style={{ fontStretch: 'expanded', letterSpacing: '0.08em' }}>{eventTitle}</span>
+          <span className="summary" style={{ 
+            fontStretch: 'expanded', 
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? '-0.04em' : '0.08em' 
+          }}>
+            {eventTitle === "strawberry hour" ? "Strawberry hour." : 
+             eventTitle === "threading in" ? "threading in" : 
+             eventTitle === "consumer social" ? "consumer social." : 
+             eventTitle === "Watercolour" ? "Watercolour." : eventTitle}
+          </span>
         </motion.h1>
         
         {/* Event image with square corners - expanded to match text width */}
@@ -260,10 +299,10 @@ limited capacity! tell us what you'd share 🫶🏼`;
         >
           <div className="w-full overflow-hidden">
             <picture>
-              <source srcSet="./images/partiful/ms-giphy.webp" type="image/webp" />
+              <source srcSet={eventData?.image?.webp || "./images/partiful/ms-giphy.webp"} type="image/webp" />
               <img 
-                src="./images/partiful/ms-fallback.jpg" 
-                alt="Mental Static Event" 
+                src={eventData?.image?.fallback || "./images/partiful/ms-fallback.jpg"} 
+                alt={`${eventTitle} Event`} 
                 className="w-full" 
                 style={{ objectFit: 'cover', maxHeight: '280px' }}
               />
@@ -281,8 +320,8 @@ limited capacity! tell us what you'd share 🫶🏼`;
         >
           <div className="ptf-l-daxsj">
             <div>
-              <div className="ptf-l-EDGV-" style={{ color: 'white', fontSize: '24px', fontWeight: 500 }}>{formattedDate}</div>
-              <div className="ptf-l-y64FO" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '18px' }}>7:30pm</div>
+              <div className="ptf-l-EDGV-" style={{ color: 'white', fontSize: '24px', fontWeight: 500, letterSpacing: '-0.01em' }}>{formattedDate}</div>
+              <div className="ptf-l-y64FO" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '18px', fontWeight: 425 }}>{eventTime}</div>
             </div>
           </div>
         </motion.time>
@@ -332,7 +371,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </div>
           
           {/* Music lyrics with Spotify link - smaller font */}
-          <div className="ptf-l-V5l2c ptf-l-42Hmr" style={{ display: 'flex', alignItems: 'flex-start', marginTop: '14px' }}>
+          <div className="ptf-l-V5l2c ptf-l-42Hmr" style={{ display: 'flex', alignItems: 'flex-start', marginTop: '8px', marginBottom: '14px' }}>
             <span className="ptf--7nAv ptf-l-02UEs ptf-l-Y-q9d" style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 18V5L21 3V16" stroke="white" strokeWidth="1.5" fill="none"/>
@@ -345,181 +384,171 @@ limited capacity! tell us what you'd share 🫶🏼`;
               target="_blank"
               rel="noopener noreferrer"
               className="ptf-l-5a8R- ptf-l-4Jj6a"
-              style={{ color: '#E6F8C1', fontSize: '14px' }}
+              style={{ color: '#E6F8C1', fontSize: '14px', fontWeight: 600 }}
               onClick={handleExternalLinkClick}
             >
-              surf it scroll it pause it click it cross it crack it ssswitch update it
+              {spotifyLyrics}
             </a>
           </div>
-        </motion.div>
+          
+          {/* Description text with staggered word animation */}
+          <motion.div
+            className="description-container"
+            variants={textContainerVariants}
+            initial="hidden"
+            animate="visible"
+            style={{ marginTop: '0', marginBottom: '0' }}
+          >
+            <div style={{ 
+              fontSize: '14px',
+              lineHeight: '22.4px',
+              color: 'rgb(255, 255, 255)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+              fontFamily: 'Lausanne, "Helvetica Neue", Helvetica, sans-serif',
+              textRendering: 'optimizeSpeed',
+              WebkitFontSmoothing: 'antialiased',
+              isolation: 'isolate'
+            }}>
+              {descriptionText.split('\n').map((paragraph, index) => (
+                <p key={index} style={{ margin: 0, display: 'block', marginTop: index > 0 ? '-8px' : '0' }}>
+                  {renderIconWithText(paragraph)}
+                </p>
+              ))}
+            </div>
         
-        {/* Description text with staggered word animation */}
-        <motion.div
-          className="description-container"
-          variants={textContainerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {descriptionWords.map((word, index) => (
-            <motion.span
-              key={index}
-              variants={wordVariants}
-              className="inline-block"
-              style={{ 
-                marginRight: word === '\n\n' ? 0 : '0.25em',
-                color: 'white', 
-                fontSize: '14px', 
-                fontWeight: 400,
-                whiteSpace: word.includes('\n') ? 'pre-line' : 'normal'
-              }}
-            >
-              {word.includes('\n') ? (
-                <React.Fragment>
-                  <br /><br />
-                </React.Fragment>
-              ) : word === '🌀🌀🌀' ? (
-                <span style={{ color: '#5938e8' }}>🌀🌀🌀</span>
-              ) : (
-                word
-              )}
-            </motion.span>
-          ))}
-        </motion.div>
-        
-        {/* Approved attendees section - now with blurred photos and badge overlay */}
+            {/* Approved attendees section with profile circles and centered badge - moved inside description container */}
         <motion.div 
-          className="ptf-l-gQnpk mt-5" 
-          style={{ margin: '22px 0 10px', position: 'relative' }}
+              className="ptf-l-gQnpk" 
+          style={{ 
+                margin: '0',
+                marginTop: '12px',
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+                minHeight: '50px',  // Further reduced to minimize gap underneath
+                paddingBottom: '0'
+          }}
           onClick={preventBubbling}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Mysterious blurred attendee photos row */}
-          <div className="flex items-center max-w-full overflow-hidden" style={{ height: '38px' }}>
-            {attendeePhotos.map((attendee, index) => (
-              <div 
-                key={attendee.id} 
-                style={{ 
-                  marginRight: index === attendeePhotos.length - 1 ? '0' : '6px',
-                  position: 'relative',
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  opacity: 0.8,
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
-                }}
-              >
-                <div style={{ 
-                  position: 'absolute', 
-                  inset: 0,
-                  backgroundColor: 'rgba(28, 50, 32, 0.25)',
-                  zIndex: 2
-                }} />
-                <img 
-                  src={attendee.image} 
-                  alt="Mysterious Attendee" 
+          {/* Profile circles row */}
+          <div style={{ 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            position: 'relative',
+            width: '100%',
+            paddingLeft: '0px',
+            paddingRight: '12px'
+          }}>
+            {[...Array(8)].map((_, index) => {
+                  // Enhanced colors with gradients and patterns
+              const colors = [
+                    { bg: 'linear-gradient(135deg, #5871FF, #8257E5)', pattern: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #8257E5, #FF7EB3)', pattern: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #FF7EB3, #5CB6FF)', pattern: 'radial-gradient(circle at 30% 70%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #5CB6FF, #9F7AEA)', pattern: 'radial-gradient(circle at 70% 70%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #9F7AEA, #65D2FF)', pattern: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #65D2FF, #8257E5)', pattern: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #8257E5, #5871FF)', pattern: 'radial-gradient(circle at 70% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #5871FF, #FF7EB3)', pattern: 'radial-gradient(circle at 50% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' }
+                  ];
+                  
+                  // Add subtle animation delay based on index
+                  const animationDelay = `${index * 0.1}s`;
+                  
+              return (
+                    <motion.div 
+                  key={index} 
                   style={{ 
-                    objectFit: 'cover', 
-                    width: '100%', 
-                    height: '100%',
-                    filter: 'blur(2px) brightness(0.8)',
-                    transform: 'scale(1.05)',
-                  }}
-                />
-              </div>
-            ))}
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    position: 'relative',
+                    marginLeft: index === 0 ? '0' : '-8px',
+                    zIndex: 8 - index,
+                        border: '2px solid rgba(255, 255, 255, 0.3)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.1)',
+                        background: colors[index].bg,
+                        opacity: 0.85,
+                        overflow: 'hidden'
+                      }}
+                      initial={{ scale: 0.9, opacity: 0.7 }}
+                      animate={{ 
+                        scale: [0.9, 1.05, 1],
+                        opacity: [0.7, 0.9, 0.85]
+                      }}
+                      transition={{ 
+                        duration: 0.5, 
+                        delay: parseFloat(animationDelay),
+                        ease: "easeOut"
+                      }}
+                    >
+                      {/* Pattern overlay - larger than the circle */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '-50%',
+                        left: '-50%',
+                        width: '200%',
+                        height: '200%',
+                        background: colors[index].pattern,
+                        opacity: 0.7
+                      }} />
+                      
+                      {/* Shine effect - larger than the circle */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '-150%',
+                        left: '-150%',
+                        width: '400%',
+                        height: '400%',
+                        background: 'linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
+                        transform: 'rotate(45deg)',
+                        animation: `shine 3s infinite ${animationDelay}`
+                      }} />
+                    </motion.div>
+              );
+            })}
           </div>
-          
-          {/* Overlaid attendee count badge */}
+
+          {/* Centered approved count badge */}
           <div 
             style={{
               position: 'absolute',
-              top: '-10px',
-              right: '20px',
-              zIndex: 10,
-              paddingLeft: '12px',
-              paddingRight: '12px',
-              paddingTop: '3px',
-              paddingBottom: '3px',
-              backgroundColor: '#E6F8C1',
-              color: '#0e2b17',
-              borderRadius: '14px',
-              fontSize: '12px',
-              fontWeight: 600,
-              letterSpacing: '0.2px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-              display: 'inline-flex',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 20,
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              color: 'white',
+              borderRadius: '999px',
+              fontSize: '15px',
+              display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '4px'
+              padding: '8px 18px 7px',
+              minWidth: '46px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 0 2px rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.8)'
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-            </svg>
-            {approvedCount} approved
+            <div style={{ fontWeight: 500, lineHeight: 1.2 }}>{approvedCount}</div>
+                <div style={{ fontSize: '11px', opacity: 1.0, marginTop: '0px', letterSpacing: '0.02em' }}>Approved</div>
           </div>
+            </motion.div>
+          </motion.div>
         </motion.div>
         
         {/* Indicator arrow for expanding content */}
         <motion.div 
-          className="flex justify-center my-6"
+          className="flex justify-center"
           onClick={toggleExpanded}
         >
-          <motion.div 
-            className="w-5 h-5 flex items-center justify-center bg-white/10 rounded-full"
-            whileHover={{ 
-              scale: 1.1, 
-              backgroundColor: 'rgba(255, 255, 255, 0.15)' 
-            }}
-            whileTap={{ scale: 0.95 }}
-            animate={isExpanded ? "expanded" : "initial"}
-            variants={arrowVariants}
-          >
-            <ChevronDown className="text-white/70" size={18} strokeWidth={2} />
-          </motion.div>
         </motion.div>
-        
-        {/* Expandable content section */}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              className="overflow-hidden"
-              variants={expandedContentVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-            >
-              <div className="pt-2 pb-6 px-1">
-                <div className="mb-4">
-                  <h3 className="text-white text-sm font-medium mb-2">Location</h3>
-                  <p className="text-white/70 text-xs">
-                    123 Creative Space<br />
-                    San Francisco, CA 94110
-                  </p>
-                </div>
-                
-                <div className="mb-4">
-                  <h3 className="text-white text-sm font-medium mb-2">RSVP Details</h3>
-                  <p className="text-white/70 text-xs">
-                    Please tell us what obscure knowledge you'll share when you RSVP.<br />
-                    Capacity is limited to {approvedCount} people.
-                  </p>
-                </div>
-                
-                <div>
-                  <h3 className="text-white text-sm font-medium mb-2">What to bring</h3>
-                  <ul className="text-white/70 text-xs list-disc pl-4 space-y-1">
-                    <li>Your curious mind</li>
-                    <li>A drink to share (optional)</li>
-                    <li>Any visual aids for your knowledge share</li>
-                  </ul>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.div>
     </div>
   );
