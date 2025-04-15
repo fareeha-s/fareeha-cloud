@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { AppScreenProps } from '../types';
-import { motion, useReducedMotion, useAnimation } from 'framer-motion';
+import { motion, useReducedMotion, useAnimation, PanInfo, AnimatePresence } from 'framer-motion';
 import { createTactileEffect } from '../App';
 import { PartifulEvent } from '../components/PartifulEvent';
 import { ChevronRight } from 'lucide-react';
@@ -239,25 +239,87 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     const selectedEvent = selectedEventId 
       ? events.find(event => event.id === selectedEventId) 
       : events.find(event => event.clickable);
+    
+    // Find the index of the current event
+    const currentIndex = selectedEventId 
+      ? events.findIndex(event => event.id === selectedEventId)
+      : events.findIndex(event => event.clickable);
+    
+    // Calculate previous and next event indices (ensuring they're clickable)
+    const getNextClickableEvent = (startIndex: number, direction: 'next' | 'prev') => {
+      const totalEvents = events.length;
+      let index = startIndex;
       
+      for (let i = 0; i < totalEvents; i++) {
+        // Move to next/prev index with wrapping
+        index = direction === 'next' 
+          ? (index + 1) % totalEvents 
+          : (index - 1 + totalEvents) % totalEvents;
+        
+        // Return if the event is clickable
+        if (events[index].clickable) {
+          return events[index].id;
+        }
+      }
+      
+      // If no clickable events found, return the current one
+      return selectedEventId || events[0].id;
+    };
+    
+    const prevEventId = getNextClickableEvent(currentIndex, 'prev');
+    const nextEventId = getNextClickableEvent(currentIndex, 'next');
+    
+    // Handler for swipe navigation
+    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      // Determine if the drag was significant enough to trigger navigation
+      const dragThreshold = 50; // Minimum drag distance to trigger navigation
+      
+      if (info.offset.x > dragThreshold) {
+        // Swiped right - go to previous event
+        markEventAsViewed(prevEventId);
+        setSelectedEventId(prevEventId);
+        createTactileEffect();
+      } else if (info.offset.x < -dragThreshold) {
+        // Swiped left - go to next event
+        markEventAsViewed(nextEventId);
+        setSelectedEventId(nextEventId);
+        createTactileEffect();
+      }
+    };
+    
     return (
-      <div 
-        className="h-full w-full overflow-hidden" 
-        onMouseDown={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <PartifulEvent 
-          eventData={selectedEvent}
-          onBack={() => {
-            // Set flag to false BEFORE state changes for immediate effect
-            setIsViewingDetail(false);
-            setShowPartiful(false);
-            setSelectedEventId(null);
-            createTactileEffect();
-          }}
-        />
+      <div className="h-full w-full overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={selectedEventId} // Important: This forces a re-render on event change
+            className="h-full w-full"
+            initial={{ opacity: 0, x: 0 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            drag={prefersReducedMotion ? false : "x"}
+            dragDirectionLock
+            dragConstraints={{ left: 0, right: 0 }}
+            dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+            dragElastic={0}
+            onDragEnd={handleDragEnd}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PartifulEvent 
+              eventData={selectedEvent}
+              onBack={() => {
+                // Set flag to false BEFORE state changes for immediate effect
+                setIsViewingDetail(false);
+                setShowPartiful(false);
+                setSelectedEventId(null);
+                createTactileEffect();
+              }}
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
     );
   }

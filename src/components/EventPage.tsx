@@ -204,11 +204,7 @@ bring a consumer product hot take. hottest take gets a high five`,
     attendees: 20,
     backgroundColor: 'rgba(219, 175, 191, 0.7)', // Light lavender with transparency
     accentColor: '#B19CD9', // Deeper lavender
-    spotifyLink: 'Bernal Heights, San Francisco, CA',
-    spotifyLyrics: 'Bernal Heights, San Francisco, CA',
     description: `Watercolour 🎨
-
-Where pigment meets purpose, and vision bleeds into reality. We thrive in the diverse palette of our community.
 
 We wanted to bring some of our favorite people in the city together for an intimate seated dinner, to celebrate each other and to create space for creative community.
 
@@ -601,7 +597,7 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
               eventType === 'threading-in' ? "threading in" : 
               eventType === 'consumer-social' ? "consumer social." : 
               eventType === 'watercolour' ? "watercolour." : 
-              eventType === 'scrumptious' ? "Scrumptious." : eventTitle}
+              eventType === 'scrumptious' ? "Scrumptious" : eventTitle}
             </span>
           </motion.h1>
         )}
