@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { EventItem } from '../data/events';
 
 // Event type configuration
-type EventType = 'strawberry-hour' | 'blood-moon-rising' | 'mental-static' | 'out-of-office' | 'threading-in' | 'consumer-social' | 'watercolour';
+type EventType = 'strawberry-hour' | 'blood-moon-rising' | 'mental-static' | 'out-of-office' | 'threading-in' | 'consumer-social' | 'watercolour' | 'scrumptious';
 
 // Event configuration type
 type EventConfig = {
@@ -40,10 +40,10 @@ all ingredients will be provided, but feel free to bring your own strawberries i
 
 limited to 8 people to keep it cozy and intimate. let us know if you'd like to join! 💕`,
     hostPhotos: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=41' },
-      { id: 2, image: 'https://i.pravatar.cc/100?img=42' },
-      { id: 3, image: 'https://i.pravatar.cc/100?img=43' },
-      { id: 4, image: 'https://i.pravatar.cc/100?img=44' }
+      { id: 1, image: '/icons/hosts/fareeha.jpg' },
+      { id: 2, image: '/icons/hosts/3-64896426.jpg' },
+      { id: 3, image: '/icons/hosts/4-64896426.jpg' },
+      { id: 4, image: '/icons/hosts/1-b975ea56.jpg' }
     ],
     attendeePhotos: [
       { id: 1, image: 'https://i.pravatar.cc/100?img=11' },
@@ -53,11 +53,11 @@ limited to 8 people to keep it cozy and intimate. let us know if you'd like to j
     ],
   },
   'blood-moon-rising': {
-    title: 'blood moon rising',
+    title: 'blood moon rising.',
     date: '13/03/25',
     time: '8:00pm',
     attendees: 15,
-    backgroundColor: 'rgba(20, 20, 40, 0.7)', // Dark blue/black with transparency
+    backgroundColor: 'rgba(20, 20, 20, 0.7)', // Dark blue/black with transparency
     accentColor: '#8B0000', // Dark red
     spotifyLink: 'https://maps.app.goo.gl/MkcQaTLh5AAbgCvQ9',
     spotifyLyrics: 'Moon Info',
@@ -71,9 +71,9 @@ missing this will be cosmic treason;
 your absence will haunt you.
 🌑`,
     hostPhotos: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=31' },
-      { id: 2, image: 'https://i.pravatar.cc/100?img=35' },
-      { id: 3, image: 'https://i.pravatar.cc/100?img=36' },
+      { id: 1, image: '/icons/hosts/fareeha.jpg' },
+      { id: 2, image: '/icons/hosts/5-64896426.jpg' },
+      { id: 3, image: '/icons/hosts/6-64896426.jpg' },
     ],
     attendeePhotos: [
       { id: 1, image: 'https://i.pravatar.cc/100?img=15' },
@@ -99,9 +99,9 @@ wiki page will go up on a projector. exactly two mins for you to brief us. +1 qu
 
 limited capacity! tell us what you'd share 🫶🏼`,
     hostPhotos: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=31' },
-      { id: 2, image: 'https://i.pravatar.cc/100?img=32' },
-      { id: 3, image: 'https://i.pravatar.cc/100?img=33' },
+      { id: 1, image: '/icons/hosts/fareeha.jpg' },
+      { id: 2, image: '/icons/hosts/1-b975ea56.jpg' },
+      { id: 3, image: '/icons/hosts/2-b975ea56.jpg' },
     ],
     attendeePhotos: [
       { id: 1, image: 'https://i.pravatar.cc/100?img=1' },
@@ -117,7 +117,7 @@ limited capacity! tell us what you'd share 🫶🏼`,
     attendees: 24,
     backgroundColor: 'rgba(144, 190, 109, 0.7)', // Light green with transparency
     accentColor: '#7DBA63',
-    spotifyLink: '2459 Larkin St APT 9, San Francisco, CA',
+    spotifyLink: 'Russian Hill, San Francisco, CA',
     spotifyLyrics: 'light drinks & snacks',
     description: `light drinks & snacks
 cocktail party, russian hill, sunset views 🌉
@@ -136,8 +136,8 @@ parking: street, can be limited in the evening
 
 xoxo`,
     hostPhotos: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=29' },
-      { id: 2, image: 'https://i.pravatar.cc/100?img=30' },
+      { id: 1, image: '/icons/hosts/7-dd1a51c0.jpg' },
+      { id: 2, image: '/icons/hosts/fareeha.jpg' },
     ],
     attendeePhotos: [
       { id: 1, image: 'https://i.pravatar.cc/100?img=21' },
@@ -151,9 +151,9 @@ xoxo`,
     date: '20/02/25',
     time: '7:00pm',
     attendees: 40,
-    backgroundColor: 'rgba(50, 35, 20, 0.7)', // Dark brown with transparency
+    backgroundColor: 'rgba(35, 25, 15, 0.7)', // Dark brown with transparency
     accentColor: '#D2B48C', // Tan/light brown
-    spotifyLink: '1395 22nd St Apt 4, San Francisco, CA',
+    spotifyLink: 'Potrero Hill, San Francisco, CA',
     spotifyLyrics: 'Fareeha',
     description: `Another Thursday, another nosh sesh.
 
@@ -161,8 +161,8 @@ Curated for the people in our lives whose eyes sparkle when they talk.
 
 Few things bring us more joy than cooking for others, so there will be lots of beautiful finger foods🤍`,
     hostPhotos: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=27' },
-      { id: 2, image: 'https://i.pravatar.cc/100?img=28' },
+      { id: 1, image: '/icons/hosts/1-b975ea56.jpg' },
+      { id: 2, image: '/icons/hosts/fareeha.jpg' },
     ],
     attendeePhotos: [
       { id: 1, image: 'https://i.pravatar.cc/100?img=41' },
@@ -187,8 +187,8 @@ and talk about all our fave apps :)
 
 bring a consumer product hot take. hottest take gets a high five`,
     hostPhotos: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=25' },
-      { id: 2, image: 'https://i.pravatar.cc/100?img=26' },
+      { id: 1, image: '/icons/hosts/fareeha.jpg' },
+      { id: 2, image: '/icons/hosts/4-64896426.jpg' },
     ],
     attendeePhotos: [
       { id: 1, image: 'https://i.pravatar.cc/100?img=51' },
@@ -202,10 +202,10 @@ bring a consumer product hot take. hottest take gets a high five`,
     date: '19/09/25',
     time: '6:30pm',
     attendees: 20,
-    backgroundColor: 'rgba(180, 175, 230, 0.7)', // Light lavender with transparency
+    backgroundColor: 'rgba(219, 175, 191, 0.7)', // Light lavender with transparency
     accentColor: '#B19CD9', // Deeper lavender
-    spotifyLink: 'Baukunst, 433 Cortland Ave, San Francisco, CA 94110',
-    spotifyLyrics: 'Baukunst, 433 Cortland Ave, San Francisco, CA 94110',
+    spotifyLink: 'Bernal Heights, San Francisco, CA',
+    spotifyLyrics: 'Bernal Heights, San Francisco, CA',
     description: `Watercolour 🎨
 
 Where pigment meets purpose, and vision bleeds into reality. We thrive in the diverse palette of our community.
@@ -216,14 +216,42 @@ You are cordially invited.
 
 dress code: pastels, watercolor washes, artisan details 🪷`,
     hostPhotos: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=23' },
-      { id: 2, image: 'https://i.pravatar.cc/100?img=24' },
+      { id: 1, image: '/icons/hosts/8-dd1a51c0.jpg' },
+      { id: 2, image: '/icons/hosts/fareeha.jpg' },
     ],
     attendeePhotos: [
       { id: 1, image: 'https://i.pravatar.cc/100?img=61' },
       { id: 2, image: 'https://i.pravatar.cc/100?img=62' },
       { id: 3, image: 'https://i.pravatar.cc/100?img=63' },
       { id: 4, image: 'https://i.pravatar.cc/100?img=64' },
+    ],
+  },
+  'scrumptious': {
+    title: 'Scrumptious',
+    date: '08/08/24',
+    time: '6:30pm',
+    attendees: 20,
+    backgroundColor: 'rgba(77, 166, 255, 0.7)', // Sky blue with transparency
+    accentColor: '#87CEEB', // Sky blue
+    spotifyLink: 'Outer Sunset, San Francisco',
+    spotifyLyrics: 'Outer Sunset, San Francisco',
+    description: `honeycrisp. pink lady. sugarbee. ghost apple. Ạ̷̼̭̻͐P̶̳̙̙̉̍̆P̸̰̚L̶̠̯̯̮͊̊Ȇ̴̗̭̝̇̀. belle de boskoop. you name it. we (probably don't) have it.
+
+join us for an evening of unmatched extravagance as we present the ultimate apple tasting experience…
+
+this is luxury at its juiciest. be there or be 🍌
+
+APARTMENT 206`,
+    hostPhotos: [
+      { id: 1, image: '/icons/hosts/1-b975ea56.jpg' },
+      { id: 2, image: '/icons/hosts/fareeha.jpg' },
+      { id: 3, image: '/icons/hosts/9-dd1a51c0.jpg' },
+    ],
+    attendeePhotos: [
+      { id: 1, image: 'https://i.pravatar.cc/100?img=71' },
+      { id: 2, image: 'https://i.pravatar.cc/100?img=72' },
+      { id: 3, image: 'https://i.pravatar.cc/100?img=73' },
+      { id: 4, image: 'https://i.pravatar.cc/100?img=74' },
     ],
   },
 };
@@ -297,8 +325,13 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
     onBack();
   };
 
-  // Function to prevent any clicks from bubbling up
+  // Function to prevent any clicks from bubbling up but allow links to work
   const preventBubbling = (e: React.MouseEvent) => {
+    // Skip if the target is an anchor tag or inside an anchor tag
+    if ((e.target as HTMLElement).tagName === 'A' || 
+        (e.target as HTMLElement).closest('a')) {
+      return;
+    }
     e.stopPropagation();
   };
 
@@ -310,6 +343,7 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
   // Function to handle external link clicks, prevents event propagation
   const handleExternalLinkClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Stop event from bubbling up
+    // Do not prevent default behavior so the link will work
   };
   
   // Animation variants for staggered text
@@ -463,7 +497,14 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
       onTouchEnd={preventTouchBubbling}
       style={{ 
         touchAction: 'pan-y',
-        backgroundColor: config.backgroundColor,
+        backgroundColor: eventType === 'strawberry-hour' ? 'rgba(0, 32, 63, 0.7)' : 
+                         eventType === 'mental-static' ? 'rgba(14, 43, 23, 0.7)' :
+                         eventType === 'blood-moon-rising' ? 'rgba(20, 20, 20, 0.7)' :
+                         eventType === 'out-of-office' ? 'rgba(144, 190, 109, 0.7)' :
+                         eventType === 'threading-in' ? 'rgba(35, 25, 15, 0.7)' :
+                         eventType === 'consumer-social' ? 'rgba(10, 20, 40, 0.7)' :
+                         eventType === 'watercolour' ? 'rgba(219, 175, 191, 0.7)' :
+                         eventType === 'scrumptious' ? 'rgba(77, 166, 255, 0.7)' : 'rgba(14, 43, 23, 0.7)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
         borderRadius: '8px',
@@ -489,55 +530,81 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
         transition={{ duration: 0.3 }}
         drag={false} // Explicitly disable drag on this component
       >
-        {/* Header title without extra margin */}
-        <motion.h1 
-          className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          style={{ 
-            fontSize: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? '42px' : `${titleFontSize}px`,
-            fontFamily: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? 
-              'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 
-              'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
-            lineHeight: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? 1.2 : 1.1,
-            marginBottom: '12px', 
-            color: 'white', 
-            textAlign: 'center', 
-            fontWeight: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? 500 : 600,
-            letterSpacing: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? '-0.03em' : '0.12em',
-            paddingTop: '0px',
-            paddingLeft: '16px',
-            paddingRight: '16px',
-            textTransform: eventType === 'strawberry-hour' || eventType === 'out-of-office' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? 'none' : 'lowercase',
-            fontStyle: 'normal',
-            width: '100%',
-            display: 'block',
-            position: 'relative',
-            margin: '0 auto',
-            maxWidth: '100%',
-            overflow: 'visible'
-          }}
-        >
-          <span 
-            className="summary" 
+        {/* Header title - with special handling for blood-moon-rising */}
+        {eventType === 'blood-moon-rising' ? (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             style={{ 
-              fontStretch: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? 'normal' : 'expanded',
-              letterSpacing: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? '-0.04em' : '0.08em',
-              display: 'block',
               width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: '12px'
+            }}
+            data-event-type="blood-moon-rising"
+          >
+            <h1 className="blood-moon-title" id="blood-moon-title">
+              blood moon rising.
+            </h1>
+          </motion.div>
+        ) : (
+          <motion.h1 
+            className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{ 
+              fontSize: eventType === 'strawberry-hour' || eventType === 'threading-in' || 
+                      eventType === 'consumer-social' || eventType === 'watercolour' || 
+                      eventType === 'scrumptious' ? '42px' : `${titleFontSize}px`,
+              fontFamily: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' || eventType === 'scrumptious' ? 
+                'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 
+                'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
+              lineHeight: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' || eventType === 'scrumptious' ? 1.2 : 1.1,
+              marginBottom: '12px', 
+              color: 'white', 
+              textAlign: 'center', 
+              fontWeight: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' || eventType === 'scrumptious' ? 500 : 600,
+              letterSpacing: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' || eventType === 'scrumptious' ? '-0.03em' : '0.12em',
+              paddingTop: '0px',
+              paddingLeft: '16px',
+              paddingRight: '16px',
+              textTransform: eventType === 'strawberry-hour' || eventType === 'out-of-office' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' || eventType === 'scrumptious' ? 'none' : 'lowercase',
+              fontStyle: 'normal',
+              width: '100%',
+              display: 'block',
               position: 'relative',
+              margin: '0 auto',
+              maxWidth: '100%',
               overflow: 'visible',
-              padding: '0 8px',
-              marginRight: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' ? '-0.04em' : '0' // Compensate for the last character spacing
+              wordWrap: 'break-word'
             }}
           >
-            {eventType === 'strawberry-hour' ? "Strawberry hour." : 
-             eventType === 'out-of-office' ? "out of office" : 
-             eventType === 'threading-in' ? "threading in" : 
-             eventType === 'consumer-social' ? "consumer social." : eventType === 'watercolour' ? "watercolour." : eventTitle}
-          </span>
-        </motion.h1>
+            <span 
+              className="summary" 
+              style={{ 
+                fontStretch: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' || eventType === 'scrumptious' ? 'normal' : 'expanded',
+                letterSpacing: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' || eventType === 'scrumptious' ? '-0.04em' : '0.08em',
+                display: 'block',
+                width: '100%',
+                position: 'relative',
+                overflow: 'visible',
+                padding: '0 8px',
+                marginRight: eventType === 'strawberry-hour' || eventType === 'threading-in' || eventType === 'consumer-social' || eventType === 'watercolour' || eventType === 'scrumptious' ? '-0.04em' : '0', // Compensate for the last character spacing
+                wordBreak: 'break-word'
+              }}
+            >
+              {eventType === 'strawberry-hour' ? "Strawberry hour." : 
+              eventType === 'out-of-office' ? "out of office" : 
+              eventType === 'threading-in' ? "threading in" : 
+              eventType === 'consumer-social' ? "consumer social." : 
+              eventType === 'watercolour' ? "watercolour." : 
+              eventType === 'scrumptious' ? "Scrumptious." : eventTitle}
+            </span>
+          </motion.h1>
+        )}
         
         {/* Event image with square corners - expanded to match text width */}
         <motion.div 
@@ -596,21 +663,47 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
               {config.hostPhotos.map((host, index) => (
                 <div key={host.id} className="ptf-l-UZPE- ptf-l-QJYpB ptf-l-gEM83" style={{ marginRight: index === config.hostPhotos.length - 1 ? '0' : '6px' }}>
                   <div className="ptf-l-sb2bo">
-                    <div className="ptf-l-gt1XK" style={{ width: '26px', height: '26px', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
-                      <img 
-                        className="ptf-l-YHgvF" 
-                        src={host.image} 
-                        alt="Host" 
-                        width="26" 
-                        height="26"
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
-                      {index === 0 && (
-                        <span className="ptf-l--7nAv ptf-l-WCCTT ptf-l-Wcrf2" style={{ position: 'absolute', bottom: '-1px', right: '-1px', color: config.accentColor, height: '10px', width: '10px' }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill={config.accentColor} xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5Z" />
-                          </svg>
-                        </span>
+                    <div className="ptf-l-gt1XK" style={{ width: '26px', height: '26px', borderRadius: '50%', overflow: 'hidden', position: 'relative', pointerEvents: index === 0 ? 'auto' : 'none' }}>
+                      {index === 0 ? (
+                        <a 
+                          href="https://partiful.com/u/AuiLl2hkaLeL1T2mjMyMomWhe092"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={handleExternalLinkClick}
+                          style={{ 
+                            display: 'block', 
+                            width: '100%', 
+                            height: '100%',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            zIndex: 10
+                          }}
+                        >
+                          <img 
+                            className="ptf-l-YHgvF" 
+                            src={host.image} 
+                            alt="Host" 
+                            width="26" 
+                            height="26"
+                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                          />
+                          <span className="ptf-l--7nAv ptf-l-WCCTT ptf-l-Wcrf2" style={{ position: 'absolute', bottom: '-1px', right: '-1px', color: config.accentColor, height: '10px', width: '10px' }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill={config.accentColor} xmlns="http://www.w3.org/2000/svg">
+                              <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5Z" />
+                            </svg>
+                          </span>
+                        </a>
+                      ) : (
+                        <>
+                          <img 
+                            className="ptf-l-YHgvF" 
+                            src={host.image} 
+                            alt="Host" 
+                            width="26" 
+                            height="26"
+                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                          />
+                        </>
                       )}
                     </div>
                   </div>
@@ -622,22 +715,35 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
           {/* Music lyrics with Spotify link - smaller font */}
           <div className="ptf-l-V5l2c ptf-l-42Hmr" style={{ display: 'flex', alignItems: 'flex-start', marginTop: '8px', marginBottom: '14px' }}>
             <span className="ptf--7nAv ptf-l-02UEs ptf-l-Y-q9d" style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 18V5L21 3V16" stroke="white" strokeWidth="1.5" fill="none"/>
-                <circle cx="6" cy="18" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
-                <circle cx="18" cy="16" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
-              </svg>
+              {eventType === 'blood-moon-rising' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.4545 13.5455C10.0455 13.9545 10.0455 14.5909 10.4545 15C10.8636 15.4091 11.5 15.4091 11.9091 15L14.5455 12.3636C15.3636 11.5455 15.3636 10.2273 14.5455 9.40909C13.7273 8.59091 12.4091 8.59091 11.5909 9.40909L8.59091 12.4091C7.36364 13.6364 7.36364 15.5909 8.59091 16.8182C9.81818 18.0455 11.7727 18.0455 13 16.8182L16 13.8182" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M13.5455 10.4545C13.9545 10.0455 14.5909 10.0455 15 10.4545C15.4091 10.8636 15.4091 11.5 15 11.9091L12.3636 14.5455C11.5455 15.3636 10.2273 15.3636 9.40909 14.5455C8.59091 13.7273 8.59091 12.4091 9.40909 11.5909L12.4091 8.59091C13.6364 7.36364 15.5909 7.36364 16.8182 8.59091C18.0455 9.81818 18.0455 11.7727 16.8182 13L13.8182 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              ) : eventType === 'out-of-office' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 5H21M3 19H21M7 14V19M7 5V10M17 14V19M17 5V10M11 14H13V19H11V14ZM11 5H13V10H11V5Z" stroke="white" strokeWidth="1.5"/>
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 18V5L21 3V16" stroke="white" strokeWidth="1.5" fill="none"/>
+                  <circle cx="6" cy="18" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
+                  <circle cx="18" cy="16" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
+                </svg>
+              )}
             </span>
-            <a 
-              href={config.spotifyLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ptf-l-5a8R- ptf-l-4Jj6a"
-              style={{ color: adjustColor(config.accentColor, 100), fontSize: '14px', fontWeight: 600 }}
-              onClick={handleExternalLinkClick}
-            >
-              {config.spotifyLyrics}
-            </a>
+            {(eventType !== 'threading-in' && eventType !== 'consumer-social' && eventType !== 'watercolour' && eventType !== 'scrumptious') && (
+              <a 
+                href={config.spotifyLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ptf-l-5a8R- ptf-l-4Jj6a"
+                style={{ color: adjustColor(config.accentColor, 100), fontSize: '14px', fontWeight: 600 }}
+                onClick={handleExternalLinkClick}
+              >
+                {config.spotifyLyrics}
+              </a>
+            )}
           </div>
           
           {/* Description text with staggered word animation */}
@@ -671,15 +777,15 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
         
         {/* Approved attendees section with profile circles and centered badge */}
         <motion.div 
-          className="ptf-l-gQnpk" 
+          className="approved-attendees" 
           style={{ 
             margin: '0',
             marginTop: '12px',
             position: 'relative',
             display: 'flex',
             alignItems: 'center',
-            minHeight: '50px',  // Further reduced to minimize gap underneath
-            paddingBottom: '0'
+            minHeight: '65px',  // Increased to give more space
+            paddingBottom: '15px'  // Added padding at the bottom to ensure content doesn't cut off
           }}
           onClick={preventBubbling}
           initial={{ opacity: 0, y: 10 }}

@@ -78,8 +78,13 @@ limited capacity! tell us what you'd share 🫶🏼`;
     onBack();
   };
 
-  // Function to prevent any clicks from bubbling up
+  // Function to prevent any clicks from bubbling up but allow links to work
   const preventBubbling = (e: React.MouseEvent) => {
+    // Skip if the target is an anchor tag or inside an anchor tag
+    if ((e.target as HTMLElement).tagName === 'A' || 
+        (e.target as HTMLElement).closest('a')) {
+      return;
+    }
     e.stopPropagation();
   };
 
@@ -90,9 +95,9 @@ limited capacity! tell us what you'd share 🫶🏼`;
 
   // Host profile photos with smaller size to match screenshot
   const hostPhotos = eventData?.hosts || [
-    { id: 1, image: 'https://i.pravatar.cc/100?img=31' },
-    { id: 2, image: 'https://i.pravatar.cc/100?img=32' },
-    { id: 3, image: 'https://i.pravatar.cc/100?img=33' },
+    { id: 1, image: '/icons/hosts/fareeha.jpg' },
+    { id: 2, image: '/icons/hosts/1-b975ea56.jpg' },
+    { id: 3, image: '/icons/hosts/2-b975ea56.jpg' },
   ];
   
   // Use the actual attendee count from the event data
@@ -107,6 +112,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
   // Function to handle external link clicks, prevents event propagation
   const handleExternalLinkClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Stop event from bubbling up
+    // Do not prevent default behavior so the link will work
   };
   
   // Animation variants for staggered text
@@ -229,8 +235,12 @@ limited capacity! tell us what you'd share 🫶🏼`;
         touchAction: 'pan-y',
         backgroundColor: eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.7)' : 
                          eventTitle === "consumer social" ? 'rgba(10, 20, 40, 0.7)' : 
-                         eventTitle === "Watercolour" ? 'rgba(180, 175, 230, 0.7)' :
-                         'rgba(14, 43, 23, 0.7)', // Navy blue for strawberry hour, consumer social, and light lavender for Watercolour
+                         eventTitle === "Watercolour" ? 'rgba(219, 175, 191, 0.7)' :
+                         eventTitle === "threading in" ? 'rgba(35, 25, 15, 0.7)' :
+                         eventTitle === "out of office" ? 'rgba(144, 190, 109, 0.7)' :
+                         eventTitle === "blood moon rising." ? 'rgba(20, 20, 20, 0.7)' :
+                         eventTitle === "Scrumptious." ? 'rgba(77, 166, 255, 0.7)' :
+                         'rgba(14, 43, 23, 0.7)', // Default color for mental static
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
         borderRadius: '8px',
@@ -257,6 +267,25 @@ limited capacity! tell us what you'd share 🫶🏼`;
         drag={false} // Explicitly disable drag on this component
       >
         {/* Header title without extra margin */}
+        {eventTitle === "blood moon rising." ? (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{ 
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: '12px'
+            }}
+            data-event-type="blood-moon-rising"
+          >
+            <h1 className="blood-moon-title" id="blood-moon-title">
+              blood moon rising.
+            </h1>
+          </motion.div>
+        ) : (
         <motion.h1 
           className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" 
           initial={{ opacity: 0, y: -10 }}
@@ -286,9 +315,11 @@ limited capacity! tell us what you'd share 🫶🏼`;
             {eventTitle === "strawberry hour" ? "Strawberry hour." : 
              eventTitle === "threading in" ? "threading in" : 
              eventTitle === "consumer social" ? "consumer social." : 
-             eventTitle === "Watercolour" ? "Watercolour." : eventTitle}
+             eventTitle === "Watercolour" ? "Watercolour." :
+             eventTitle === "Scrumptious." ? "Scrumptious." : eventTitle}
           </span>
         </motion.h1>
+        )}
         
         {/* Event image with square corners - expanded to match text width */}
         <motion.div 
@@ -345,23 +376,49 @@ limited capacity! tell us what you'd share 🫶🏼`;
             
             <div className="ptf-l-STiwz ptf-l-cXv5O" style={{ marginLeft: '6px', display: 'flex', overflow: 'hidden' }}>
               {hostPhotos.map((host, index) => (
-                <div key={host.id} className="ptf-l-UZPE- ptf-l-QJYpB ptf-l-gEM83" style={{ marginRight: index === hostPhotos.length - 1 ? '0' : '6px' }}>
+                <div key={host.id} className="ptf-l-UZPE- ptf-l-QJYpB ptf-l-gEM83" style={{ marginRight: index === hostPhotos.length - 1 ? '0' : '0px' }}>
                   <div className="ptf-l-sb2bo">
-                    <div className="ptf-l-gt1XK" style={{ width: '26px', height: '26px', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
-                      <img 
-                        className="ptf-l-YHgvF" 
-                        src={host.image} 
-                        alt="Host" 
-                        width="26" 
-                        height="26"
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
-                      {index === 0 && (
-                        <span className="ptf-l--7nAv ptf-l-WCCTT ptf-l-Wcrf2" style={{ position: 'absolute', bottom: '-1px', right: '-1px', color: '#5938e8', height: '10px', width: '10px' }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="#5938e8" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5Z" />
-                          </svg>
-                        </span>
+                    <div className="ptf-l-gt1XK" style={{ width: '26px', height: '26px', borderRadius: '50%', overflow: 'hidden', position: 'relative', pointerEvents: host.image.includes('fareeha') ? 'auto' : 'none' }}>
+                      {host.image.includes('fareeha') ? (
+                        <a 
+                          href="https://partiful.com/u/AuiLl2hkaLeL1T2mjMyMomWhe092"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={handleExternalLinkClick}
+                          style={{ 
+                            display: 'block', 
+                            width: '100%', 
+                            height: '100%',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            zIndex: 10
+                          }}
+                        >
+                          <img 
+                            className="ptf-l-YHgvF" 
+                            src={host.image} 
+                            alt="Host" 
+                            width="26" 
+                            height="26"
+                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                          />
+                          <span className="ptf-l--7nAv ptf-l-WCCTT ptf-l-Wcrf2" style={{ position: 'absolute', bottom: '-1px', right: '-1px', color: '#5938e8', height: '10px', width: '10px' }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="#5938e8" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5Z" />
+                            </svg>
+                          </span>
+                        </a>
+                      ) : (
+                        <>
+                          <img 
+                            className="ptf-l-YHgvF" 
+                            src={host.image} 
+                            alt="Host" 
+                            width="26" 
+                            height="26"
+                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                          />
+                        </>
                       )}
                     </div>
                   </div>
@@ -371,13 +428,23 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </div>
           
           {/* Music lyrics with Spotify link - smaller font */}
+          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "consumer social" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious") && (
           <div className="ptf-l-V5l2c ptf-l-42Hmr" style={{ display: 'flex', alignItems: 'flex-start', marginTop: '8px', marginBottom: '14px' }}>
             <span className="ptf--7nAv ptf-l-02UEs ptf-l-Y-q9d" style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 18V5L21 3V16" stroke="white" strokeWidth="1.5" fill="none"/>
-                <circle cx="6" cy="18" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
-                <circle cx="18" cy="16" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
-              </svg>
+              {eventTitle === "blood moon rising." ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.4545 13.5455C10.0455 13.9545 10.0455 14.5909 10.4545 15C10.8636 15.4091 11.5 15.4091 11.9091 15L14.5455 12.3636C15.3636 11.5455 15.3636 10.2273 14.5455 9.40909C13.7273 8.59091 12.4091 8.59091 11.5909 9.40909L8.59091 12.4091C7.36364 13.6364 7.36364 15.5909 8.59091 16.8182C9.81818 18.0455 11.7727 18.0455 13 16.8182L16 13.8182" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M13.5455 10.4545C13.9545 10.0455 14.5909 10.0455 15 10.4545C15.4091 10.8636 15.4091 11.5 15 11.9091L12.3636 14.5455C11.5455 15.3636 10.2273 15.3636 9.40909 14.5455C8.59091 13.7273 8.59091 12.4091 9.40909 11.5909L12.4091 8.59091C13.6364 7.36364 15.5909 7.36364 16.8182 8.59091C18.0455 9.81818 18.0455 11.7727 16.8182 13L13.8182 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              ) : eventTitle === "out of office" ? (
+                <Utensils size={16} color="white" />
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 18V5L21 3V16" stroke="white" strokeWidth="1.5" fill="none"/>
+                  <circle cx="6" cy="18" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
+                  <circle cx="18" cy="16" r="3" stroke="white" strokeWidth="1.5" fill="none"/>
+                </svg>
+              )}
             </span>
             <a 
               href={spotifyLink}
@@ -390,6 +457,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
               {spotifyLyrics}
             </a>
           </div>
+          )}
           
           {/* Description text with staggered word animation */}
           <motion.div
@@ -397,7 +465,10 @@ limited capacity! tell us what you'd share 🫶🏼`;
             variants={textContainerVariants}
             initial="hidden"
             animate="visible"
-            style={{ marginTop: '0', marginBottom: '0' }}
+            style={{ 
+              marginTop: spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "consumer social" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious") ? '0' : '20px', 
+              marginBottom: '0' 
+            }}
           >
             <div style={{ 
               fontSize: '14px',
@@ -427,8 +498,8 @@ limited capacity! tell us what you'd share 🫶🏼`;
             position: 'relative',
             display: 'flex',
             alignItems: 'center',
-                minHeight: '50px',  // Further reduced to minimize gap underneath
-                paddingBottom: '0'
+                minHeight: '65px',  // Increased from 50px to give more space
+                paddingBottom: '15px'  // Added padding at the bottom to ensure content doesn't cut off
           }}
           onClick={preventBubbling}
           initial={{ opacity: 0, y: 10 }}
