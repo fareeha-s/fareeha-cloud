@@ -64,8 +64,8 @@ one whole hour to celebrate strawberries being in season 😊 🍓 🍓 🍓`,
     spotifyLink: "https://open.spotify.com/track/3Am0IbOxmvlSXro7N5iSfZ",
     spotifyLyrics: "nothing is real...",
     image: {
-      webp: "./images/partiful/strawberry-giphy.webp",
-      fallback: "./images/partiful/strawberry-fallback.jpg"
+      webp: "./images/partiful/sh-giphy.webp",
+      fallback: "./images/partiful/sh-giphy.webp"
     },
     hosts: [
       { id: 1, image: '/icons/hosts/fareeha.jpg' },
@@ -90,8 +90,8 @@ missing this will be cosmic treason; your absence will haunt you. 🌑`,
     spotifyLink: "https://www.timeanddate.com/moon/usa/san-francisco",
     spotifyLyrics: "Moon Info",
     image: {
-      webp: "./images/partiful/potluck-giphy.webp",
-      fallback: "./images/partiful/potluck-fallback.jpg"
+      webp: "./images/partiful/bmr.jpeg",
+      fallback: "./images/partiful/bmr.jpeg"
     },
     hosts: [
       { id: 1, image: '/icons/hosts/fareeha.jpg' },
@@ -126,8 +126,8 @@ xoxo`,
     spotifyLink: "Russian Hill, San Francisco, CA",
     spotifyLyrics: "light drinks & snacks",
     image: {
-      webp: "./images/partiful/office-giphy.webp",
-      fallback: "./images/partiful/office-fallback.jpg"
+      webp: "./images/partiful/ooo.jpeg",
+      fallback: "./images/partiful/ooo.jpeg"
     },
     hosts: [
       { id: 1, image: '/icons/hosts/7-dd1a51c0.jpg' },
@@ -150,8 +150,8 @@ Few things bring us more joy than cooking for others, so there will be lots of b
     spotifyLink: "Potrero Hill, San Francisco, CA",
     spotifyLyrics: "Fareeha",
     image: {
-      webp: "./images/partiful/threading-giphy.webp",
-      fallback: "./images/partiful/threading-fallback.jpg"
+      webp: "./images/partiful/ti-giphy.webp",
+      fallback: "./images/partiful/ti-giphy.webp"
     },
     hosts: [
       { id: 1, image: '/icons/hosts/1-b975ea56.jpg' },
@@ -175,8 +175,8 @@ bring a consumer product hot take. hottest take gets a high five`,
     spotifyLink: "Presidio Bowl",
     spotifyLyrics: "Presidio Bowl",
     image: {
-      webp: "./images/partiful/consumer-giphy.webp",
-      fallback: "./images/partiful/consumer-fallback.jpg"
+      webp: "./images/partiful/cs-giphy.webp",
+      fallback: "./images/partiful/cs-giphy.webp"
     },
     hosts: [
       { id: 1, image: '/icons/hosts/fareeha.jpg' },
@@ -193,18 +193,14 @@ bring a consumer product hot take. hottest take gets a high five`,
     time: "6:30pm",
     description: `Watercolour 🎨
 
-Where pigment meets purpose, and vision bleeds into reality. We thrive in the diverse palette of our community.
-
 We wanted to bring some of our favorite people in the city together for an intimate seated dinner, to celebrate each other and to create space for creative community.
 
 You are cordially invited.
 
 dress code: pastels, watercolor washes, artisan details 🪷`,
-    spotifyLink: "Bernal Heights, San Francisco, CA",
-    spotifyLyrics: "Bernal Heights, San Francisco, CA",
     image: {
-      webp: "./images/partiful/watercolour-giphy.webp",
-      fallback: "./images/partiful/watercolour-fallback.jpg"
+      webp: "./images/partiful/w-giphy.webp",
+      fallback: "./images/partiful/w-giphy.webp"
     },
     hosts: [
       { id: 1, image: '/icons/hosts/8-dd1a51c0.jpg' },
@@ -213,7 +209,7 @@ dress code: pastels, watercolor washes, artisan details 🪷`,
   },
   {
     id: 8,
-    title: "Scrumptious.",
+    title: "Scrumptious",
     date: "08/08/24",
     attendees: 20,
     clickable: true,
@@ -229,8 +225,8 @@ APARTMENT 206`,
     spotifyLink: "Outer Sunset, San Francisco",
     spotifyLyrics: "Outer Sunset, San Francisco",
     image: {
-      webp: "./images/partiful/scrumptious-giphy.webp",
-      fallback: "./images/partiful/scrumptious-fallback.jpg"
+      webp: "./images/partiful/s.jpg",
+      fallback: "./images/partiful/s.jpg"
     },
     hosts: [
       { id: 1, image: '/icons/hosts/1-b975ea56.jpg' },
