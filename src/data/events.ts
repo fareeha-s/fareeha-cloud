@@ -43,16 +43,16 @@ limited capacity! tell us what you'd share 🫶🏼`,
       fallback: "./images/partiful/ms-fallback.jpg"
     },
     hosts: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=31' },
-      { id: 2, image: 'https://i.pravatar.cc/100?img=32' },
-      { id: 3, image: 'https://i.pravatar.cc/100?img=33' }
+      { id: 1, image: '/icons/hosts/fareeha.jpg' },
+      { id: 2, image: '/icons/hosts/1-b975ea56.jpg' },
+      { id: 3, image: '/icons/hosts/2-b975ea56.jpg' }
     ]
   },
   {
     id: 2,
     title: "strawberry hour",
     date: "26/03/25",
-    attendees: 63,
+    attendees: 60,
     clickable: true,
     timeframe: 'upcoming',
     time: "7:00pm",
@@ -68,46 +68,42 @@ one whole hour to celebrate strawberries being in season 😊 🍓 🍓 🍓`,
       fallback: "./images/partiful/strawberry-fallback.jpg"
     },
     hosts: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=31' },
-      { id: 4, image: 'https://i.pravatar.cc/100?img=34' },
-      { id: 5, image: 'https://i.pravatar.cc/100?img=35' },
-      { id: 6, image: 'https://i.pravatar.cc/100?img=36' }
+      { id: 1, image: '/icons/hosts/fareeha.jpg' },
+      { id: 2, image: '/icons/hosts/3-64896426.jpg' },
+      { id: 3, image: '/icons/hosts/4-64896426.jpg' },
+      { id: 4, image: '/icons/hosts/1-b975ea56.jpg' }
     ]
   },
   {
     id: 3,
-    title: "blood moon rising",
+    title: "blood moon rising.",
     date: "13/03/25",
     attendees: 15,
     clickable: true,
     timeframe: 'upcoming',
     time: "8:00pm",
-    description: `to witness the sky's transformation,
-marvel at cosmic rarity,
-and remember being small under something ancient.
+    description: `to witness the sky's transformation, marvel at cosmic rarity, and remember being small under something ancient.
 
 // layers recommended. the cold is merciless.
 
-missing this will be cosmic treason;
-your absence will haunt you.
-🌑`,
-    spotifyLink: "https://maps.app.goo.gl/MkcQaTLh5AAbgCvQ9",
+missing this will be cosmic treason; your absence will haunt you. 🌑`,
+    spotifyLink: "https://www.timeanddate.com/moon/usa/san-francisco",
     spotifyLyrics: "Moon Info",
     image: {
       webp: "./images/partiful/potluck-giphy.webp",
       fallback: "./images/partiful/potluck-fallback.jpg"
     },
     hosts: [
-      { id: 1, image: 'https://i.pravatar.cc/100?img=31' },
-      { id: 5, image: 'https://i.pravatar.cc/100?img=35' },
-      { id: 6, image: 'https://i.pravatar.cc/100?img=36' }
+      { id: 1, image: '/icons/hosts/fareeha.jpg' },
+      { id: 2, image: '/icons/hosts/5-64896426.jpg' },
+      { id: 3, image: '/icons/hosts/6-64896426.jpg' }
     ]
   },
   {
     id: 4,
     title: "out of office",
     date: "05/03/25",
-    attendees: 24,
+    attendees: 40,
     clickable: true,
     timeframe: 'upcoming',
     time: "7:30pm",
@@ -127,15 +123,15 @@ dress code: casual, shoes off :)
 parking: street, can be limited in the evening
 
 xoxo`,
-    spotifyLink: "2459 Larkin St APT 9, San Francisco, CA",
+    spotifyLink: "Russian Hill, San Francisco, CA",
     spotifyLyrics: "light drinks & snacks",
     image: {
       webp: "./images/partiful/office-giphy.webp",
       fallback: "./images/partiful/office-fallback.jpg"
     },
     hosts: [
-      { id: 7, image: 'https://i.pravatar.cc/100?img=29' },
-      { id: 8, image: 'https://i.pravatar.cc/100?img=30' }
+      { id: 1, image: '/icons/hosts/7-dd1a51c0.jpg' },
+      { id: 2, image: '/icons/hosts/fareeha.jpg' }
     ]
   },
   {
@@ -151,15 +147,15 @@ xoxo`,
 Curated for the people in our lives whose eyes sparkle when they talk.
 
 Few things bring us more joy than cooking for others, so there will be lots of beautiful finger foods🤍`,
-    spotifyLink: "1395 22nd St Apt 4, San Francisco, CA",
+    spotifyLink: "Potrero Hill, San Francisco, CA",
     spotifyLyrics: "Fareeha",
     image: {
       webp: "./images/partiful/threading-giphy.webp",
       fallback: "./images/partiful/threading-fallback.jpg"
     },
     hosts: [
-      { id: 9, image: 'https://i.pravatar.cc/100?img=27' },
-      { id: 10, image: 'https://i.pravatar.cc/100?img=28' }
+      { id: 1, image: '/icons/hosts/1-b975ea56.jpg' },
+      { id: 2, image: '/icons/hosts/fareeha.jpg' }
     ]
   },
   {
@@ -183,14 +179,14 @@ bring a consumer product hot take. hottest take gets a high five`,
       fallback: "./images/partiful/consumer-fallback.jpg"
     },
     hosts: [
-      { id: 11, image: 'https://i.pravatar.cc/100?img=25' },
-      { id: 12, image: 'https://i.pravatar.cc/100?img=26' }
+      { id: 1, image: '/icons/hosts/fareeha.jpg' },
+      { id: 2, image: '/icons/hosts/4-64896426.jpg' }
     ]
   },
   {
     id: 7,
     title: "Watercolour",
-    date: "19/09/25",
+    date: "19/09/24",
     attendees: 20,
     clickable: true,
     timeframe: 'upcoming',
@@ -204,15 +200,42 @@ We wanted to bring some of our favorite people in the city together for an intim
 You are cordially invited.
 
 dress code: pastels, watercolor washes, artisan details 🪷`,
-    spotifyLink: "Baukunst, 433 Cortland Ave, San Francisco, CA 94110",
-    spotifyLyrics: "Baukunst, 433 Cortland Ave, San Francisco, CA 94110",
+    spotifyLink: "Bernal Heights, San Francisco, CA",
+    spotifyLyrics: "Bernal Heights, San Francisco, CA",
     image: {
       webp: "./images/partiful/watercolour-giphy.webp",
       fallback: "./images/partiful/watercolour-fallback.jpg"
     },
     hosts: [
-      { id: 13, image: 'https://i.pravatar.cc/100?img=23' },
-      { id: 14, image: 'https://i.pravatar.cc/100?img=24' }
+      { id: 1, image: '/icons/hosts/8-dd1a51c0.jpg' },
+      { id: 2, image: '/icons/hosts/fareeha.jpg' }
+    ]
+  },
+  {
+    id: 8,
+    title: "Scrumptious.",
+    date: "08/08/24",
+    attendees: 20,
+    clickable: true,
+    timeframe: 'upcoming',
+    time: "6:30pm",
+    description: `honeycrisp. pink lady. sugarbee. ghost apple. Ạ̷̼̭̻͐P̶̳̙̙̉̍̆P̸̰̚L̶̠̯̯̮͊̊Ȇ̴̗̭̝̇̀. belle de boskoop. you name it. we (probably don't) have it.
+
+join us for an evening of unmatched extravagance as we present the ultimate apple tasting experience…
+
+this is luxury at its juiciest. be there or be 🍌
+
+APARTMENT 206`,
+    spotifyLink: "Outer Sunset, San Francisco",
+    spotifyLyrics: "Outer Sunset, San Francisco",
+    image: {
+      webp: "./images/partiful/scrumptious-giphy.webp",
+      fallback: "./images/partiful/scrumptious-fallback.jpg"
+    },
+    hosts: [
+      { id: 1, image: '/icons/hosts/1-b975ea56.jpg' },
+      { id: 2, image: '/icons/hosts/fareeha.jpg' },
+      { id: 3, image: '/icons/hosts/9-dd1a51c0.jpg' }
     ]
   }
 ]; 

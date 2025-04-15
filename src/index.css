@@ -311,3 +311,69 @@ div[style*="marginTop"] {
   height: 100% !important;
   transition: height 0.15s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* Special handling for blood moon rising title - with extra specificity */
+.blood-moon-title,
+.main-container [data-event-type="blood-moon-rising"] h1.blood-moon-title,
+.portrait-container [data-event-type="blood-moon-rising"] h1.blood-moon-title,
+h1.blood-moon-title,
+div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
+  font-size: 19px !important; /* Using important only where absolutely necessary */
+  white-space: normal;
+  overflow: visible;
+  max-width: 220px;
+  margin: 0 auto;
+  text-align: center;
+  word-break: normal;
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  font-weight: 600;
+  color: white;
+  text-transform: lowercase;
+  font-family: 'Grotesk', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  text-overflow: initial;
+  display: block;
+  width: auto;
+  height: auto;
+  padding: 0;
+}
+
+/* Fix for blood moon rising container - more specific selector */
+.main-container [data-event-type="blood-moon-rising"] h1,
+.portrait-container [data-event-type="blood-moon-rising"] h1 {
+  font-size: 19px;
+  white-space: normal;
+  overflow: visible;
+  max-width: 220px;
+  margin: 0 auto;
+  text-align: center;
+  word-break: normal;
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  font-weight: 600;
+  color: white;
+  text-transform: lowercase;
+  font-family: 'Grotesk', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+}
+
+/* Target blood moon rising title by ID - highest specificity */
+#blood-moon-title {
+  font-size: 19px !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  max-width: 220px !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+  word-break: normal !important;
+  letter-spacing: 0.12em !important;
+  line-height: 1.1 !important;
+  font-weight: 600 !important;
+  color: white !important;
+  text-transform: lowercase !important;
+  font-family: 'Grotesk', -apple-system, BlinkMacSystemFont, Arial, sans-serif !important;
+  text-overflow: initial !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+}

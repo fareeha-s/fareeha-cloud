@@ -30,7 +30,7 @@ __vision__
 __things i love__
 -> workout classes
 -> music with guitars
--> biking around sf with my friends
+-> night bikes around sf with my friends :)
 -> apples`,
     date: "17/03/25",
     timeframe: 'older',
