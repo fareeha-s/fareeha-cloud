@@ -657,11 +657,20 @@ function App() {
       <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
         {/* Single beautiful background image with fallback */}
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-[#1a2030] to-[#293240]"
+          className="absolute inset-0 bg-gradient-to-br from-[#131518] to-[#1d1c21]"
           style={{ 
             opacity: 1,
           }}
         >
+          {/* Subtle bokeh effect overlay */}
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{ 
+              backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.03) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.02) 0%, transparent 30%), radial-gradient(circle at 45% 80%, rgba(180,180,200,0.02) 0%, transparent 40%)',
+              mixBlendMode: 'screen'
+            }}
+          ></div>
+          
           {/* Background image that loads on top of the gradient */}
           <img 
             src="./optimized/background.webp" 
