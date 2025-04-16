@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { AppIcon } from './components/AppIcon';
 import { NotesScreen } from './screens/NotesScreen';
@@ -144,12 +144,12 @@ const getRelativeDate = (dateStr: string) => {
   const dateObj = new Date(2000 + year, month - 1, day);
   
   // Get day of week with 3-letter abbreviation
-  const daysOfWeek = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const dayOfWeek = daysOfWeek[dateObj.getDay()];
   
   // Special cases for today and yesterday
-  if (dateStr === today) return 'today';
-  if (dateStr === yesterday) return 'yesterday';
+  if (dateStr === today) return 'Today';
+  if (dateStr === yesterday) return 'Yesterday';
   
   // For all other dates, simply return the 3-letter day
   return dayOfWeek;
@@ -164,10 +164,10 @@ function App() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentAppElement, setCurrentAppElement] = useState<HTMLElement | null>(null);
   const [windowHeight, setWindowHeight] = useState('100vh');
-  const [isAppleDevice, setIsAppleDevice] = useState(false);
+  const [, setIsAppleDevice] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
-  const [recentTracks, setRecentTracks] = useState<SpotifyTrack[]>([]);
+  const [recentTracks] = useState<SpotifyTrack[]>([]);
   const [currentWidgetIndex, setCurrentWidgetIndex] = useState(0);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
   const [isWidgetHovered, setIsWidgetHovered] = useState(false);
@@ -206,14 +206,29 @@ function App() {
   
   // Select events based on visit history
   const selectedEvent = useMemo(() => {
+    // Sort all events by date (most recent first)
+    const sortedEvents = [...events].sort((a, b) => {
+      // Parse dates (assuming DD/MM/YY format)
+      const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+      const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+      
+      // Compare dates (most recent first)
+      if (yearB !== yearA) return yearB - yearA;
+      if (monthB !== monthA) return monthB - monthA;
+      return dayB - dayA;
+    });
+    
+    // Take only the 6 most recent events
+    const recentEvents = sortedEvents.slice(0, 6);
+    
     if (isFirstVisit) {
       // For first visit - show the most recent upcoming event
-      const upcomingEvents = events.filter(event => event.timeframe === 'upcoming');
-      return upcomingEvents[0] || events[0];
+      const upcomingEvents = recentEvents.filter(event => event.timeframe === 'upcoming');
+      return upcomingEvents[0] || recentEvents[0];
     } else {
-      // For subsequent visits - show random events
-      const randomIndex = Math.floor(Math.random() * events.length);
-      return events[randomIndex];
+      // For subsequent visits - show random events from the 6 most recent
+      const randomIndex = Math.floor(Math.random() * recentEvents.length);
+      return recentEvents[randomIndex];
     }
   }, [isFirstVisit]);
   
@@ -252,7 +267,7 @@ function App() {
       title: selectedEvent.title,
       subtitle: '',
       timestamp: getRelativeDate(selectedEvent.date),
-      timestampLabel: 'latest event',
+      timestampLabel: 'latest events',
       progress: 25,
       iconBgColor: 'bg-[#FF4081]/20'
     }
@@ -261,7 +276,8 @@ function App() {
   // Update progress when tracks change
   useEffect(() => {
     if (recentTracks.length > 0) {
-      const newProgress = Math.floor(Math.random() * 80) + 10;
+      // Unused variable removed
+      // const newProgress = Math.floor(Math.random() * 80) + 10;
       // setProgressPercent(newProgress);
     }
   }, [recentTracks]);
@@ -1094,13 +1110,13 @@ function App() {
                            selectedEvent.title}
                         </h3>
                         {/* Show timestamp for all widgets, including notes */}
-                        <p className="text-[12px] text-white/70 text-sharp ml-1 flex-shrink-0" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 350 }}>
+                        <p className="text-[14px] text-white/70 text-sharp ml-1 flex-shrink-0" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 350 }}>
                           {widgets[currentWidgetIndex].type === 'notes' 
                             ? getRelativeDate(selectedNote.date) // Show 3-letter day for notes in the top right
                             : widgets[currentWidgetIndex].timestamp}
                       </p>
                     </div>
-                      <p className="text-[12px] text-white/60 font-normal text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 300 }}>
+                      <p className="text-[14px] text-white/60 font-normal text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 300 }}>
                         {widgets[currentWidgetIndex].type === 'notes' ? 
                           'notes' : // Show "notes" in the subtitle position
                           widgets[currentWidgetIndex].timestampLabel}
@@ -1162,7 +1178,7 @@ function App() {
                         )}
                         {/* Only show subtitle if it exists */}
                         {widgets[currentWidgetIndex].subtitle && (
-                          <p className="text-[12px] text-white/70 font-normal whitespace-nowrap pr-2 text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textShadow: 'none' }}>
+                          <p className="text-[14px] text-white/70 font-normal whitespace-nowrap pr-2 text-sharp" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', textShadow: 'none' }}>
                             {widgets[currentWidgetIndex].subtitle}
                           </p>
                         )}
@@ -1170,9 +1186,9 @@ function App() {
                   </div>
                     
                     {/* Content preview area - consistent height across all widgets */}
-                    <div className={`${widgets[currentWidgetIndex].type === 'notes' ? 'min-h-[3.0em]' : 'min-h-[3.0em]'} mb-2`}>
+                    <div className={`${widgets[currentWidgetIndex].type === 'notes' ? 'min-h-[2.8em]' : 'min-h-[2.8em]'} mb-1`}>
                       {/* Apply consistent styling to all widget content */}
-                      <p className="text-white/65 font-normal px-1 text-sharp leading-relaxed overflow-hidden" style={{ 
+                      <p className="text-white/65 font-normal px-1 text-sharp overflow-hidden" style={{ 
                         WebkitFontSmoothing: 'antialiased', 
                         MozOsxFontSmoothing: 'grayscale', 
                         textShadow: 'none',
@@ -1180,19 +1196,21 @@ function App() {
                         display: '-webkit-box',
                         WebkitLineClamp: '2',
                         WebkitBoxOrient: 'vertical',
+                        lineHeight: '1.3',
                         letterSpacing: '0.01em',
-                        lineHeight: '1.45',
                         fontWeight: 350,
-                        marginTop: widgets[currentWidgetIndex].type === 'notes' ? '-6px' : '0px',
-                        marginBottom: widgets[currentWidgetIndex].type === 'notes' ? '6px' : '8px',
-                        paddingBottom: widgets[currentWidgetIndex].type === 'notes' ? '8px' : '8px',
+                        marginTop: widgets[currentWidgetIndex].type === 'notes' ? '-8px' : '-2px',
+                        marginBottom: widgets[currentWidgetIndex].type === 'notes' ? '6px' : '6px',
+                        paddingBottom: widgets[currentWidgetIndex].type === 'notes' ? '0px' : '0px',
                         maxWidth: '100%',
                         fontSize: '12px'
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes' 
                           ? (selectedNote.title.includes("hello world!") 
-                              ? "my north star 🔆\na future where our social framework is optimized for human longevity"
-                              : selectedNote.content)
+                              ? "my north star 🔆\na future where our social framework is optimized for human longevity..."
+                              : (selectedNote.content && selectedNote.content.endsWith('...') 
+                                  ? selectedNote.content 
+                                  : (selectedNote.content || '') + '...'))
                           : widgets[currentWidgetIndex].type === 'partiful'
                             ? '' // Empty content for partiful as requested
                             : '' // Empty content for workout

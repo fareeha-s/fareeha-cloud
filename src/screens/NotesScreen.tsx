@@ -141,6 +141,28 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Create a ref for the note content container
   const noteContentRef = useRef<HTMLDivElement>(null);
   
+  // Add effect to check if user has already used swipe
+  useEffect(() => {
+    // Check localStorage for previous swipe interactions
+    const hasUsedSwipe = localStorage.getItem('hasUsedNoteSwipe') === 'true';
+    if (hasUsedSwipe) {
+      // If user has already swiped before, don't show dots
+      setShowDots(false);
+    }
+  }, []);
+
+  // Add effect to show dots when note is opened, if user hasn't swiped before
+  useEffect(() => {
+    if (selectedNote) {
+      const hasUsedSwipe = localStorage.getItem('hasUsedNoteSwipe') === 'true';
+      
+      // Only show dots if user hasn't swiped before
+      if (!hasUsedSwipe) {
+        setShowDots(true);
+      }
+    }
+  }, [selectedNote]);
+
   // Function to update both the ref and window property
   const setIsViewingDetail = (value: boolean) => {
     isViewingDetailRef.current = value;
@@ -230,21 +252,6 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     };
   }, [selectedNote]);
 
-  // Add effect to show dots when note is opened, then hide after delay
-  useEffect(() => {
-    if (selectedNote) {
-      // Show dots when note is opened
-      setShowDots(true);
-      
-      // Hide dots after 3 seconds
-      const timer = setTimeout(() => {
-        setShowDots(false);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [selectedNote]);
-
   // Add effect to ensure the portrait mode is properly maintained
   useEffect(() => {
     // Set the flag to control the container shape
@@ -312,46 +319,18 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     yesterdayDate.setDate(now.getDate() - 1);
     const yesterday = `${String(yesterdayDate.getDate()).padStart(2, '0')}/${String(yesterdayDate.getMonth() + 1).padStart(2, '0')}/${String(yesterdayDate.getFullYear()).slice(-2)}`;
     
-    // Parse the provided date to get the day of week
+    // Parse the provided date to get the month
     const [day, month, year] = dateStr.split('/').map(Number);
-    const dateObj = new Date(2000 + year, month - 1, day);
     
-    // Get day of week
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayOfWeek = daysOfWeek[dateObj.getDay()];
+    // Special cases for very recent dates
+    if (dateStr === today) return 'Today';
+    if (dateStr === yesterday) return 'Yesterday';
     
-    // Calculate difference in days
-    const diffTime = now.getTime() - dateObj.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    // For all other dates, just show the month
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthName = monthNames[month - 1];
     
-    // Calculate difference in weeks and months
-    const diffWeeks = Math.floor(diffDays / 7);
-    const diffMonths = (now.getFullYear() - dateObj.getFullYear()) * 12 + now.getMonth() - dateObj.getMonth();
-    
-    if (dateStr === today) return 'today';
-    if (dateStr === yesterday) return 'yesterday';
-    
-    // Within a week, use day names
-    if (diffDays < 7) return dayOfWeek.toLowerCase();
-    
-    // Within two weeks
-    if (diffDays < 14) return 'last week';
-    
-    // Within a month
-    if (diffDays < 31) {
-      if (diffWeeks === 2) return '2 weeks ago';
-      if (diffWeeks === 3) return '3 weeks ago';
-      return `${diffWeeks} weeks ago`;
-    }
-    
-    // Within 3 months
-    if (diffMonths <= 3) {
-      if (diffMonths === 1) return '1 month ago';
-      return `${diffMonths} months ago`;
-    }
-    
-    // Older dates
-    return dateStr;
+    return monthName;
   };
 
   // New filters for pinned notes and all notes
@@ -492,11 +471,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     markNoteAsViewed(nextNote.id);
     createTactileEffect();
     
-    // Reset dots timer when navigating
-    setShowDots(true);
-    setTimeout(() => {
-      setShowDots(false);
-    }, 3000);
+    // Hide dots permanently after first swipe
+    setShowDots(false);
+    localStorage.setItem('hasUsedNoteSwipe', 'true');
   };
   
   const navigateToPrevNote = () => {
@@ -512,11 +489,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     markNoteAsViewed(prevNote.id);
     createTactileEffect();
     
-    // Reset dots timer when navigating
-    setShowDots(true);
-    setTimeout(() => {
-      setShowDots(false);
-    }, 3000);
+    // Hide dots permanently after first swipe
+    setShowDots(false);
+    localStorage.setItem('hasUsedNoteSwipe', 'true');
   };
 
   return (
@@ -640,15 +615,6 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               >
                 {/* Remove swipe hint animation */}
                 
-                <div className="flex items-center justify-between mb-1 text-white/80">
-                  <div className="flex items-center">
-                    {/* Remove navigation indicator */}
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-xs text-white/60">{getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}</span>
-                  </div>
-                </div>
-                
                 <motion.div 
                   className="flex flex-col"
                   variants={containerVariants}
@@ -659,15 +625,18 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                     className="flex flex-col"
                     variants={itemVariants}
                   >
-                    <div className="mb-2">
-                      <h2 className="text-white text-lg font-medium">
+                    <div className="flex justify-between items-start mb-2">
+                      <h2 className="text-white text-xl font-medium">
                         {selectedNote?.title}
                       </h2>
+                      <span className="text-[14px] text-white/60 ml-2 mt-1">
+                        {getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}
+                      </span>
                     </div>
                     
                     {/* Show full content without preview/expand */}
                     <motion.div 
-                      className="text-white/90 text-sm leading-relaxed whitespace-pre-line"
+                      className="text-white/90 text-base leading-relaxed whitespace-pre-line"
                       variants={itemVariants}
                       style={{ 
                         whiteSpace: 'pre-line'
@@ -718,22 +687,22 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 <AnimatePresence>
                   {showDots && (
                     <motion.div 
-                      className="flex items-center justify-center mt-4 mb-2 py-2 space-x-1.5"
+                      className="flex items-center justify-center mt-4 mb-2 py-2 space-x-2"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.5, ease: "easeInOut" }}
                     >
                       <div
-                        className="h-[5px] w-[5px] rounded-full bg-white/25 transition-all duration-200 cursor-pointer hover:bg-white/40"
+                        className="h-[6px] w-[6px] rounded-full bg-white/40 transition-all duration-200 cursor-pointer hover:bg-white/60"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigateToPrevNote();
                         }}
                       />
-                      <div className="h-[5px] w-[5px] rounded-full bg-white/70 transition-all duration-200" />
+                      <div className="h-[6px] w-[6px] rounded-full bg-white transition-all duration-200" />
                       <div
-                        className="h-[5px] w-[5px] rounded-full bg-white/25 transition-all duration-200 cursor-pointer hover:bg-white/40"
+                        className="h-[6px] w-[6px] rounded-full bg-white/40 transition-all duration-200 cursor-pointer hover:bg-white/60"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigateToNextNote();
@@ -759,7 +728,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 {/* Pinned notes section */}
                 {pinnedNotes.length > 0 && (
                   <div>
-                    <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2 flex items-center">
+                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2 flex items-center">
                       <PinIcon />
                       Pinned
                     </h2>
@@ -789,12 +758,12 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                           </div>
                           <div className="ml-1 flex-1 flex justify-between items-center">
                             <div className="flex-1 pr-3">
-                              <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
+                              <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                                 {note.title}
                               </h3>
                             </div>
                             <div className="flex-shrink-0 flex items-center">
-                              <span className="text-xs text-white/40 whitespace-nowrap">
+                              <span className="text-[14px] text-white/50 whitespace-nowrap">
                                 {getRelativeDate(note.date)}
                               </span>
                             </div>
@@ -828,8 +797,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 {/* All notes section */}
                 {allNotes.length > 0 && (
                   <div>
-                    <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2">
-                      Last edited
+                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2">
+                      All
                     </h2>
                     <div className="space-y-0.5">
                       {allNotes.map((note, index) => (
@@ -856,12 +825,12 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                           </div>
                           <div className="ml-1 flex-1 flex justify-between items-center">
                             <div className="flex-1 pr-3">
-                              <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
+                              <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                                 {note.title}
                               </h3>
                             </div>
                             <div className="flex-shrink-0 flex items-center">
-                              <span className="text-xs text-white/40 whitespace-nowrap">
+                              <span className="text-[14px] text-white/50 whitespace-nowrap">
                                 {getRelativeDate(note.date)}
                               </span>
                             </div>
