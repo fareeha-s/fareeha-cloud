@@ -31,6 +31,7 @@
     color: white;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-shadow: none;
   }
   
   p {
@@ -182,9 +183,9 @@
     z-index: 1;
   }
   
-  /* Text shadow for app headers */
+  /* Text shadow for app headers - removed glow effect */
   .text-shadow-sm {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.2);
+    text-shadow: none;
   }
   
   html, body {
@@ -217,7 +218,7 @@
 
 @layer utilities {
   .text-shadow-sm {
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    text-shadow: none;
   }
   
   /* Hide scrollbar for Chrome, Safari and Opera */

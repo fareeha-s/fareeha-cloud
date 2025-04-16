@@ -354,6 +354,13 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // Set flag to false BEFORE state changes for immediate effect
     setIsViewingDetail(false);
     
+    // Reset widgetNoteId when closing a note
+    // This ensures that if the user goes back to home and clicks the same note
+    // from the widget again, the orb will reappear
+    if (selectedNote && widgetNoteId === selectedNote.id) {
+      setWidgetNoteId(null);
+    }
+    
     // Add longer delay before changing React state to ensure animation completes
     setTimeout(() => {
       setSelectedNote(null);
@@ -375,16 +382,24 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
 
   // Helper function to determine if a note should have a pulsing dot
   const shouldShowPulsingDot = (noteId: number) => {
-    // Check if this note has been viewed before
+    // If user came from widget, highlight that specific note
+    // but hide it only while actually viewing the note
+    if (widgetNoteId !== null && widgetNoteId === noteId) {
+      // Only hide the dot if this note is currently being viewed
+      // This ensures the dot appears again after going back to home screen
+      // and clicking on the same note from the widget
+      if (selectedNote && selectedNote.id === noteId) {
+        return false;
+      }
+      return true;
+    }
+
+    // For notes not accessed through widget, check if viewed before
     const viewedNotes = JSON.parse(localStorage.getItem('viewedNotes') || '[]');
     if (viewedNotes.includes(noteId)) {
       return false;
     }
-
-    // If user came from widget, only highlight that specific note
-    if (widgetNoteId !== null) {
-      return widgetNoteId === noteId;
-    }
+    
     // Otherwise, highlight the first note in the list
     return notes.length > 0 && notes[0].id === noteId;
   };
@@ -433,7 +448,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   }, [selectedNote]);
 
   const handleNoteClick = (note: NoteItem) => {
+    // Mark the note as viewed immediately
     markNoteAsViewed(note.id);
+    
     // Set flag to true BEFORE state changes for immediate effect
     setIsViewingDetail(true);
     console.log('Click handler: Setting isViewingNoteDetail to true');
@@ -445,6 +462,12 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     setCurrentNoteIndex(noteIndex);
     
     createTactileEffect();
+    
+    // If this was the note highlighted from widget, clear the widget ID
+    // This will ensure the pulsing orb disappears when returning to the list
+    if (widgetNoteId === note.id) {
+      setWidgetNoteId(null);
+    }
   };
 
   // Add function to handle video links
@@ -518,17 +541,27 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             transition={{ duration: 0.2 }}
             // Add swipe handlers for navigation
             onTouchStart={(e) => {
+              // Don't initialize swipe if user is interacting with text (potential copy operation)
+              if (window.getSelection()?.toString()) {
+                return;
+              }
               setSwipeStartX(e.touches[0].clientX);
               setSwipeDirection(null);
             }}
             onTouchMove={(e) => {
               if (swipeStartX === null) return;
               
+              // Don't process swipe if user is selecting text
+              if (window.getSelection()?.toString()) {
+                setSwipeStartX(null);
+                return;
+              }
+              
               const currentX = e.touches[0].clientX;
               const diff = currentX - swipeStartX;
               
-              // Set direction once we have a clear movement
-              if (Math.abs(diff) > 10) {
+              // Increased threshold for swipe detection to avoid accidental swipes
+              if (Math.abs(diff) > 20) {
                 const newDirection = diff > 0 ? 'right' : 'left';
                 if (swipeDirection !== newDirection) {
                   setSwipeDirection(newDirection);
@@ -538,10 +571,18 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             onTouchEnd={(e) => {
               if (swipeStartX === null || swipeDirection === null) return;
               
+              // Don't complete swipe if user has selected text (copy operation)
+              if (window.getSelection()?.toString()) {
+                setSwipeStartX(null);
+                setSwipeDirection(null);
+                return;
+              }
+              
               const endX = e.changedTouches[0].clientX;
               const diff = endX - swipeStartX;
               
-              if (Math.abs(diff) > 50) { // Minimum swipe distance
+              // Increased minimum swipe distance for better differentiation
+              if (Math.abs(diff) > 80) { // Increased from 50 to 80
                 if (swipeDirection === 'right') {
                   navigateToPrevNote(); // Right swipe navigates to previous note
                 } else {
@@ -598,7 +639,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 border: '1px solid rgba(255, 255, 255, 0.05)',
                 backdropFilter: 'blur(8px)',
                 WebkitBackdropFilter: 'blur(8px)',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                userSelect: 'text' // Explicitly allow text selection
               }}
             >
               {/* Remove left and right edge indicators */}
@@ -610,7 +652,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                   overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
                   maxHeight: '100%',  // Make sure content stays within the container height
                   touchAction: 'pan-y', // Allow vertical scrolling only
-                  pointerEvents: 'auto' // Ensure the component captures all pointer events
+                  pointerEvents: 'auto', // Ensure the component captures all pointer events
+                  userSelect: 'text' // Explicitly allow text selection
                 }}
               >
                 {/* Remove swipe hint animation */}
@@ -626,7 +669,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                     variants={itemVariants}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <h2 className="text-white text-xl font-medium">
+                      <h2 className="text-white text-lg font-medium">
                         {selectedNote?.title}
                       </h2>
                       <span className="text-[14px] text-white/60 ml-2 mt-1">

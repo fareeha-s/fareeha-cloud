@@ -220,18 +220,50 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
 
   // Helper function to determine if an event should have a pulsing dot
   const shouldShowPulsingDot = (eventId: number) => {
-    // Check if this event has been viewed before
+    // If user came from widget, highlight that specific event
+    // but hide it once they've viewed it
+    if (widgetEventId !== null && widgetEventId === eventId) {
+      if (selectedEventId === eventId) {
+        // The event is currently being viewed, so hide the dot
+        return false;
+      }
+      // The event was just clicked from widget but not yet viewed
+      return true;
+    }
+
+    // For non-widget clicks, check if this event has been viewed before
     const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '[]');
     if (viewedEvents.includes(eventId)) {
       return false;
     }
-
-    // If user came from widget, only highlight that specific event
-    if (widgetEventId !== null) {
-      return widgetEventId === eventId;
+    
+    // Check if this is first time use (no viewed events)
+    const isFirstTimeUse = viewedEvents.length === 0;
+    
+    // If this is first time use, show the orb on the top event (newest upcoming event)
+    if (isFirstTimeUse) {
+      // Get the top upcoming event or first event if none are upcoming
+      const firstTimeUpcomingEvents = events.filter(event => event.timeframe === 'upcoming');
+      if (firstTimeUpcomingEvents.length > 0) {
+        // Sort by date (closest first)
+        const sortedEvents = [...firstTimeUpcomingEvents].sort((a, b) => {
+          const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+          const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+          
+          if (yearA !== yearB) return yearA - yearB;
+          if (monthA !== monthB) return monthA - monthB;
+          return dayA - dayB;
+        });
+        
+        // Show orb on the first upcoming event
+        return sortedEvents[0].id === eventId;
+      } else if (events.length > 0) {
+        // If no upcoming events, show orb on the first event
+        return events[0].id === eventId;
+      }
     }
-    // Otherwise, highlight the default event (first in the list)
-    return defaultHighlightEventId === eventId;
+    
+    return false;
   };
 
   // Add function to mark event as viewed

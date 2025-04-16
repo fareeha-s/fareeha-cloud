@@ -113,10 +113,8 @@ cocktail party, russian hill, sunset views 🌉
 we know so many interesting people who should know each other! time to make that happen 🩵
 
 agenda
-7:30 your arrival (don't be late srsly)
 7:45 meet your future collaborators, conspirators, accomplices
-8:30 forced connection ritual 🫶🏼 (ice breakers lol)
-8:45 artsy/creative/mysterious group photo
+8:30 forced connection ritual 🫶🏼 
 9:30 disappear (it's a school night)
 
 dress code: casual, shoes off :)

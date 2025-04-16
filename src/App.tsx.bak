@@ -620,10 +620,7 @@ function App() {
   
   // Get the display name for the active app, with a special case for partiful to show as parti-folio
   const activeAppName = activeApp ? 
-    (activeApp === 'partiful' ? 'partifolio 🎉' : 
-     activeApp === 'notes' ? 'notes ✧' :
-     activeApp === 'socials' ? 'socials ✨' :
-     apps.find(app => app.id === activeApp)?.name) 
+    (activeApp === 'partiful' ? 'partifolio 🎉' : apps.find(app => app.id === activeApp)?.name) 
     : null;
   
   // Precise iOS app opening animation timing
@@ -782,30 +779,45 @@ function App() {
         >
           {activeApp ? (
             <motion.h2 
-              className="text-[18px] font-normal text-right fixed"
-              initial={{ opacity: 0 }}
+              className="text-xl text-white font-medium tracking-wide text-shadow-sm"
+              initial={{ y: 0 }}
               animate={{ 
-                opacity: 1,
+                y: [0, 10, 0],
+                opacity: [1, 0.96, 1],
                 transition: {
-                  duration: 0.8,
-                  ease: [0.22, 1, 0.36, 1]
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  duration: 4,
+                  ease: "easeInOut",
+                  times: [0, 0.5, 1]
                 }
               }}
               style={{ 
-                top: '8px',
-                right: '25px',
-                zIndex: 9999,
-                color: '#ffffff'
+                textShadow: '0 0 6px rgba(255, 255, 255, 0.2)',
+                filter: 'drop-shadow(0 1px 1px rgba(255, 255, 255, 0.08))',
+                position: 'relative',
+                top: '2px'
               }}
             >
-              <span className="flex items-center">
-                {activeAppName}
-              </span>
+              {activeAppName}
+              <motion.span 
+                className="absolute inset-0 w-full h-full bg-gradient-to-t from-transparent to-white/5 opacity-0"
+                animate={{
+                  opacity: [0, 0.15, 0],
+                  transition: {
+                    repeat: Infinity,
+                    duration: 3,
+                    ease: "easeInOut",
+                    repeatType: "reverse",
+                    delay: 0.5
+                  }
+                }}
+              />
             </motion.h2>
           ) : (
             /* Home screen title with enhanced styling */
             <motion.h2 
-              className="text-[18px] font-normal text-right fixed"
+              className="text-[18px] font-normal tracking-tight text-right relative z-50 pointer-events-auto"
               initial={{ opacity: 0 }}
               animate={{ 
                 opacity: 1,
@@ -815,19 +827,21 @@ function App() {
                 }
               }}
               style={{ 
+                position: 'absolute',
                 top: '8px',
                 right: '25px',
-                zIndex: 9999,
-                color: '#ffffff'
+                zIndex: 50,
+                color: 'rgba(255, 255, 255, 0.95)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                letterSpacing: '-0.01em'
               }}
             >
-              <span className="flex items-center">
+              <span className="relative inline-flex items-center">
                 fareeha
                 <img 
                   src="/icons/hosts/fareeha.jpg" 
                   alt="Fareeha" 
-                  className="ml-1 rounded-full w-6 h-6 object-cover border border-white/20" 
-                  style={{ zIndex: 9999 }}
+                  className="inline-block ml-1 rounded-full w-6 h-6 object-cover border border-white/20 relative z-50" 
                 />
               </span>
             </motion.h2>
@@ -1063,7 +1077,7 @@ function App() {
                   WebkitTransform: 'translateZ(0)',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
                     touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal swipes
-                    cursor: swipeStartX !== null ? (swipeDirection === 'right' ? 'w-resize' : swipeDirection === 'left' ? 'e-resize' : 'grab') : 'pointer' 
+                    cursor: swipeStartX !== null ? (swipeDirection === 'right' ? 'w-resize' : swipeDirection === 'left' ? 'e-resize' : 'grab') : 'default' 
                 }}
               >
                 <div className="flex items-center mb-3">
@@ -1198,11 +1212,9 @@ function App() {
                         {widgets[currentWidgetIndex].type === 'notes' 
                           ? (selectedNote.title.includes("hello world!") 
                               ? "my north star: to design a social stack intentionally calibrated for human longevity..."
-                              : selectedNote.title.includes("kineship") 
-                                ? "the kineship app shares your workout calendar with your circles..."
-                                : (selectedNote.content && selectedNote.content.endsWith('...') 
-                                    ? selectedNote.content 
-                                    : (selectedNote.content || '') + '...'))
+                              : (selectedNote.content && selectedNote.content.endsWith('...') 
+                                  ? selectedNote.content 
+                                  : (selectedNote.content || '') + '...'))
                           : widgets[currentWidgetIndex].type === 'partiful'
                             ? '' // Empty content for partiful as requested
                             : '' // Empty content for workout
@@ -1213,8 +1225,10 @@ function App() {
               </motion.div>
               </AnimatePresence>
               
-              {/* Indicator Dots */}
-              <div className="flex items-center justify-center mt-3 space-x-2">
+              {/* Indicator Dots - only show on mobile */}
+              <div className="flex items-center justify-center mt-3 space-x-2" style={{ 
+                display: typeof window !== 'undefined' && window.innerWidth <= 768 ? 'flex' : 'none' 
+              }}>
                 {widgets.map((_, index) => (
                   <div
                     key={`indicator-${index}`}
