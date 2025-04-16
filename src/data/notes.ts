@@ -21,7 +21,7 @@ a future where our social framework is optimized for human longevity 🔆
 <span style="font-weight: bold;">contributing</span>
 ▹ [gala committee](video:https://youtu.be/VMxSzVREUgY), heart and stroke foundation
 ▹ [fashion show committee](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), diabetes canada
-▹ [hosting](app:partiful) with my favourite people
+▹ [hosting](app:partiful) with my favourite people!
  `,
     date: "15/04/25",
     timeframe: 'recent',

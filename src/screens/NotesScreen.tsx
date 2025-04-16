@@ -124,12 +124,22 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   const chevronControls = useAnimation();
   const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
   const [widgetNoteId, setWidgetNoteId] = useState<number | null>(null);
+  // Add state for tracking current note index and swipe
+  const [currentNoteIndex, setCurrentNoteIndex] = useState<number>(-1);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [swipeStartX, setSwipeStartX] = useState<number | null>(null);
   
   // Add state for video player
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   
   // Create a ref to use for directly setting the window property
   const isViewingDetailRef = useRef(false);
+  
+  // Replace isAtBottom with showDots for pagination timing
+  const [showDots, setShowDots] = useState(false);
+  
+  // Create a ref for the note content container
+  const noteContentRef = useRef<HTMLDivElement>(null);
   
   // Function to update both the ref and window property
   const setIsViewingDetail = (value: boolean) => {
@@ -218,6 +228,21 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       // @ts-ignore
       delete window.isViewingNoteDetail;
     };
+  }, [selectedNote]);
+
+  // Add effect to show dots when note is opened, then hide after delay
+  useEffect(() => {
+    if (selectedNote) {
+      // Show dots when note is opened
+      setShowDots(true);
+      
+      // Hide dots after 3 seconds
+      const timer = setTimeout(() => {
+        setShowDots(false);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
   }, [selectedNote]);
 
   // Add effect to ensure the portrait mode is properly maintained
@@ -434,6 +459,12 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     setIsViewingDetail(true);
     console.log('Click handler: Setting isViewingNoteDetail to true');
     setSelectedNote(note);
+    
+    // Find the index of the note in the combined array
+    const allNotesArray = [...pinnedNotes, ...allNotes];
+    const noteIndex = allNotesArray.findIndex(n => n.id === note.id);
+    setCurrentNoteIndex(noteIndex);
+    
     createTactileEffect();
   };
 
@@ -445,6 +476,47 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Function to close video player
   const closeVideoPlayer = () => {
     setVideoUrl(null);
+  };
+
+  // Function to handle note navigation by swiping
+  const navigateToNextNote = () => {
+    // Get all notes (both pinned and regular)
+    const allNotesArray = [...pinnedNotes, ...allNotes];
+    
+    // No navigation if we're at the end of the list
+    if (currentNoteIndex >= allNotesArray.length - 1) return;
+    
+    const nextNote = allNotesArray[currentNoteIndex + 1];
+    setSelectedNote(nextNote);
+    setCurrentNoteIndex(currentNoteIndex + 1);
+    markNoteAsViewed(nextNote.id);
+    createTactileEffect();
+    
+    // Reset dots timer when navigating
+    setShowDots(true);
+    setTimeout(() => {
+      setShowDots(false);
+    }, 3000);
+  };
+  
+  const navigateToPrevNote = () => {
+    // Get all notes (both pinned and regular)
+    const allNotesArray = [...pinnedNotes, ...allNotes];
+    
+    // No navigation if we're at the beginning of the list
+    if (currentNoteIndex <= 0) return;
+    
+    const prevNote = allNotesArray[currentNoteIndex - 1];
+    setSelectedNote(prevNote);
+    setCurrentNoteIndex(currentNoteIndex - 1);
+    markNoteAsViewed(prevNote.id);
+    createTactileEffect();
+    
+    // Reset dots timer when navigating
+    setShowDots(true);
+    setTimeout(() => {
+      setShowDots(false);
+    }, 3000);
   };
 
   return (
@@ -469,9 +541,82 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            // Add swipe handlers for navigation
+            onTouchStart={(e) => {
+              setSwipeStartX(e.touches[0].clientX);
+              setSwipeDirection(null);
+            }}
+            onTouchMove={(e) => {
+              if (swipeStartX === null) return;
+              
+              const currentX = e.touches[0].clientX;
+              const diff = currentX - swipeStartX;
+              
+              // Set direction once we have a clear movement
+              if (Math.abs(diff) > 10) {
+                const newDirection = diff > 0 ? 'right' : 'left';
+                if (swipeDirection !== newDirection) {
+                  setSwipeDirection(newDirection);
+                }
+              }
+            }}
+            onTouchEnd={(e) => {
+              if (swipeStartX === null || swipeDirection === null) return;
+              
+              const endX = e.changedTouches[0].clientX;
+              const diff = endX - swipeStartX;
+              
+              if (Math.abs(diff) > 50) { // Minimum swipe distance
+                if (swipeDirection === 'right') {
+                  navigateToPrevNote(); // Right swipe navigates to previous note
+                } else {
+                  navigateToNextNote(); // Left swipe navigates to next note
+                }
+              }
+              
+              setSwipeStartX(null);
+              setSwipeDirection(null);
+            }}
+            // Also handle mouse-based swipes for desktop
+            onMouseDown={(e) => {
+              setSwipeStartX(e.clientX);
+              setSwipeDirection(null);
+            }}
+            onMouseMove={(e) => {
+              if (swipeStartX === null) return;
+              
+              const diff = e.clientX - swipeStartX;
+              
+              // Set direction once we have a clear movement
+              if (Math.abs(diff) > 10) {
+                const newDirection = diff > 0 ? 'right' : 'left';
+                if (swipeDirection !== newDirection) {
+                  setSwipeDirection(newDirection);
+                }
+              }
+            }}
+            onMouseUp={(e) => {
+              if (swipeStartX === null || swipeDirection === null) return;
+              
+              const diff = e.clientX - swipeStartX;
+              
+              if (Math.abs(diff) > 50) { // Minimum swipe distance
+                if (swipeDirection === 'right') {
+                  navigateToPrevNote(); // Right swipe navigates to previous note
+                } else {
+                  navigateToNextNote(); // Left swipe navigates to next note
+                }
+              }
+              
+              setSwipeStartX(null);
+              setSwipeDirection(null);
+            }}
+            style={{
+              cursor: swipeStartX !== null ? (swipeDirection === 'right' ? 'w-resize' : swipeDirection === 'left' ? 'e-resize' : 'grab') : 'auto'
+            }}
           >
             <div 
-              className="h-full w-full rounded-lg backdrop-blur-sm bg-black/10"
+              className="h-full w-full rounded-lg backdrop-blur-sm bg-black/10 relative"
               style={{ 
                 touchAction: 'pan-y',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
@@ -481,7 +626,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 overflow: 'hidden'
               }}
             >
+              {/* Remove left and right edge indicators */}
+              
               <motion.div 
+                ref={noteContentRef}
                 className="h-full w-full overflow-auto scrollbar-subtle relative p-6"
                 style={{ 
                   overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
@@ -490,9 +638,11 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                   pointerEvents: 'auto' // Ensure the component captures all pointer events
                 }}
               >
+                {/* Remove swipe hint animation */}
+                
                 <div className="flex items-center justify-between mb-1 text-white/80">
                   <div className="flex items-center">
-                    {/* Empty div to maintain spacing */}
+                    {/* Remove navigation indicator */}
                   </div>
                   <div className="flex items-center">
                     <span className="text-xs text-white/60">{getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}</span>
@@ -563,6 +713,35 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                     />
                   </motion.div>
                 </motion.div>
+                
+                {/* Pagination dots - with smooth fade in/out */}
+                <AnimatePresence>
+                  {showDots && (
+                    <motion.div 
+                      className="flex items-center justify-center mt-4 mb-2 py-2 space-x-1.5"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                    >
+                      <div
+                        className="h-[5px] w-[5px] rounded-full bg-white/25 transition-all duration-200 cursor-pointer hover:bg-white/40"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigateToPrevNote();
+                        }}
+                      />
+                      <div className="h-[5px] w-[5px] rounded-full bg-white/70 transition-all duration-200" />
+                      <div
+                        className="h-[5px] w-[5px] rounded-full bg-white/25 transition-all duration-200 cursor-pointer hover:bg-white/40"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigateToNextNote();
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             </div>
           </motion.div>
