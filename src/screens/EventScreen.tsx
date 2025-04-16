@@ -83,21 +83,12 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
   // Modified to show swipe indicator when user scrolls to bottom of first event
   useEffect(() => {
     if (showPartiful && hasScrolledToBottom) {
-      // Check localStorage to see if user has seen the swipe indicator before
-      const hasSeenSwipeIndicator = localStorage.getItem('hasSeenEventSwipeIndicator');
+      // Check localStorage to see if user has already used swipe
+      const hasUsedSwipe = localStorage.getItem('hasUsedEventSwipe') === 'true';
       
-      if (!hasSeenSwipeIndicator) {
-        // Show the swipe indicator
+      if (!hasUsedSwipe) {
+        // Show the swipe indicator if user hasn't swiped before
         setShowSwipeIndicator(true);
-        
-        // Hide the indicator after 3 seconds
-        const timer = setTimeout(() => {
-          setShowSwipeIndicator(false);
-          // Mark that user has seen the indicator
-          localStorage.setItem('hasSeenEventSwipeIndicator', 'true');
-        }, 3000);
-        
-        return () => clearTimeout(timer);
       }
     }
   }, [showPartiful, hasScrolledToBottom]);
@@ -169,7 +160,15 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     const today = "08/04/25"; // Assume today is 8th April 2025
     if (dateStr === today) return "Today";
     if (dateStr === "07/04/25") return "Yesterday";
-    return dateStr;
+    
+    // Parse the date to get the month
+    const [day, month, year] = dateStr.split('/').map(Number);
+    
+    // Convert month number to month name
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthName = monthNames[month - 1];
+    
+    return monthName;
   };
   
   // Apple-like spring animation
@@ -300,11 +299,19 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
         markEventAsViewed(prevEventId);
         setSelectedEventId(prevEventId);
         createTactileEffect();
+        
+        // Hide indicator permanently
+        setShowSwipeIndicator(false);
+        localStorage.setItem('hasUsedEventSwipe', 'true');
       } else if (info.offset.x < -dragThreshold) {
         // Swiped left - go to next event
         markEventAsViewed(nextEventId);
         setSelectedEventId(nextEventId);
         createTactileEffect();
+        
+        // Hide indicator permanently
+        setShowSwipeIndicator(false);
+        localStorage.setItem('hasUsedEventSwipe', 'true');
       }
     };
     
@@ -352,14 +359,14 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                   transition={{ duration: 0.5 }}
                 >
                   <motion.div 
-                    className="flex items-center space-x-1.5"
+                    className="flex items-center space-x-2"
                     initial={{ y: 10, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 10, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
                     <motion.div 
-                      className="w-1.5 h-1.5 rounded-full bg-white opacity-60"
+                      className="w-[6px] h-[6px] rounded-full bg-white opacity-40"
                       animate={{ opacity: [0.4, 0.6, 0.4] }}
                       transition={{ 
                         repeat: Infinity,
@@ -368,10 +375,10 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                       }}
                     />
                     <motion.div 
-                      className="w-1.5 h-1.5 rounded-full bg-white opacity-80" 
+                      className="w-[6px] h-[6px] rounded-full bg-white" 
                     />
                     <motion.div 
-                      className="w-1.5 h-1.5 rounded-full bg-white opacity-60"
+                      className="w-[6px] h-[6px] rounded-full bg-white opacity-40"
                       animate={{ opacity: [0.4, 0.6, 0.4] }}
                       transition={{ 
                         repeat: Infinity,
@@ -443,7 +450,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
           {/* Past Month section */}
           {pastMonthEvents.length > 0 && (
             <div>
-              <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2">
+              <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2">
                 Past Month
               </h2>
               <div className="space-y-0.5">
@@ -476,12 +483,12 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                     </div>
                     <div className="ml-1 flex-1 flex justify-between items-center">
                       <div className="flex-1 pr-3">
-                        <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
+                        <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                           {event.title}
                         </h3>
                       </div>
                       <div className="flex-shrink-0 flex items-center">
-                        <span className="text-xs text-white/40 whitespace-nowrap">
+                        <span className="text-[14px] text-white/50 whitespace-nowrap">
                           {getRelativeDate(event.date)}
                         </span>
                       </div>
@@ -515,7 +522,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
           {/* All events section */}
           {remainingEvents.length > 0 && (
             <div>
-              <h2 className="text-white/50 text-xs font-medium uppercase tracking-wider mb-2 px-2">
+              <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2">
                 All
               </h2>
               <div className="space-y-0.5">
@@ -548,12 +555,12 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                     </div>
                     <div className="ml-1 flex-1 flex justify-between items-center">
                       <div className="flex-1 pr-3">
-                        <h3 className="text-sm font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
+                        <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
                           {event.title}
                         </h3>
                       </div>
                       <div className="flex-shrink-0 flex items-center">
-                        <span className="text-xs text-white/40 whitespace-nowrap">
+                        <span className="text-[14px] text-white/50 whitespace-nowrap">
                           {getRelativeDate(event.date)}
                         </span>
                       </div>
