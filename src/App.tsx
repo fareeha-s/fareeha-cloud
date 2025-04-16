@@ -447,47 +447,10 @@ function App() {
         }
       }
       
-      /* App container animation classes */
-      .app-container-blur-animation {
-        animation: app-container-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: app-container-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      .app-container-blur-active-animation {
-        animation: app-container-blur-active 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: app-container-blur-active 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      /* Keyframe animations for blur */
-      @keyframes app-container-blur {
-        0% { backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-        20% { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
-        40% { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-        60% { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-        80% { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-        100% { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-      }
-      
-      @keyframes app-container-blur-active {
-        0% { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-        100% { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-      }
-      
-      /* Widget animation classes */
-      .music-widget-blur-animation {
-        animation: music-widget-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: music-widget-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
+      /* Widget animation classes for music widget - actually used in the components */
       .music-widget-bg-animation {
         animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         -webkit-animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      @keyframes music-widget-blur {
-        0% { backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-        50% { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
-        100% { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
       }
       
       @keyframes music-widget-bg-fade {
