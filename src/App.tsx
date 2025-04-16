@@ -177,6 +177,23 @@ function App() {
   const widgetRef = useRef<HTMLDivElement>(null);
   const [hasShownFirstDisplay, setHasShownFirstDisplay] = useState(false);
   const [lastManualNavigation, setLastManualNavigation] = useState<number | null>(null);
+  // Add state to detect if user is on a mobile device
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  
+  // Detect if user is on a mobile device
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      setIsMobileDevice(isMobile);
+    };
+    
+    checkIfMobile();
+    
+    // Also check on resize in case of device orientation changes
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
   
   // Check if this is the first visit
   useEffect(() => {
@@ -824,7 +841,7 @@ function App() {
               <span className="flex items-center">
                 fareeha
                 <img 
-                  src="/icons/hosts/fareeha.jpg" 
+                  src="./icons/hosts/fareeha.jpg" 
                   alt="Fareeha" 
                   className="ml-1 rounded-full w-6 h-6 object-cover border border-white/20" 
                   style={{ zIndex: 9999 }}
@@ -973,86 +990,53 @@ function App() {
                     setSwipeStartX(null);
                     setSwipeDirection(null);
                   }}
-                  // Implement a direct, simpler swipe detection system
+                  // Implement a direct, simpler swipe detection system for mobile devices only
                   onTouchStart={(e) => {
-                    setSwipeStartX(e.touches[0].clientX);
-                    setSwipeDirection(null);
-                    setIsSwiping(true);
+                    if (isMobileDevice) {
+                      setSwipeStartX(e.touches[0].clientX);
+                      setSwipeDirection(null);
+                      setIsSwiping(true);
+                    }
                   }}
                   onTouchMove={(e) => {
-                    if (swipeStartX === null) return;
-                    
-                    const currentX = e.touches[0].clientX;
-                    const diff = currentX - swipeStartX;
-                    
-                    // Set direction once we have a clear movement
-                    if (Math.abs(diff) > 10) {
-                      const newDirection = diff > 0 ? 'right' : 'left';
-                      if (swipeDirection !== newDirection) {
-                        setSwipeDirection(newDirection);
+                    if (isMobileDevice && swipeStartX !== null) {
+                      const currentX = e.touches[0].clientX;
+                      const diff = currentX - swipeStartX;
+                      
+                      // Set direction once we have a clear movement
+                      if (Math.abs(diff) > 10) {
+                        const newDirection = diff > 0 ? 'right' : 'left';
+                        if (swipeDirection !== newDirection) {
+                          setSwipeDirection(newDirection);
+                        }
                       }
                     }
                   }}
                   onTouchEnd={(e) => {
-                    if (swipeStartX === null || swipeDirection === null) return;
-                    
-                    const endX = e.changedTouches[0].clientX;
-                    const diff = endX - swipeStartX;
-                    
-                    if (Math.abs(diff) > 50) { // Minimum swipe distance
-                      if (swipeDirection === 'right') {
-                        handlePrevWidget();
-                      } else {
-                        handleNextWidget();
+                    if (isMobileDevice && swipeStartX !== null && swipeDirection !== null) {
+                      const endX = e.changedTouches[0].clientX;
+                      const diff = endX - swipeStartX;
+                      
+                      if (Math.abs(diff) > 50) { // Minimum swipe distance
+                        if (swipeDirection === 'right') {
+                          handlePrevWidget();
+                        } else {
+                          handleNextWidget();
+                        }
                       }
-                    }
-                    
-                    setSwipeStartX(null);
-                    setSwipeDirection(null);
-                    setIsSwiping(false);
-                    
-                    // Record the time of manual navigation for swipe
-                    setLastManualNavigation(Date.now());
-                  }}
-                  // Also handle mouse-based swipes for desktop
-                  onMouseDown={(e) => {
-                    setSwipeStartX(e.clientX);
-                    setSwipeDirection(null);
-                    setIsSwiping(true);
-                  }}
-                  onMouseMove={(e) => {
-                    if (swipeStartX === null) return;
-                    
-                    const diff = e.clientX - swipeStartX;
-                    
-                    // Set direction once we have a clear movement
-                    if (Math.abs(diff) > 10) {
-                      const newDirection = diff > 0 ? 'right' : 'left';
-                      if (swipeDirection !== newDirection) {
-                        setSwipeDirection(newDirection);
-                      }
+                      
+                      setSwipeStartX(null);
+                      setSwipeDirection(null);
+                      setIsSwiping(false);
+                      
+                      // Record the time of manual navigation for swipe
+                      setLastManualNavigation(Date.now());
                     }
                   }}
-                  onMouseUp={(e) => {
-                    if (swipeStartX === null || swipeDirection === null) return;
-                    
-                    const diff = e.clientX - swipeStartX;
-                    
-                    if (Math.abs(diff) > 50) { // Minimum swipe distance
-                      if (swipeDirection === 'right') {
-                        handlePrevWidget();
-                      } else {
-                        handleNextWidget();
-                      }
-                    }
-                    
-                    setSwipeStartX(null);
-                    setSwipeDirection(null);
-                    setIsSwiping(false);
-                    
-                    // Record the time of manual navigation for swipe
-                    setLastManualNavigation(Date.now());
-                  }}
+                  // Remove mouse-based swipes for desktop completely
+                  onMouseDown={undefined}
+                  onMouseMove={undefined}
+                  onMouseUp={undefined}
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.04)',
                   backdropFilter: 'none',
@@ -1061,16 +1045,16 @@ function App() {
                   padding: '14px',
                   transform: 'translateZ(0)',
                   WebkitTransform: 'translateZ(0)',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
-                    touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal swipes
-                    cursor: swipeStartX !== null ? (swipeDirection === 'right' ? 'w-resize' : swipeDirection === 'left' ? 'e-resize' : 'grab') : 'pointer' 
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
+                  touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal swipes
+                  cursor: 'pointer' // Always use pointer cursor for web users
                 }}
               >
                 <div className="flex items-center mb-3">
                     <div className={`w-10 h-10 rounded-md flex items-center justify-center mr-3 shadow-md ${widgets[currentWidgetIndex].iconBgColor} overflow-hidden border border-white/10`}>
                       {widgets[currentWidgetIndex].type === 'workout' && (
                         <img 
-                          src="/icons/apps/kineship.png" 
+                          src="./icons/apps/kineship.png" 
                           alt="Kineship" 
                           className="w-full h-full object-cover" 
                           style={{ borderRadius: '0.375rem' }}
@@ -1081,7 +1065,7 @@ function App() {
                       )}
                       {widgets[currentWidgetIndex].type === 'partiful' && (
                         <img 
-                          src="/icons/apps/partiful.png" 
+                          src="./icons/apps/partiful.png" 
                           alt="Partiful" 
                           className="w-6 h-6 object-contain" 
                         />
