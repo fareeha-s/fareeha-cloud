@@ -1190,7 +1190,9 @@ function App() {
                         fontSize: '12px'
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes' 
-                          ? selectedNote.content 
+                          ? (selectedNote.title.includes("hello world!") 
+                              ? "my north star 🔆\na future where our social framework is optimized for human longevity"
+                              : selectedNote.content)
                           : widgets[currentWidgetIndex].type === 'partiful'
                             ? '' // Empty content for partiful as requested
                             : '' // Empty content for workout
@@ -1336,7 +1338,13 @@ function App() {
               initial={{ opacity: 0, x: -5 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -5 }}
-              transition={{ duration: 0.2 }}
+              transition={{ 
+                x: { duration: 0.3, delay: 4.5 },
+                opacity: { 
+                  duration: 2.5,
+                  delay: 1.5 
+                }
+              }}
               onClick={!isAnimating ? handleClose : undefined}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}

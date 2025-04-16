@@ -255,14 +255,14 @@ limited capacity! tell us what you'd share 🫶🏼`;
       onTouchEnd={preventTouchBubbling}
       style={{ 
         touchAction: 'pan-y',
-        backgroundColor: eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.7)' : 
-                         eventTitle === "consumer social" ? 'rgba(10, 20, 40, 0.7)' : 
-                         eventTitle === "Watercolour" ? 'rgba(219, 175, 191, 0.7)' :
-                         eventTitle === "threading in" ? 'rgba(35, 25, 15, 0.7)' :
-                         eventTitle === "out of office" ? 'rgba(144, 190, 109, 0.7)' :
-                         eventTitle === "blood moon rising." ? 'rgba(20, 20, 20, 0.7)' :
-                         eventTitle === "Scrumptious" ? 'rgba(77, 166, 255, 0.7)' :
-                         'rgba(14, 43, 23, 0.7)', // Default color for mental static
+        backgroundColor: eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.5)' : 
+                         eventTitle === "consumer social" ? 'rgba(10, 20, 40, 0.5)' : 
+                         eventTitle === "Watercolour" ? 'rgba(219, 175, 191, 0.5)' :
+                         eventTitle === "threading in" ? 'rgba(35, 25, 15, 0.5)' :
+                         eventTitle === "out of office" ? 'rgba(144, 190, 109, 0.5)' :
+                         eventTitle === "blood moon rising." ? 'rgba(20, 20, 20, 0.5)' :
+                         eventTitle === "Scrumptious" ? 'rgba(77, 166, 255, 0.5)' :
+                         'rgba(14, 43, 23, 0.5)', // Default color for mental static
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
         borderRadius: '8px',
