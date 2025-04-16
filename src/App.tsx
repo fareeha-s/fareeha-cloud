@@ -594,12 +594,11 @@ function App() {
 
   // Handle navigation between apps
   const handleWidgetClick = (widgetType: string) => {
-    // Special case for workout widget to navigate to kineship.com
+    // Special case for workout widget to navigate to the kineship note
     if (widgetType === 'workout') {
-      // Remove the link to kineship.com
-      // window.open('https://kineship.com', '_blank');
-      // Simply navigate to the app screen instead
-      handleAppClick(widgetType);
+      // Open the kineship note instead of workout app
+      window.initialNoteId = 2; // ID of the kineship note
+      handleAppClick('notes');
       return;
     }
     
