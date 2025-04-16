@@ -257,7 +257,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
         touchAction: 'pan-y',
         backgroundColor: eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.5)' : 
                          eventTitle === "consumer social" ? 'rgba(10, 20, 40, 0.5)' : 
-                         eventTitle === "Watercolour" ? 'rgba(219, 175, 191, 0.5)' :
+                         eventTitle === "Watercolour" ? 'rgba(147, 112, 142, 0.7)' :
                          eventTitle === "threading in" ? 'rgba(35, 25, 15, 0.5)' :
                          eventTitle === "out of office" ? 'rgba(144, 190, 109, 0.5)' :
                          eventTitle === "blood moon rising." ? 'rgba(20, 20, 20, 0.5)' :
@@ -289,7 +289,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
         drag={false} // Explicitly disable drag on this component
       >
         {/* Header title without extra margin */}
-        {eventTitle === "blood moon rising." ? (
+        {eventTitle === "blood moon rising." || eventTitle === "consumer social" ? (
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -301,10 +301,10 @@ limited capacity! tell us what you'd share 🫶🏼`;
               alignItems: 'center',
               marginBottom: '12px'
             }}
-            data-event-type="blood-moon-rising"
+            data-event-type={eventTitle === "blood moon rising." ? "blood-moon-rising" : "consumer-social"}
           >
-            <h1 className="blood-moon-title" id="blood-moon-title">
-              blood moon rising.
+            <h1 className={eventTitle === "blood moon rising." ? "blood-moon-title" : "blood-moon-title consumer-social-title"} id={eventTitle === "blood moon rising." ? "blood-moon-title" : "consumer-social-title"}>
+              {eventTitle === "blood moon rising." ? "blood moon rising." : "consumer social."}
             </h1>
           </motion.div>
         ) : (
@@ -315,15 +315,15 @@ limited capacity! tell us what you'd share 🫶🏼`;
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           style={{ 
             fontSize: '28px', 
-            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? 'Times New Roman, serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
+            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
             lineHeight: 1.1, 
             marginBottom: '12px', 
             color: 'white', 
             textAlign: 'center', 
-            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? 700 : 600,
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? '-0.03em' : '0.12em',
+            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? 500 : 600,
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? '-0.03em' : '0.12em',
             paddingTop: '0px',
-            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? 'none' : 'lowercase',
+            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? 'none' : 'lowercase',
             fontStretch: '150%',
             fontStyle: 'normal',
             whiteSpace: 'nowrap',
@@ -332,7 +332,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
         >
           <span className="summary" style={{ 
             fontStretch: 'expanded', 
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "consumer social" || eventTitle === "Watercolour" ? '-0.04em' : '0.08em' 
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? '-0.04em' : '0.08em' 
           }}>
             {eventTitle === "strawberry hour" ? "Strawberry hour." : 
              eventTitle === "threading in" ? "threading in" : 
@@ -450,7 +450,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </div>
           
           {/* Music lyrics with Spotify link - smaller font */}
-          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "consumer social" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious") && (
+          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious" && eventTitle !== "consumer social") && (
           <div className="ptf-l-V5l2c ptf-l-42Hmr" style={{ display: 'flex', alignItems: 'flex-start', marginTop: '8px', marginBottom: '14px' }}>
             <span className="ptf--7nAv ptf-l-02UEs ptf-l-Y-q9d" style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}>
               {eventTitle === "blood moon rising." ? (
@@ -488,7 +488,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
             initial="hidden"
             animate="visible"
             style={{ 
-              marginTop: spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "consumer social" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious") ? '0' : '20px', 
+              marginTop: spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious" && eventTitle !== "consumer social") ? '0' : '20px', 
               marginBottom: '0' 
             }}
           >
