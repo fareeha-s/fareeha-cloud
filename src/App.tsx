@@ -447,7 +447,18 @@ function App() {
         }
       }
       
-      /* Keyframe animations for blur and background */
+      /* App container animation classes */
+      .app-container-blur-animation {
+        animation: app-container-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: app-container-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      
+      .app-container-blur-active-animation {
+        animation: app-container-blur-active 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: app-container-blur-active 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      
+      /* Keyframe animations for blur */
       @keyframes app-container-blur {
         0% { backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
         20% { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
@@ -462,41 +473,17 @@ function App() {
         100% { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
       }
       
-      @keyframes app-container-bg-fade {
-        0% { background-color: rgba(0, 0, 0, 0.02); }
-        25% { background-color: rgba(0, 0, 0, 0.05); }
-        50% { background-color: rgba(0, 0, 0, 0.08); }
-        75% { background-color: rgba(0, 0, 0, 0.12); }
-        100% { background-color: rgba(0, 0, 0, 0.15); }
+      /* Widget animation classes */
+      .music-widget-blur-animation {
+        animation: music-widget-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: music-widget-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
       
-      @keyframes app-container-bg-active {
-        0% { background-color: rgba(0, 0, 0, 0.15); }
-        100% { background-color: rgba(0, 0, 0, 0.3); }
+      .music-widget-bg-animation {
+        animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
       
-      /* Animation classes */
-      .app-container-blur-animation {
-        animation: app-container-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: app-container-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      .app-container-blur-active-animation {
-        animation: app-container-blur-active 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: app-container-blur-active 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      .app-container-bg-animation {
-        animation: app-container-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: app-container-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      .app-container-bg-active-animation {
-        animation: app-container-bg-active 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: app-container-bg-active 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      /* Music widget animations */
       @keyframes music-widget-blur {
         0% { backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
         50% { backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
@@ -507,16 +494,6 @@ function App() {
         0% { background-color: rgba(255, 255, 255, 0.03); }
         50% { background-color: rgba(255, 255, 255, 0.05); }
         100% { background-color: rgba(255, 255, 255, 0.07); }
-      }
-      
-      .music-widget-blur-animation {
-        animation: music-widget-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: music-widget-blur 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      .music-widget-bg-animation {
-        animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
     `;
     document.head.appendChild(styleElement);
@@ -713,61 +690,41 @@ function App() {
       onClick={activeApp && !isAnimating ? handleClose : undefined}
       drag={false}
     >
-      {/* Background Wrapper - Ensures full coverage */}
+      {/* Background Wrapper - Simplified with single image and fallback */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
-      {/* Soft blur orbs */}
+        {/* Single beautiful background image with fallback */}
         <div 
-          className="absolute top-[-25vh] right-[10vw] w-[55vw] h-[55vw] max-w-[600px] max-h-[600px] rounded-full bg-gradient-to-r from-[#88a5a3] to-[#b3c1bd] blur-[140px] will-change-transform" 
+          className="absolute inset-0 bg-gradient-to-br from-[#1a2030] to-[#293240]"
           style={{ 
-            transform: 'translateZ(0)', 
-            WebkitTransform: 'translateZ(0)',
-            opacity: isLoaded ? 0.38 : 0,
-            transition: 'opacity 1s cubic-bezier(0.22, 1, 0.36, 1)'
+            opacity: 1,
           }}
-        ></div>
-        <div 
-          className="absolute bottom-[-20vh] left-[-5vw] w-[45vw] h-[45vw] max-w-[500px] max-h-[500px] rounded-full bg-gradient-to-r from-[#bad0c5] to-[#98aeae] blur-[120px] will-change-transform" 
-          style={{ 
-            transform: 'translateZ(0)', 
-            WebkitTransform: 'translateZ(0)',
-            opacity: isLoaded ? 0.3 : 0,
-            transition: 'opacity 1s cubic-bezier(0.22, 1, 0.36, 1)'
-          }}
-        ></div>
-        
-        {/* Simplified gradient overlays - more Safari friendly */}
-        <div 
-          className="absolute top-[20vh] left-[10vw] w-[35vw] h-[35vw] rounded-full bg-[#a0d8ef]/10 blur-[100px]" 
-          style={{ 
-            opacity: isLoaded ? 0.25 : 0,
-            transition: 'opacity 1.2s ease'
-          }}
-        ></div>
-        <div 
-          className="absolute bottom-[25vh] right-[5vw] w-[30vw] h-[30vw] rounded-full bg-[#d4a5e5]/10 blur-[80px]" 
-          style={{ 
-            opacity: isLoaded ? 0.2 : 0,
-            transition: 'opacity 1.2s ease'
-          }}
-        ></div>
-        
-        {/* Subtle grid overlay for depth - extends to all edges */}
-        <div 
-          className="absolute inset-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNMzAgMzBoMzB2MzBIMzB6TTAgMGgzMHYzMEgweiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA0KSIvPjxwYXRoIGQ9Ik0zMCAwaDMwdjMwSDMwek0wIDMwaDMwdjMwSDB6IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIi8+PC9nPjwvc3ZnPg==')]" 
-          style={{
-            opacity: isLoaded ? (isHighPerformanceDevice ? 0.12 : 0.08) : 0,
-            transition: 'opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1)'
-          }}
-        ></div>
-        
-        {/* Additional subtle top gradient to enhance the Dynamic Island effect */}
-        <div 
-          className="absolute top-0 left-0 right-0 h-[15vh] bg-gradient-to-b from-[#0a0c10]/40 to-transparent" 
-          style={{ 
-            opacity: isLoaded ? 0.4 : 0,
-            transition: 'opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1)'
-          }}
-        ></div>
+        >
+          {/* Background image that loads on top of the gradient */}
+          <img 
+            src="./optimized/background.webp" 
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ 
+              opacity: isLoaded ? 0.9 : 0,
+              transition: 'opacity 1s ease',
+            }}
+            onError={(e) => {
+              // If webp fails, try jpg
+              const img = e.target as HTMLImageElement;
+              img.onerror = null; // Prevent infinite error loop
+              img.src = './background.jpg';
+            }}
+          />
+          
+          {/* Subtle overlay for better text contrast */}
+          <div 
+            className="absolute inset-0 bg-black/20"
+            style={{ 
+              opacity: isLoaded ? 0.5 : 0,
+              transition: 'opacity 1s ease',
+            }}
+          ></div>
+        </div>
       </div>
 
       <div 
