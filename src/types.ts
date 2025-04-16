@@ -17,5 +17,11 @@ declare global {
     initialNoteId?: number;
     initialEventId?: number;
     isViewingEventDetail?: boolean;
+    isViewingNoteDetail?: boolean;
+    openNoteWithId?: (noteId: number) => void;
+    handleVideoLink?: (videoUrl: string) => void;
+    handleAppClick?: (appId: string) => void;
+    noteScreenBackHandler?: () => boolean;
+    eventScreenBackHandler?: () => boolean;
   }
 }

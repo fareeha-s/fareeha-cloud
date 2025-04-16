@@ -1,15 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { AppScreenProps } from '../types';
 import { motion, useAnimation, useReducedMotion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, X } from 'lucide-react';
 import { createTactileEffect } from '../App';
 import { notes, NoteItem } from '../data/notes';
+import ReactDOM from 'react-dom';
 
 // Declare the global window property for TypeScript
 declare global {
   interface Window {
     noteScreenBackHandler?: () => boolean;
     initialNoteId?: number;
+    isViewingNoteDetail?: boolean;
+    openNoteWithId?: (noteId: number) => void;
+    openEventWithId?: (eventId: number) => void;
+    handleAppClick?: (appId: string) => void;
+    initialEventId?: number;
+    handleVideoLink?: (url: string) => void;
   }
 }
 
@@ -49,6 +56,68 @@ const PinIcon = () => (
   </svg>
 );
 
+// Add a Video Player component with Portal
+const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: () => void }) => {
+  // Extract YouTube video ID from URL
+  const getYouTubeVideoId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const videoId = getYouTubeVideoId(videoUrl);
+
+  if (!videoId) return null;
+
+  // Calculate embedUrl
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&controls=1&showinfo=1&playsinline=1`;
+
+  // Create a portal to render directly to body
+  return ReactDOM.createPortal(
+    <motion.div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh'
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div 
+        className="w-full h-full flex items-center justify-center"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button 
+          className="absolute top-8 right-8 z-10 p-3 bg-black/70 hover:bg-black/90 rounded-full text-white/80 hover:text-white transition-colors"
+          onClick={onClose}
+        >
+          <X size={28} />
+        </button>
+        <iframe
+          className="w-full h-full max-h-screen"
+          src={embedUrl}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </motion.div>
+    </motion.div>,
+    document.body
+  );
+};
+
 export const NotesScreen: React.FC<AppScreenProps> = () => {
   const prefersReducedMotion = useReducedMotion();
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -56,6 +125,45 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
   const [widgetNoteId, setWidgetNoteId] = useState<number | null>(null);
   
+  // Add state for video player
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  
+  // Create a ref to use for directly setting the window property
+  const isViewingDetailRef = useRef(false);
+  
+  // Function to update both the ref and window property
+  const setIsViewingDetail = (value: boolean) => {
+    isViewingDetailRef.current = value;
+    window.isViewingNoteDetail = value;
+    console.log('Setting isViewingNoteDetail via function:', value);
+    
+    // Directly apply the class to the DOM as a fallback mechanism
+    try {
+      const mainContainer = document.querySelector('.main-container');
+      if (mainContainer) {
+        if (value) {
+          mainContainer.classList.add('portrait-container');
+          mainContainer.classList.add('expanded');
+          console.log('Directly added portrait-container expanded classes to DOM');
+        } else {
+          // Force a DOM reflow before removing classes to ensure animation happens
+          void (mainContainer as HTMLElement).offsetWidth;
+          mainContainer.classList.remove('portrait-container');
+          mainContainer.classList.remove('expanded');
+          // Add a transient class to control the collapse animation specifically
+          mainContainer.classList.add('collapsing');
+          // Remove the transient class after animation completes
+          setTimeout(() => {
+            mainContainer.classList.remove('collapsing');
+          }, 500);
+          console.log('Directly removed portrait-container expanded classes from DOM');
+        }
+      }
+    } catch (e) {
+      console.error('Error directly manipulating DOM:', e);
+    }
+  };
+
   // Run a subtle animation sequence on first render
   useEffect(() => {
     if (!hasInteracted && !prefersReducedMotion) {
@@ -87,7 +195,14 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // we should close the note view first instead of closing the app
     const handleAppBackClick = () => {
       if (selectedNote) {
-        closeNote();
+        // Set flag to false BEFORE state changes for immediate effect
+        setIsViewingDetail(false);
+        
+        // Add longer delay before changing React state to ensure animation completes
+        setTimeout(() => {
+          setSelectedNote(null);
+          createTactileEffect();
+        }, 150); // Increased from 50ms to 150ms
         return true; // Event was handled
       }
       return false; // Let App handle the default behavior
@@ -100,6 +215,21 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     return () => {
       // @ts-ignore
       delete window.noteScreenBackHandler;
+      // @ts-ignore
+      delete window.isViewingNoteDetail;
+    };
+  }, [selectedNote]);
+
+  // Add effect to ensure the portrait mode is properly maintained
+  useEffect(() => {
+    // Set the flag to control the container shape
+    setIsViewingDetail(selectedNote !== null);
+    console.log('Setting isViewingNoteDetail:', selectedNote !== null);
+    
+    return () => {
+      // Clean up when component unmounts
+      setIsViewingDetail(false);
+      console.log('Cleanup: Setting isViewingNoteDetail to false');
     };
   }, [selectedNote]);
 
@@ -111,6 +241,37 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       // Clear the initialNoteId after using it
       window.initialNoteId = undefined;
     }
+    
+    // Set up the openNoteWithId function in the window object
+    window.openNoteWithId = (noteId: number) => {
+      // Find the note with this ID
+      const noteToOpen = notes.find(note => note.id === noteId);
+      if (noteToOpen) {
+        // Close current note first if one is open
+        setIsViewingDetail(false);
+        
+        // Small delay before opening the new note
+        setTimeout(() => {
+          setIsViewingDetail(true);
+          setSelectedNote(noteToOpen);
+          markNoteAsViewed(noteId);
+          createTactileEffect();
+        }, 150);
+      }
+    };
+    
+    // Set up the handleVideoLink function in the window object
+    window.handleVideoLink = (url: string) => {
+      handleVideoLink(url);
+    };
+    
+    // Clean up
+    return () => {
+      // @ts-ignore
+      delete window.openNoteWithId;
+      // @ts-ignore
+      delete window.handleVideoLink;
+    };
   }, []);
 
   // Use the shared notes data instead of local state
@@ -186,8 +347,14 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     });
 
   const closeNote = () => {
-    setSelectedNote(null);
-    createTactileEffect();
+    // Set flag to false BEFORE state changes for immediate effect
+    setIsViewingDetail(false);
+    
+    // Add longer delay before changing React state to ensure animation completes
+    setTimeout(() => {
+      setSelectedNote(null);
+      createTactileEffect();
+    }, 150); // Increased from 50ms to 150ms
   };
 
   // Animation variants
@@ -254,10 +421,30 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     }
   };
 
+  // Debug effect to monitor isViewingDetailRef changes
+  useEffect(() => {
+    console.log('selectedNote changed to:', selectedNote !== null);
+    console.log('isViewingDetailRef is now:', isViewingDetailRef.current);
+    console.log('window.isViewingNoteDetail is now:', window.isViewingNoteDetail);
+  }, [selectedNote]);
+
   const handleNoteClick = (note: NoteItem) => {
+    markNoteAsViewed(note.id);
+    // Set flag to true BEFORE state changes for immediate effect
+    setIsViewingDetail(true);
+    console.log('Click handler: Setting isViewingNoteDetail to true');
     setSelectedNote(note);
     createTactileEffect();
-    markNoteAsViewed(note.id);
+  };
+
+  // Add function to handle video links
+  const handleVideoLink = (url: string) => {
+    setVideoUrl(url);
+  };
+
+  // Function to close video player
+  const closeVideoPlayer = () => {
+    setVideoUrl(null);
   };
 
   return (
@@ -304,14 +491,14 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                 }}
               >
                 <div className="flex items-center justify-between mb-1 text-white/80">
-                <div className="flex items-center">
-                  {/* Empty div to maintain spacing */}
+                  <div className="flex items-center">
+                    {/* Empty div to maintain spacing */}
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-xs text-white/60">{getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}</span>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <span className="text-xs text-white/60">{getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}</span>
-                </div>
-              </div>
-              
+                
                 <motion.div 
                   className="flex flex-col"
                   variants={containerVariants}
@@ -323,10 +510,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                     variants={itemVariants}
                   >
                     <div className="mb-2">
-                    <h2 className="text-white text-lg font-medium">
-                      {selectedNote?.title}
-                    </h2>
-                  </div>
+                      <h2 className="text-white text-lg font-medium">
+                        {selectedNote?.title}
+                      </h2>
+                    </div>
                     
                     {/* Show full content without preview/expand */}
                     <motion.div 
@@ -337,28 +524,41 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                       }}
                       dangerouslySetInnerHTML={{
                         __html: selectedNote?.content
-                          .split(/(__[^_]+__)|\[([^\]]+)\]\(([^)]+)\)/)
-                          .map((part, index) => {
-                            if (!part) return '';
-                            
-                            // Check if this part is an underlined section
-                            if (part.startsWith('__') && part.endsWith('__')) {
-                              return `<span class="underline decoration-white/90">${part.slice(2, -2)}</span>`;
+                          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+                            // Check if this is an internal note link
+                            if (url.startsWith('note:')) {
+                              const noteId = parseInt(url.substring(5));
+                              return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
+                                e.stopPropagation(); 
+                                window.openNoteWithId(${noteId});
+                              })(event)">${text}</a>`;
                             }
                             
-                            // Check if this is a link text part
-                            if (index % 4 === 2) {
-                              const url = selectedNote?.content.split(/\[([^\]]+)\]\(([^)]+)\)/)[Math.floor(index/4) * 2 + 2];
-                              return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300" onclick="event.stopPropagation()">${part}</a>`;
+                            // Check if this is a video link
+                            if (url.startsWith('video:')) {
+                              const videoUrl = url.substring(6);
+                              return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
+                                e.stopPropagation(); 
+                                window.handleVideoLink('${videoUrl}');
+                              })(event)">${text}</a>`;
                             }
                             
-                            // Skip URL parts
-                            if (index % 4 === 3) return '';
+                            // Check if this is an app link
+                            if (url.startsWith('app:')) {
+                              const appId = url.substring(4);
+                              return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
+                                e.stopPropagation(); 
+                                window.handleAppClick('${appId}');
+                              })(event)">${text}</a>`;
+                            }
                             
-                            // Return regular text
-                            return part;
+                            // External link
+                            return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="event.stopPropagation()">${text}</a>`;
                           })
-                          .join('')
+                          .replace(/(__[^_]+__)/g, (match, part) => {
+                            // Process underlined sections
+                            return `<span class="underline decoration-white/90">${part.slice(2, -2)}</span>`;
+                          })
                       }}
                     />
                   </motion.div>
@@ -403,7 +603,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                               variants={chevronVariants}
                               initial="initial"
                               whileHover="hover"
-                              animate={index === 0 && note.title.includes("who am i again") && !hasInteracted ? chevronControls : undefined}
+                              animate={index === 0 && note.title.includes("hello world!") && !hasInteracted ? chevronControls : undefined}
                             >
                               <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
                             </motion.div>
@@ -515,6 +715,16 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               </div>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Video player overlay */}
+      <AnimatePresence>
+        {videoUrl && (
+          <VideoPlayerOverlay 
+            videoUrl={videoUrl} 
+            onClose={closeVideoPlayer} 
+          />
         )}
       </AnimatePresence>
     </div>

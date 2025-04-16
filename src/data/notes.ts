@@ -10,54 +10,45 @@ export type NoteItem = {
 export const notes: NoteItem[] = [
   { 
     id: 1, 
-    title: "who am i again?", 
-    content: `__main quest__
--> building [kineship](https://kineship.com)
+    title: "hello world!", 
+    content: `<span style="font-weight: bold;">my north star</span> 
+a future where our social framework is optimized for human longevity 🔆
 
-__side/<span class="opacity-50">prior</span> quests__
--> early community architect @ [stealth], [$1M pre-seed via HF0](https://www.hf0.com/)
-<span class="opacity-50">-> _tessel, a social matching experience in vancouver & toronto_
--> _medbridge, health tech for south side chicago_
--> _[gala](https://www.heartandstrokegala.ca/2024-highlights) committee - heart and stroke foundation_
--> _[fashion show](https://crm2.diabetes.ca/site/SPageServer?pagename=2025_pumpcoutu) committee - diabetes canada_</span>
+<span style="font-weight: bold;">building</span>
+▹ [kineship](note:2)
+▹ early community architect @ <span style="color: rgba(255, 255, 255, 0.5);">stealth</span> [($1M pre-seed via HF0)](https://www.hf0.com/)
 
-__mission__
--> enable health focused human interactions
-
-__vision__
--> longevity achieved for all humans
-
-__things i love__
--> workout classes
--> music with guitars
--> night bikes around sf with my friends :)
--> apples`,
-    date: "17/03/25",
-    timeframe: 'older',
+<span style="font-weight: bold;">contributing</span>
+▹ [gala committee](video:https://youtu.be/VMxSzVREUgY), heart and stroke foundation
+▹ [fashion show committee](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), diabetes canada
+▹ [hosting](app:partiful) with my favourite people
+ `,
+    date: "15/04/25",
+    timeframe: 'recent',
     pinned: true
   },
   { 
     id: 2, 
-    title: "why kineship", 
+    title: "kineship", 
     content: "inspired by the mission to reshape social culture to embrace longevity", 
-    date: "25/03/25",
-    timeframe: 'older',
+    date: "12/04/25",
+    timeframe: 'recent',
     pinned: false
   },
   { 
     id: 3, 
     title: "on dinner tables", 
     content: "observations on how we socialize", 
-    date: "12/01/25",
-    timeframe: 'older',
+    date: "02/04/25",
+    timeframe: 'recent',
     pinned: false
   },
   { 
     id: 4, 
-    title: "apples...", 
+    title: "apples", 
     content: "sugarbee - 10/10, pink lady - 9/10, honeycrisp - 7/10", 
-    date: "01/01/25",
-    timeframe: 'older',
+    date: "28/03/25",
+    timeframe: 'recent',
     pinned: false
   },
   { 

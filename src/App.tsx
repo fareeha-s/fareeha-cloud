@@ -1,11 +1,11 @@
-import React, { useState, useRef, useLayoutEffect, useEffect, useMemo } from 'react';
-import { AnimatePresence, motion, useReducedMotion, PanInfo } from 'framer-motion';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { AppIcon } from './components/AppIcon';
 import { NotesScreen } from './screens/NotesScreen';
 import { SocialsScreen } from './screens/SocialsScreen';
 import { EventScreen } from './screens/EventScreen';
 import type { AppIcon as AppIconType } from './types';
-import { Music, ChevronLeft, ChevronRight, StickyNote, ChevronDown } from 'lucide-react';
+import { ChevronLeft, StickyNote } from 'lucide-react';
 import axios from 'axios';
 import { getSession } from 'next-auth/react';
 
@@ -193,9 +193,9 @@ function App() {
   
   // Select notes based on visit history
   const selectedNote = useMemo(() => {
-    // For first visit - show the "who am i again?" note
+    // For first visit - show the "hello world!" note
     if (isFirstVisit) {
-      return notes.find(note => note.title.includes("who am i again")) || notes[0];
+      return notes.find(note => note.title.includes("hello world!")) || notes[0];
     } 
     // For subsequent visits - show random notes
     else {
@@ -493,6 +493,20 @@ function App() {
     };
   }, []);
   
+  // Create a mapping from app IDs to handleAppClick (for use with inline links)
+  useEffect(() => {
+    // Make handleAppClick available to the window object for links in notes
+    window.handleAppClick = (appId: string) => {
+      console.log('App link clicked:', appId);
+      handleAppClick(appId);
+    };
+    
+    return () => {
+      // Clean up
+      delete (window as any).handleAppClick;
+    };
+  }, []);  // Empty dependency array ensures this only runs once
+  
   // For icon masking/cloning during animation
   const [clonedAppIcon, setClonedAppIcon] = useState<{
     app: AppIconType | null;
@@ -787,44 +801,28 @@ function App() {
           ) : (
             /* Home screen title with enhanced styling */
             <motion.h2 
-              className="text-2xl text-white font-medium tracking-wide text-right relative z-30 pointer-events-auto"
-              initial={{ y: 0 }}
+              className="text-xl font-normal tracking-tight text-right relative z-30 pointer-events-auto"
+              initial={{ opacity: 0 }}
               animate={{ 
-                y: [0, 12, 0],
-                opacity: [1, 0.92, 1],
+                opacity: 1,
                 transition: {
-                  repeat: Infinity,
-                  repeatType: "mirror",
-                  duration: 5,
-                  ease: "easeInOut",
-                  times: [0, 0.5, 1]
+                  duration: 0.8,
+                  ease: [0.22, 1, 0.36, 1]
                 }
               }}
               style={{ 
                 position: 'absolute',
-                textShadow: '0 0 8px rgba(255, 255, 255, 0.3)',
-                filter: 'drop-shadow(0 1px 2px rgba(255, 255, 255, 0.1))',
                 bottom: '0',
                 zIndex: 30,
-                letterSpacing: '0.02em',
-                right: '0'
+                right: '0',
+                color: 'rgba(255, 255, 255, 0.95)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                letterSpacing: '-0.01em'
               }}
             >
               <span className="relative inline-block">
-                hi, it's fareeha 🫶
-                <motion.span 
-                  className="absolute inset-0 w-full h-full bg-gradient-to-t from-transparent to-white/5 opacity-0"
-                  animate={{
-                    opacity: [0, 0.3, 0],
-                    transition: {
-                      repeat: Infinity,
-                      duration: 3,
-                      ease: "easeInOut",
-                      repeatType: "reverse",
-                      delay: 0.5
-                    }
-                  }}
-                />
+                hi, it's fareeha
+                <span className="ml-1 inline-block transform -translate-y-[1px]">✨</span>
               </span>
             </motion.h2>
           )}
@@ -834,7 +832,7 @@ function App() {
         <motion.div 
           className={`w-[290px] aspect-square rounded-[24px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container ${
             activeApp ? 'glass-solid-shine' : ''
-          } ${activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail ? 'portrait-container' : ''}`}
+          } ${activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail ? 'portrait-container expanded' : ''} ${activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail ? 'portrait-container expanded' : ''}`}
           onClick={(e) => {
             e.stopPropagation();
             if (activeApp && !isAnimating) handleClose();
@@ -844,10 +842,24 @@ function App() {
             if (activeApp === 'partiful') {
               console.log('App.tsx rendering - isViewingEventDetail:', typeof window !== 'undefined' ? window.isViewingEventDetail : 'undefined');
             }
+            if (activeApp === 'notes') {
+              console.log('App.tsx rendering - isViewingNoteDetail:', typeof window !== 'undefined' ? window.isViewingNoteDetail : 'undefined');
+            }
             
             // We need to ensure that when in event detail view, the portrait styles are applied
             // This is a more reliable approach since window properties might be unreliable
             if (activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail) {
+              return {
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset',
+                transform: 'translateZ(0)',
+                WebkitTransform: 'translateZ(0)',
+                opacity: 1,
+                aspectRatio: '3/4',
+                height: '390px',
+                width: '290px',
+              };
+            }
+            if (activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail) {
               return {
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset',
                 transform: 'translateZ(0)',
@@ -1034,14 +1046,6 @@ function App() {
                     
                     // Record the time of manual navigation for swipe
                     setLastManualNavigation(Date.now());
-                  }}
-                  onMouseLeave={(e) => {
-                    // If mouse leaves while swiping, reset the state
-                    if (swipeStartX !== null) {
-                      setSwipeStartX(null);
-                      setSwipeDirection(null);
-                      setIsSwiping(false);
-                    }
                   }}
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.04)',
