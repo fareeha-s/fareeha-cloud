@@ -17,6 +17,7 @@ declare global {
     handleAppClick?: (appId: string) => void;
     initialEventId?: number;
     handleVideoLink?: (url: string) => void;
+    openNoteDirectly?: boolean;
   }
 }
 
@@ -143,6 +144,27 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   
   // Create a ref for the note content container
   const noteContentRef = useRef<HTMLDivElement>(null);
+  
+  // Check for the openNoteDirectly flag to open note in detail view directly
+  useEffect(() => {
+    // If the openNoteDirectly flag is set, and we have an initialNoteId
+    if (typeof window !== 'undefined' && window.openNoteDirectly && window.initialNoteId) {
+      // Find the note with the specified ID
+      const noteToOpen = notes.find(note => note.id === window.initialNoteId);
+      if (noteToOpen) {
+        // Open the note directly in detail view
+        console.log('Opening note directly in detail view:', noteToOpen.id);
+        setSelectedNote(noteToOpen);
+        setIsViewingDetail(true);
+        // Set the current note index for navigation
+        const noteIndex = notes.findIndex(note => note.id === noteToOpen.id);
+        setCurrentNoteIndex(noteIndex);
+        
+        // Reset the openNoteDirectly flag to avoid reopening on component re-renders
+        window.openNoteDirectly = false;
+      }
+    }
+  }, []);
   
   // Detect if user is on a mobile device
   useEffect(() => {

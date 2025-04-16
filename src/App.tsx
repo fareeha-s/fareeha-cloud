@@ -594,10 +594,11 @@ function App() {
 
   // Handle navigation between apps
   const handleWidgetClick = (widgetType: string) => {
-    // Special case for workout widget to navigate to the kineship note
+    // Special case for workout widget to navigate directly to the kineship note detail view
     if (widgetType === 'workout') {
-      // Open the kineship note instead of workout app
+      // Open the kineship note directly in detail view
       window.initialNoteId = 2; // ID of the kineship note
+      window.openNoteDirectly = true; // Signal to open this note directly in detail view
       handleAppClick('notes');
       return;
     }
@@ -606,6 +607,7 @@ function App() {
     if (widgetType === 'notes') {
       // Set up global variable to tell NotesScreen which note to highlight
       window.initialNoteId = selectedNote.id;
+      window.openNoteDirectly = false; // Reset this flag
       handleAppClick(widgetType);
       return;
     }
@@ -614,6 +616,8 @@ function App() {
     if (widgetType === 'partiful') {
       // Set up global variable to tell EventScreen which event to open
       window.initialEventId = selectedEvent.id;
+      // Reset note opening flag
+      window.openNoteDirectly = false;
     }
     
     // Navigate to the appropriate app screen for other widget types
