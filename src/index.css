@@ -285,31 +285,56 @@
   aspect-ratio: 3/4 !important;
   height: 390px !important;
   width: 290px !important;
-  transition: all 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, width, height, aspect-ratio;
 }
 
 /* Position the container's parent element correctly */
 .portrait-container ~ div[style*="marginTop"] {
   margin-top: -195px !important; /* Half of the height */
-  transition: margin-top 0.15s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transition: margin-top 0.5s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 /* Make sure even the parent container without portrait-container yet has a smooth transition */
 div[style*="marginTop"] {
-  transition: margin-top 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: margin-top 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Smooth transition between aspect ratios */
+/* Smooth transition between aspect ratios - separate transitions for forward/backward */
 .main-container {
-  transition: aspect-ratio 0.15s cubic-bezier(0.22, 1, 0.36, 1),
-              height 0.15s cubic-bezier(0.22, 1, 0.36, 1),
-              width 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, width, height, aspect-ratio;
+  transition-property: width, height, aspect-ratio;
+}
+
+/* Specific transition for collapsing back to square from portrait */
+.main-container.collapsing {
+  aspect-ratio: 1/1 !important;
+  height: 290px !important;
+  width: 290px !important;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Ensure text stays readable during transition */
 .portrait-container .h-full {
   height: 100% !important;
-  transition: height 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Expanded state for portrait container */
+.portrait-container.expanded {
+  aspect-ratio: 3/4 !important;
+  height: 390px !important;
+  width: 290px !important;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Expanded state for main container */
+.main-container.expanded {
+  aspect-ratio: 3/4 !important;
+  height: 390px !important;
+  width: 290px !important;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Special handling for blood moon rising title - with extra specificity */

@@ -3,7 +3,7 @@ import type { AppScreenProps } from '../types';
 import { motion, useReducedMotion, useAnimation, PanInfo, AnimatePresence } from 'framer-motion';
 import { createTactileEffect } from '../App';
 import { PartifulEvent } from '../components/PartifulEvent';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import { events, EventItem } from '../data/events';
 
 // Declare the global window property for TypeScript
@@ -23,6 +23,8 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [widgetEventId, setWidgetEventId] = useState<number | null>(null);
   const [defaultHighlightEventId, setDefaultHighlightEventId] = useState<number | null>(null);
+  const [showSwipeIndicator, setShowSwipeIndicator] = useState(false);
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   
   // Create a ref to use for directly setting the window property
   const isViewingDetailRef = useRef(false);
@@ -77,6 +79,28 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
       delete window.isViewingEventDetail;
     };
   }, [showPartiful]);
+
+  // Modified to show swipe indicator when user scrolls to bottom of first event
+  useEffect(() => {
+    if (showPartiful && hasScrolledToBottom) {
+      // Check localStorage to see if user has seen the swipe indicator before
+      const hasSeenSwipeIndicator = localStorage.getItem('hasSeenEventSwipeIndicator');
+      
+      if (!hasSeenSwipeIndicator) {
+        // Show the swipe indicator
+        setShowSwipeIndicator(true);
+        
+        // Hide the indicator after 3 seconds
+        const timer = setTimeout(() => {
+          setShowSwipeIndicator(false);
+          // Mark that user has seen the indicator
+          localStorage.setItem('hasSeenEventSwipeIndicator', 'true');
+        }, 3000);
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [showPartiful, hasScrolledToBottom]);
 
   // Restore this useEffect to ensure the portrait mode is properly maintained
   useEffect(() => {
@@ -248,22 +272,19 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     // Calculate previous and next event indices (ensuring they're clickable)
     const getNextClickableEvent = (startIndex: number, direction: 'next' | 'prev') => {
       const totalEvents = events.length;
+      let offset = direction === 'next' ? 1 : -1;
       let index = startIndex;
       
+      // Loop through all events to find the next/prev clickable one
       for (let i = 0; i < totalEvents; i++) {
-        // Move to next/prev index with wrapping
-        index = direction === 'next' 
-          ? (index + 1) % totalEvents 
-          : (index - 1 + totalEvents) % totalEvents;
-        
-        // Return if the event is clickable
+        index = (index + offset + totalEvents) % totalEvents; // Ensure wrap-around
         if (events[index].clickable) {
           return events[index].id;
         }
       }
       
-      // If no clickable events found, return the current one
-      return selectedEventId || events[0].id;
+      // If no clickable events found, return the original
+      return events[startIndex].id;
     };
     
     const prevEventId = getNextClickableEvent(currentIndex, 'prev');
@@ -317,7 +338,52 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                 setSelectedEventId(null);
                 createTactileEffect();
               }}
+              onScrollToBottom={() => setHasScrolledToBottom(true)}
             />
+            
+            {/* Swipe indicator overlay - Apple-style */}
+            <AnimatePresence>
+              {showSwipeIndicator && (
+                <motion.div 
+                  className="absolute bottom-8 left-0 right-0 pointer-events-none flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <motion.div 
+                    className="flex items-center space-x-1.5"
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 10, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div 
+                      className="w-1.5 h-1.5 rounded-full bg-white opacity-60"
+                      animate={{ opacity: [0.4, 0.6, 0.4] }}
+                      transition={{ 
+                        repeat: Infinity,
+                        duration: 1.5,
+                        ease: "easeInOut" 
+                      }}
+                    />
+                    <motion.div 
+                      className="w-1.5 h-1.5 rounded-full bg-white opacity-80" 
+                    />
+                    <motion.div 
+                      className="w-1.5 h-1.5 rounded-full bg-white opacity-60"
+                      animate={{ opacity: [0.4, 0.6, 0.4] }}
+                      transition={{ 
+                        repeat: Infinity,
+                        duration: 1.5,
+                        ease: "easeInOut",
+                        delay: 0.1
+                      }}
+                    />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </AnimatePresence>
       </div>

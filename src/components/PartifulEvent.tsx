@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronDown, Shirt, Utensils } from 'lucide-react';
+import { Shirt, Utensils } from 'lucide-react';
 import { EventItem } from '../data/events';
 
 type PartifulEventProps = {
   onBack: () => void;
   eventData?: EventItem;
+  onScrollToBottom?: () => void;
 };
 
-export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData }) => {
+export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData, onScrollToBottom }) => {
   // State to track if user has scrolled
   const [hasScrolled, setHasScrolled] = useState(false);
   // State to track if additional content is expanded
@@ -52,19 +53,40 @@ limited capacity! tell us what you'd share 🫶🏼`;
     
     // Add scroll event listener
     const handleScroll = () => {
-      if (window.scrollY > 50 || (containerRef.current && containerRef.current.scrollTop > 50)) {
-        setHasScrolled(true);
+      if (containerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+        
+        // Track if user has scrolled more than 50px
+        if (scrollTop > 50) {
+          setHasScrolled(true);
+        }
+        
+        // Check if user has scrolled near the bottom (within 30px)
+        const isAtBottom = scrollHeight - scrollTop - clientHeight < 30;
+        if (isAtBottom && onScrollToBottom) {
+          onScrollToBottom();
+        }
       }
     };
     
+    // Add event listener to the container
+    const currentContainer = containerRef.current;
+    if (currentContainer) {
+      currentContainer.addEventListener('scroll', handleScroll);
+    }
+    
+    // Also listen for window scroll (fallback)
     window.addEventListener('scroll', handleScroll);
     
     // Clean up function to remove the class when component unmounts
     return () => {
       document.body.classList.remove('partiful-event-active');
+      if (currentContainer) {
+        currentContainer.removeEventListener('scroll', handleScroll);
+      }
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [onScrollToBottom]);
 
   // Toggle expanded state
   const toggleExpanded = (e: React.MouseEvent) => {
