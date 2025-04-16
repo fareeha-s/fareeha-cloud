@@ -138,30 +138,54 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Replace isAtBottom with showDots for pagination timing
   const [showDots, setShowDots] = useState(false);
   
+  // Add state to detect if user is on a mobile device
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  
   // Create a ref for the note content container
   const noteContentRef = useRef<HTMLDivElement>(null);
   
+  // Detect if user is on a mobile device
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      setIsMobileDevice(isMobile);
+    };
+    
+    checkIfMobile();
+    
+    // Also check on resize in case of device orientation changes
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+  
   // Add effect to check if user has already used swipe
   useEffect(() => {
-    // Check localStorage for previous swipe interactions
-    const hasUsedSwipe = localStorage.getItem('hasUsedNoteSwipe') === 'true';
-    if (hasUsedSwipe) {
-      // If user has already swiped before, don't show dots
+    // Only check localStorage for mobile devices
+    if (isMobileDevice) {
+      // Check localStorage for previous swipe interactions
+      const hasUsedSwipe = localStorage.getItem('hasUsedNoteSwipe') === 'true';
+      if (hasUsedSwipe) {
+        // If user has already swiped before, don't show dots
+        setShowDots(false);
+      }
+    } else {
+      // Never show dots for non-mobile devices
       setShowDots(false);
     }
-  }, []);
+  }, [isMobileDevice]);
 
   // Add effect to show dots when note is opened, if user hasn't swiped before
   useEffect(() => {
-    if (selectedNote) {
+    if (selectedNote && isMobileDevice) {
       const hasUsedSwipe = localStorage.getItem('hasUsedNoteSwipe') === 'true';
       
-      // Only show dots if user hasn't swiped before
+      // Only show dots if user hasn't swiped before and is on mobile
       if (!hasUsedSwipe) {
         setShowDots(true);
       }
     }
-  }, [selectedNote]);
+  }, [selectedNote, isMobileDevice]);
 
   // Function to update both the ref and window property
   const setIsViewingDetail = (value: boolean) => {
@@ -539,16 +563,16 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            // Add swipe handlers for navigation
-            onTouchStart={(e) => {
+            // Only add swipe handlers for mobile devices
+            onTouchStart={isMobileDevice ? (e) => {
               // Don't initialize swipe if user is interacting with text (potential copy operation)
               if (window.getSelection()?.toString()) {
                 return;
               }
               setSwipeStartX(e.touches[0].clientX);
               setSwipeDirection(null);
-            }}
-            onTouchMove={(e) => {
+            } : undefined}
+            onTouchMove={isMobileDevice ? (e) => {
               if (swipeStartX === null) return;
               
               // Don't process swipe if user is selecting text
@@ -567,8 +591,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                   setSwipeDirection(newDirection);
                 }
               }
-            }}
-            onTouchEnd={(e) => {
+            } : undefined}
+            onTouchEnd={isMobileDevice ? (e) => {
               if (swipeStartX === null || swipeDirection === null) return;
               
               // Don't complete swipe if user has selected text (copy operation)
@@ -592,43 +616,13 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               
               setSwipeStartX(null);
               setSwipeDirection(null);
-            }}
-            // Also handle mouse-based swipes for desktop
-            onMouseDown={(e) => {
-              setSwipeStartX(e.clientX);
-              setSwipeDirection(null);
-            }}
-            onMouseMove={(e) => {
-              if (swipeStartX === null) return;
-              
-              const diff = e.clientX - swipeStartX;
-              
-              // Set direction once we have a clear movement
-              if (Math.abs(diff) > 10) {
-                const newDirection = diff > 0 ? 'right' : 'left';
-                if (swipeDirection !== newDirection) {
-                  setSwipeDirection(newDirection);
-                }
-              }
-            }}
-            onMouseUp={(e) => {
-              if (swipeStartX === null || swipeDirection === null) return;
-              
-              const diff = e.clientX - swipeStartX;
-              
-              if (Math.abs(diff) > 50) { // Minimum swipe distance
-                if (swipeDirection === 'right') {
-                  navigateToPrevNote(); // Right swipe navigates to previous note
-                } else {
-                  navigateToNextNote(); // Left swipe navigates to next note
-                }
-              }
-              
-              setSwipeStartX(null);
-              setSwipeDirection(null);
-            }}
+            } : undefined}
+            // Remove mouse-based swipes for desktop completely
+            onMouseDown={undefined}
+            onMouseMove={undefined}
+            onMouseUp={undefined}
             style={{
-              cursor: swipeStartX !== null ? (swipeDirection === 'right' ? 'w-resize' : swipeDirection === 'left' ? 'e-resize' : 'grab') : 'auto'
+              cursor: 'auto' // Always use default cursor for web users
             }}
           >
             <div 
