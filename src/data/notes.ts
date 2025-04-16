@@ -30,7 +30,14 @@ export const notes: NoteItem[] = [
   { 
     id: 2, 
     title: "kineship", 
-    content: `▹ <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.5);">kineship.com</a>
+    content: `<div style="display: flex; align-items: center; margin-bottom: 12px;">
+  <div style="width: 42px; height: 42px; border-radius: 10px; background-color: rgba(98, 190, 156, 0.2); display: flex; align-items: center; justify-content: center; margin-right: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid rgba(255, 255, 255, 0.1);">
+    <img src="./icons/apps/kineship.png" alt="Kineship" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
+  </div>
+  <div style="font-size: 16px; color: white; font-weight: 400;"><a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.5);">kineship.com</a></div>
+</div>
+
+▹ <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.5);">kineship.com</a>
 
 the kineship app shares your workout calendar with your circles. the underlying principle is to help increase behavioural synchrony between you and your community - which is a key driver of longevity!`, 
     date: "12/04/25",
