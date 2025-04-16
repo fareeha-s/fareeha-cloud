@@ -598,11 +598,62 @@ limited capacity! tell us what you'd share 🫶🏼`;
                 ]
               ];
               
+              // Collection of accent/wildcard colors that can be inserted into any scheme
+              const wildcardColors = [
+                { bg: 'linear-gradient(135deg, #FF4D6D, #FF9D8D)', pattern: 'radial-gradient(circle at 40% 40%, rgba(255,255,255,0.15) 0%, transparent 50%)' },
+                { bg: 'linear-gradient(135deg, #845EC2, #B39CD0)', pattern: 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.15) 0%, transparent 50%)' },
+                { bg: 'linear-gradient(135deg, #00C9A7, #1AC0C6)', pattern: 'radial-gradient(circle at 45% 45%, rgba(255,255,255,0.15) 0%, transparent 50%)' },
+                { bg: 'linear-gradient(135deg, #F39233, #FFBD69)', pattern: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, transparent 50%)' },
+                { bg: 'linear-gradient(135deg, #4D8076, #84A9AC)', pattern: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 50%)' },
+                { bg: 'linear-gradient(135deg, #3B429F, #3A8AC0)', pattern: 'radial-gradient(circle at 40% 40%, rgba(255,255,255,0.15) 0%, transparent 50%)' },
+                { bg: 'linear-gradient(135deg, #0D5C46, #329476)', pattern: 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.15) 0%, transparent 50%)' },
+                { bg: 'linear-gradient(135deg, #A12568, #FF7582)', pattern: 'radial-gradient(circle at 45% 45%, rgba(255,255,255,0.15) 0%, transparent 50%)' },
+              ];
+              
               // Use the eventData.id to create a predictable but seemingly random scheme
               // This ensures the same event always gets the same color scheme
               const eventIdNum = eventData?.id ? parseInt(eventData.id.toString().slice(-1), 10) : 0;
               const schemeIndex = eventIdNum % colorSchemes.length;
-              const colors = colorSchemes[schemeIndex];
+              let colors = [...colorSchemes[schemeIndex]]; // Make a copy we can modify
+              
+              // Inject some randomness with wildcard circles
+              // Use the event id and index to create a deterministic but seemingly random selection
+              const shouldUseWildcard = (eventIdNum + index) % 3 === 0; // Every 3rd profile has a chance for a wildcard
+              
+              if (shouldUseWildcard) {
+                // Use a combination of eventId and index to select a consistent wildcard
+                const wildcardIndex = (eventIdNum + index) % wildcardColors.length;
+                // Replace the current color with a wildcard color
+                colors[index] = wildcardColors[wildcardIndex];
+              }
+              
+              // Add some variation in gradient direction for more diversity
+              const gradientDirections = ['135deg', '150deg', '120deg', '165deg', '105deg', '90deg'];
+              const directionIndex = (eventIdNum + index) % gradientDirections.length;
+              
+              // Extract color values from the gradient for manipulation
+              const bgGradient = colors[index].bg;
+              const colorMatches = bgGradient.match(/linear-gradient\(\d+deg,\s*([^,]+),\s*([^)]+)\)/);
+              
+              if (colorMatches && colorMatches.length >= 3) {
+                const color1 = colorMatches[1].trim();
+                const color2 = colorMatches[2].trim();
+                
+                // Occasionally flip the gradient colors or adjust opacity for more variety
+                const shouldFlip = (eventIdNum + index) % 5 === 0;
+                const shouldAdjustOpacity = (eventIdNum + index + 1) % 4 === 0;
+                
+                if (shouldFlip) {
+                  colors[index].bg = `linear-gradient(${gradientDirections[directionIndex]}, ${color2}, ${color1})`;
+                } else if (shouldAdjustOpacity) {
+                  // Make one color slightly transparent for more subtle gradients
+                  const opacity = 0.8 + (index % 3) * 0.1; // Between 0.8 and 1.0
+                  colors[index].bg = `linear-gradient(${gradientDirections[directionIndex]}, ${color1}, ${color2.replace(')', `, ${opacity})`).replace('rgb', 'rgba')}`;
+                } else {
+                  // Just change the direction
+                  colors[index].bg = `linear-gradient(${gradientDirections[directionIndex]}, ${color1}, ${color2})`;
+                }
+              }
               
               // Add subtle animation delay based on index
               const animationDelay = `${index * 0.1}s`;
