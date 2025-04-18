@@ -90,6 +90,9 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
         // Show the swipe indicator if user hasn't swiped before
         setShowSwipeIndicator(true);
       }
+    } else {
+      // Hide the indicator if not showing Partiful or not scrolled to bottom
+      setShowSwipeIndicator(false);
     }
   }, [showPartiful, hasScrolledToBottom]);
 
@@ -283,10 +286,17 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
   }, [showPartiful]);
 
   const handleEventPress = (event: EventItem) => {
+    // Mark event as viewed for the pulsing dot
     markEventAsViewed(event.id);
-    setSelectedEventId(event.id);
-    setShowPartiful(true);
-    createTactileEffect();
+    
+    // Check if we need to show partiful data
+    if (event.clickable) {
+      // Reset scroll state when showing a new event
+      setHasScrolledToBottom(false);
+      setSelectedEventId(event.id);
+      setShowPartiful(true);
+      createTactileEffect();
+    }
   };
 
   if (showPartiful) {
@@ -330,6 +340,8 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
         // Swiped right - go to previous event
         markEventAsViewed(prevEventId);
         setSelectedEventId(prevEventId);
+        // Reset scroll state for the new event
+        setHasScrolledToBottom(false);
         createTactileEffect();
         
         // Hide indicator permanently
@@ -339,6 +351,8 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
         // Swiped left - go to next event
         markEventAsViewed(nextEventId);
         setSelectedEventId(nextEventId);
+        // Reset scroll state for the new event
+        setHasScrolledToBottom(false);
         createTactileEffect();
         
         // Hide indicator permanently

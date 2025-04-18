@@ -2,16 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
     <title>hi it's fareeha!</title>
-    
+
     <!-- Font preloading - optimized strategy -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" as="style">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
-    
+                            
     <!-- Add inline font-display:swap rule for immediate text visibility -->
     <style>
       @font-face {
@@ -31,9 +31,9 @@
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
       }
     </style>
-    
-    <!-- Preload critical assets -->
-    <link rel="preload" href="/background.jpg" as="image" />
+
+    <!-- Preload critical assets - optimized image loading strategy -->
+    <link rel="preload" href="./optimized/background-placeholder.webp" as="image" fetchpriority="high" />
     
     <style>
       :root {
@@ -55,79 +55,86 @@
         color: white;
         font-family: var(--font-sans);
       }
-      
+
       /* iOS devices - use system font */
       @supports (-webkit-touch-callout: none) {
         :root {
           --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
         }
       }
-      
+
       #root {
         height: 100%;
         width: 100%;
         overflow: hidden;
         font-family: var(--font-sans);
       }
-      /* Background image preloader with smoother transition */
+      
+      /* Progressive image loading for background */
       body::before {
         content: "";
         position: fixed;
         inset: 0;
         z-index: -1;
-        background-image: url('/background.jpg');
+        background-image: url('./optimized/background-placeholder.webp');
         background-size: cover;
         background-position: center;
         opacity: 0;
-        transition: opacity 2s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: opacity 0.3s ease-out;
       }
-      body.loaded::before {
+      
+      body.placeholder-loaded::before {
         opacity: 1;
       }
-
+      
+      body.final-loaded::before {
+        background-image: url('./optimized/background.webp');
+        transition: opacity 1s ease-out, background-image 0s 0.5s;
+      }
+      
       /* Progressive blur animation keyframes */
       @keyframes gradualBlur {
-        0% { 
-          backdrop-filter: blur(0px); 
-          -webkit-backdrop-filter: blur(0px); 
+        0% {
+          backdrop-filter: blur(0px);
+          -webkit-backdrop-filter: blur(0px);
         }
-        50% { 
-          backdrop-filter: blur(5px); 
-          -webkit-backdrop-filter: blur(5px); 
+        50% {
+          backdrop-filter: blur(5px);
+          -webkit-backdrop-filter: blur(5px);
         }
-        100% { 
-          backdrop-filter: blur(10px); 
-          -webkit-backdrop-filter: blur(10px); 
+        100% {
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
         }
       }
 
       @keyframes gradualBlurMedium {
-        0% { 
-          backdrop-filter: blur(0px); 
-          -webkit-backdrop-filter: blur(0px); 
+        0% {
+          backdrop-filter: blur(0px);
+          -webkit-backdrop-filter: blur(0px);
         }
-        50% { 
-          backdrop-filter: blur(6px); 
-          -webkit-backdrop-filter: blur(6px); 
+        50% {
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
         }
-        100% { 
-          backdrop-filter: blur(12px); 
-          -webkit-backdrop-filter: blur(12px); 
+        100% {
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
         }
       }
 
       @keyframes gradualBlurSmall {
-        0% { 
-          backdrop-filter: blur(0px); 
-          -webkit-backdrop-filter: blur(0px); 
+        0% {
+          backdrop-filter: blur(0px);
+          -webkit-backdrop-filter: blur(0px);
         }
-        50% { 
-          backdrop-filter: blur(2px); 
-          -webkit-backdrop-filter: blur(2px); 
+        50% {
+          backdrop-filter: blur(2px);
+          -webkit-backdrop-filter: blur(2px);
         }
-        100% { 
-          backdrop-filter: blur(4px); 
-          -webkit-backdrop-filter: blur(4px); 
+        100% {
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
         }
       }
 
@@ -136,20 +143,20 @@
         backdrop-filter: blur(0px);
         -webkit-backdrop-filter: blur(0px);
       }
-      
-      body.loaded .backdrop-blur-lg {
-        animation: gradualBlur var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: gradualBlur var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+      body.final-loaded .backdrop-blur-lg {
+        animation: gradualBlur 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;      
+        -webkit-animation: gradualBlur 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
-      
-      body.loaded .backdrop-blur-2xl {
-        animation: gradualBlurMedium var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: gradualBlurMedium var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+      body.final-loaded .backdrop-blur-2xl {
+        animation: gradualBlurMedium 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: gradualBlurMedium 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
-      
-      body.loaded .backdrop-blur-sm {
-        animation: gradualBlurSmall var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: gradualBlurSmall var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+      body.final-loaded .backdrop-blur-sm {
+        animation: gradualBlurSmall 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+        -webkit-animation: gradualBlurSmall 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
 
       /* Force transparency during initial load with gradual change */
@@ -160,15 +167,15 @@
         75% { background-color: rgba(0, 0, 0, 0.12); }
         100% { background-color: rgba(0, 0, 0, 0.15); }
       }
-      
+
       .bg-black\/20 {
         background-color: rgba(0, 0, 0, 0.02) !important;
       }
-      
-      body.loaded .bg-black\/20 {
-        animation: fadeInBackground var(--blur-animation-duration) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+      body.final-loaded .bg-black\/20 {
+        animation: fadeInBackground 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
       }
-      
+
       /* Improve rendering on mobile */
       .will-change-transform {
         will-change: transform;
@@ -177,22 +184,36 @@
       }
     </style>
     <script>
-      // Preload the background image with faster animation
-      const img = new Image();
-      img.src = '/background.jpg';
-      img.onload = function() {
-        // Reduce delay to ensure faster loading
+      // Optimized progressive image loading
+      document.addEventListener('DOMContentLoaded', function() {
+        // Load placeholder immediately
+        const placeholderImg = new Image();
+        placeholderImg.src = './optimized/background-placeholder.webp';
+        placeholderImg.onload = function() {
+          document.body.classList.add('placeholder-loaded');
+          
+          // Then preload the full image 
+          const fullImg = new Image();
+          fullImg.src = './optimized/background.webp';
+          fullImg.onload = function() {
+            document.body.classList.add('final-loaded');
+          };
+        };
+        
+        // Fallback if placeholder fails
         setTimeout(() => {
-          document.body.classList.add('loaded');
-        }, 150);
-      };
-      
-      // Reduce fallback timeout
-      setTimeout(() => {
-        if (!document.body.classList.contains('loaded')) {
-          document.body.classList.add('loaded');
-        }
-      }, 1000);
+          if (!document.body.classList.contains('placeholder-loaded')) {
+            document.body.classList.add('placeholder-loaded');
+          }
+        }, 200);
+        
+        // Fallback if full image fails
+        setTimeout(() => {
+          if (!document.body.classList.contains('final-loaded')) {
+            document.body.classList.add('final-loaded');
+          }
+        }, 800);
+      });
 
       // Detect high-end devices for smoother animations
       function detectDevicePerformance() {

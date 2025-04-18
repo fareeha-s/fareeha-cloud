@@ -210,14 +210,17 @@ function App() {
   
   // Select notes based on visit history
   const selectedNote = useMemo(() => {
+    // Filter out locked notes to ensure we never select a locked note
+    const unlockNotes = notes.filter(note => !note.locked);
+    
     // For first visit - show the "hello world!" note
     if (isFirstVisit) {
-      return notes.find(note => note.title.includes("hello world!")) || notes[0];
+      return unlockNotes.find(note => note.title.includes("hello world!")) || unlockNotes[0];
     } 
     // For subsequent visits - show random notes
     else {
-      const randomIndex = Math.floor(Math.random() * notes.length);
-      return notes[randomIndex];
+      const randomIndex = Math.floor(Math.random() * unlockNotes.length);
+      return unlockNotes[randomIndex];
     }
   }, [isFirstVisit]);
   
@@ -606,7 +609,10 @@ function App() {
     // Special case for notes widget to open the notes list
     if (widgetType === 'notes') {
       // Set up global variable to tell NotesScreen which note to highlight
-      window.initialNoteId = selectedNote.id;
+      // Filter out locked notes to ensure we never highlight a locked note
+      const unlockNotes = notes.filter(note => !note.locked);
+      const noteToHighlight = unlockNotes.find(note => note.id === selectedNote.id) || unlockNotes[0];
+      window.initialNoteId = noteToHighlight.id;
       window.openNoteDirectly = false; // Reset this flag
       handleAppClick(widgetType);
       return;
@@ -666,20 +672,20 @@ function App() {
           }}
         >
           {/* Subtle bokeh effect overlay */}
-          <div 
+        <div 
             className="absolute inset-0 opacity-30"
-            style={{ 
+          style={{ 
               backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.03) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.02) 0%, transparent 30%), radial-gradient(circle at 45% 80%, rgba(180,180,200,0.02) 0%, transparent 40%)',
               mixBlendMode: 'screen'
-            }}
-          ></div>
-          
+          }}
+        ></div>
+        
           {/* Background image that loads on top of the gradient */}
           <img 
             src="./optimized/background.webp" 
             alt=""
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ 
+          style={{ 
               opacity: isLoaded ? 0.9 : 0,
               transition: 'opacity 1s ease',
             }}
@@ -690,15 +696,15 @@ function App() {
               img.src = './background.jpg';
             }}
           />
-          
+        
           {/* Subtle overlay for better text contrast */}
-          <div 
+        <div 
             className="absolute inset-0 bg-black/20"
-            style={{ 
+          style={{
               opacity: isLoaded ? 0.5 : 0,
               transition: 'opacity 1s ease',
-            }}
-          ></div>
+          }}
+        ></div>
         </div>
       </div>
 
@@ -925,44 +931,44 @@ function App() {
                   // Implement a direct, simpler swipe detection system for mobile devices only
                   onTouchStart={(e) => {
                     if (isMobileDevice) {
-                      setSwipeStartX(e.touches[0].clientX);
-                      setSwipeDirection(null);
-                      setIsSwiping(true);
+                    setSwipeStartX(e.touches[0].clientX);
+                    setSwipeDirection(null);
+                    setIsSwiping(true);
                     }
                   }}
                   onTouchMove={(e) => {
                     if (isMobileDevice && swipeStartX !== null) {
-                      const currentX = e.touches[0].clientX;
-                      const diff = currentX - swipeStartX;
-                      
-                      // Set direction once we have a clear movement
-                      if (Math.abs(diff) > 10) {
-                        const newDirection = diff > 0 ? 'right' : 'left';
-                        if (swipeDirection !== newDirection) {
-                          setSwipeDirection(newDirection);
+                    const currentX = e.touches[0].clientX;
+                    const diff = currentX - swipeStartX;
+                    
+                    // Set direction once we have a clear movement
+                    if (Math.abs(diff) > 10) {
+                      const newDirection = diff > 0 ? 'right' : 'left';
+                      if (swipeDirection !== newDirection) {
+                        setSwipeDirection(newDirection);
                         }
                       }
                     }
                   }}
                   onTouchEnd={(e) => {
                     if (isMobileDevice && swipeStartX !== null && swipeDirection !== null) {
-                      const endX = e.changedTouches[0].clientX;
-                      const diff = endX - swipeStartX;
-                      
-                      if (Math.abs(diff) > 50) { // Minimum swipe distance
-                        if (swipeDirection === 'right') {
-                          handlePrevWidget();
-                        } else {
-                          handleNextWidget();
-                        }
+                    const endX = e.changedTouches[0].clientX;
+                    const diff = endX - swipeStartX;
+                    
+                    if (Math.abs(diff) > 50) { // Minimum swipe distance
+                      if (swipeDirection === 'right') {
+                        handlePrevWidget();
+                      } else {
+                        handleNextWidget();
                       }
-                      
-                      setSwipeStartX(null);
-                      setSwipeDirection(null);
-                      setIsSwiping(false);
-                      
-                      // Record the time of manual navigation for swipe
-                      setLastManualNavigation(Date.now());
+                    }
+                    
+                    setSwipeStartX(null);
+                    setSwipeDirection(null);
+                    setIsSwiping(false);
+                    
+                    // Record the time of manual navigation for swipe
+                    setLastManualNavigation(Date.now());
                     }
                   }}
                   // Remove mouse-based swipes for desktop completely
@@ -977,8 +983,8 @@ function App() {
                   padding: '14px',
                   transform: 'translateZ(0)',
                   WebkitTransform: 'translateZ(0)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
-                  touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal swipes
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
+                    touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal swipes
                   cursor: 'pointer' // Always use pointer cursor for web users
                 }}
               >

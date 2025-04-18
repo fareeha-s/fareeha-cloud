@@ -20,14 +20,14 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
   const socials: SocialApp[] = [
     {
       name: "strava",
-      icon: "/icons/apps/strava.png",
+      icon: "./icons/apps/strava.png",
       url: "https://strava.app.link/PzFPfOvKpSb",
       position: 1,
       isCustomIcon: true
     },
     {
       name: "instagram",
-      icon: "/icons/apps/instagram.png",
+      icon: "./icons/apps/instagram.png",
       url: "https://instagram.com/fareehasala",
       position: 2,
       isCustomIcon: true
@@ -53,28 +53,28 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
     },
     {
       name: "kineship",
-      icon: "/icons/apps/kineship.png",
+      icon: "./icons/apps/kineship.png",
       url: "https://kineship.com",
       position: 6,
       isCustomIcon: true
     },
     {
       name: "retro",
-      icon: "/icons/apps/retro.jpg",
+      icon: "./icons/apps/retro.jpg",
       url: "https://retro.app/@fareeha",
       position: 7,
       isCustomIcon: true
     },
     {
       name: "airbuds",
-      icon: "/icons/apps/airbuds.png",
+      icon: "./icons/apps/airbuds.png",
       url: "https://i.airbuds.fm/fareehas/pC4Nm0VR4i",
       position: 8,
       isCustomIcon: true
     },
     {
       name: "corner",
-      icon: "/icons/apps/corner.jpg",
+      icon: "./icons/apps/corner.jpg",
       url: "https://www.corner.inc/fareeha",
       position: 9,
       isCustomIcon: true
