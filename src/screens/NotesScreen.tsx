@@ -539,6 +539,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     if (currentNoteIndex >= allNotesArray.length - 1) return;
     
     const nextNote = allNotesArray[currentNoteIndex + 1];
+    // Don't navigate to locked notes
+    if (nextNote.locked) return;
+    
     setSelectedNote(nextNote);
     setCurrentNoteIndex(currentNoteIndex + 1);
     markNoteAsViewed(nextNote.id);
@@ -557,6 +560,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     if (currentNoteIndex <= 0) return;
     
     const prevNote = allNotesArray[currentNoteIndex - 1];
+    // Don't navigate to locked notes
+    if (prevNote.locked) return;
+    
     setSelectedNote(prevNote);
     setCurrentNoteIndex(currentNoteIndex - 1);
     markNoteAsViewed(prevNote.id);
@@ -610,6 +616,14 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               const currentX = e.touches[0].clientX;
               const diff = currentX - swipeStartX;
               
+              // Check if the note is locked before allowing swipe
+              const allNotesArray = [...pinnedNotes, ...allNotes];
+              const nextNote = diff < 0 ? allNotesArray[currentNoteIndex + 1] : allNotesArray[currentNoteIndex - 1];
+              if (nextNote?.locked) {
+                setSwipeStartX(null);
+                return;
+              }
+              
               // Increased threshold for swipe detection to avoid accidental swipes
               if (Math.abs(diff) > 20) {
                 const newDirection = diff > 0 ? 'right' : 'left';
@@ -630,6 +644,15 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               
               const endX = e.changedTouches[0].clientX;
               const diff = endX - swipeStartX;
+              
+              // Check if the note is locked before allowing swipe
+              const allNotesArray = [...pinnedNotes, ...allNotes];
+              const nextNote = diff > 0 ? allNotesArray[currentNoteIndex - 1] : allNotesArray[currentNoteIndex + 1];
+              if (nextNote?.locked) {
+                setSwipeStartX(null);
+                setSwipeDirection(null);
+                return;
+              }
               
               // Increased minimum swipe distance for better differentiation
               if (Math.abs(diff) > 80) { // Increased from 50 to 80
