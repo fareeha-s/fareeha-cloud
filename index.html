@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/fareeha-cloud/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
     <title>hi it's fareeha!</title>
 
@@ -33,7 +33,7 @@
     </style>
 
     <!-- Preload critical assets - optimized image loading strategy -->
-    <link rel="preload" href="/fareeha-cloud/optimized/background-placeholder.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/optimized/background-placeholder.webp" as="image" fetchpriority="high" />
     
     <style>
       :root {
@@ -76,7 +76,7 @@
         position: fixed;
         inset: 0;
         z-index: -1;
-        background-image: url('/fareeha-cloud/optimized/background-placeholder.webp');
+        background-image: url('/optimized/background-placeholder.webp');
         background-size: cover;
         background-position: center;
         opacity: 0;
@@ -88,7 +88,7 @@
       }
       
       body.final-loaded::before {
-        background-image: url('/fareeha-cloud/optimized/background.webp');
+        background-image: url('/optimized/background.webp');
         transition: opacity 1s ease-out, background-image 0s 0.5s;
       }
       
@@ -188,13 +188,13 @@
       document.addEventListener('DOMContentLoaded', function() {
         // Load placeholder immediately
         const placeholderImg = new Image();
-        placeholderImg.src = '/fareeha-cloud/optimized/background-placeholder.webp';
+        placeholderImg.src = '/optimized/background-placeholder.webp';
         placeholderImg.onload = function() {
           document.body.classList.add('placeholder-loaded');
           
           // Then preload the full image 
           const fullImg = new Image();
-          fullImg.src = '/fareeha-cloud/optimized/background.webp';
+          fullImg.src = '/optimized/background.webp';
           fullImg.onload = function() {
             document.body.classList.add('final-loaded');
           };
@@ -227,10 +227,10 @@
       // Run detection immediately
       detectDevicePerformance();
     </script>
-    <script type="module" crossorigin src="/fareeha-cloud/assets/index-CLHtZT6W.js"></script>
-    <link rel="modulepreload" crossorigin href="/fareeha-cloud/assets/react-vendor-DcYyfGB6.js">
-    <link rel="modulepreload" crossorigin href="/fareeha-cloud/assets/motion-vendor-DXYzeKKA.js">
-    <link rel="stylesheet" crossorigin href="/fareeha-cloud/assets/index-DNwqv0se.css">
+    <script type="module" crossorigin src="/assets/index-4J68mB3X.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-DcYyfGB6.js">
+    <link rel="modulepreload" crossorigin href="/assets/motion-vendor-DXYzeKKA.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-DNwqv0se.css">
   </head>
   <body>
     <div id="root">
