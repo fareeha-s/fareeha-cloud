@@ -826,8 +826,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                               </h3>
                             </div>
                             <div className="flex-shrink-0 flex items-center">
-                              <span className="text-[14px] text-white/50 whitespace-nowrap">
-                                {getRelativeDate(note.date)}
+                              <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
+                                {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
                               </span>
                             </div>
                           </div>
@@ -895,8 +895,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                               </h3>
                             </div>
                             <div className="flex-shrink-0 flex items-center">
-                              <span className="text-[14px] ${note.locked ? 'text-white/60' : 'text-white/50'} whitespace-nowrap">
-                                {note.locked ? <Lock size={16} className="text-white/60" /> : getRelativeDate(note.date)}
+                              <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
+                                {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
                               </span>
                             </div>
                           </div>
