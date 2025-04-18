@@ -5,7 +5,10 @@ export type NoteItem = {
   date: string;
   timeframe: 'recent' | 'older';
   pinned?: boolean;
-  style?: { color?: string };
+  style?: { 
+    color?: string;
+    pointerEvents?: 'none' | 'auto';
+  };
   locked?: boolean;
 };
 
@@ -34,7 +37,7 @@ export const notes: NoteItem[] = [
     title: "kineship", 
     content: `
 <div style="display: flex; align-items: center;">
-  <img src="/fareeha-cloud/icons/apps/kineship.png" alt="Kineship" style="width:60px; height:60px; border-radius: 12px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); background: linear-gradient(to bottom, #f8f9fa, #e2e6ea); transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; margin-top: -10px;" onmouseover="this.style.transform='scale(1.1)'; this.style.background='linear-gradient(to bottom, #e2e6ea, #f8f9fa)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.background='linear-gradient(to bottom, #f8f9fa, #e2e6ea)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';" onclick="window.open('https://kineship.com', '_blank')" />
+  <img src="/icons/apps/kineship.png" alt="Kineship" style="width:60px; height:60px; border-radius: 12px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); background: linear-gradient(to bottom, #f8f9fa, #e2e6ea); transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; margin-top: -10px;" onmouseover="this.style.transform='scale(1.1)'; this.style.background='linear-gradient(to bottom, #e2e6ea, #f8f9fa)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.background='linear-gradient(to bottom, #f8f9fa, #e2e6ea)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';" onclick="window.open('https://kineship.com', '_blank')" />
   <span style="font-size: 12px; font-style: italic; margin-left: 15px;">pre-launch</span>
 </div>
 <b><i>another social app?!</i></b>
