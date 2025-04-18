@@ -5,6 +5,8 @@ export type NoteItem = {
   date: string;
   timeframe: 'recent' | 'older';
   pinned?: boolean;
+  style?: { color?: string };
+  locked?: boolean;
 };
 
 export const notes: NoteItem[] = [
@@ -30,21 +32,37 @@ export const notes: NoteItem[] = [
   { 
     id: 2, 
     title: "kineship", 
-    content: `<div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 16px;">
-  <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(98, 190, 156, 0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid rgba(255, 255, 255, 0.1);">
-    <img src="./icons/apps/kineship.png" alt="Kineship" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
-  </div>
-  <div style="font-size: 16px; color: white; font-weight: 400;"><a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.5);">kineship.com</a></div>
+    content: `
+<div style="display: flex; align-items: center;">
+  <img src="/icons/apps/kineship.png" alt="Kineship" style="width:60px; height:60px; border-radius: 12px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); background: linear-gradient(to bottom, #f8f9fa, #e2e6ea); transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; margin-top: -10px;" onmouseover="this.style.transform='scale(1.1)'; this.style.background='linear-gradient(to bottom, #e2e6ea, #f8f9fa)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.background='linear-gradient(to bottom, #f8f9fa, #e2e6ea)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';" onclick="window.open('https://kineship.com', '_blank')" />
+  <span style="font-size: 12px; font-style: italic; margin-left: 15px;">pre-launch</span>
 </div>
+<b><i>another social app?!</i></b>
 
-the kineship app shares your workout calendar with your circles. the underlying principle is to help increase behavioural synchrony between you and your community - which is a key driver of longevity!`, 
+This one won't ask you to post — just to notice!
+
+Many social apps connect us by adding more: more invites, more plans, more coordination.
+
+Lately, I've been wondering if there's also something meaningful in adding less, but noticing more.
+
+I find myself drawn to the idea of just allowing our everyday moments to feel more mutual. Our nervous systems register a kind of comfort in this <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC5137339/' target='_blank' rel='noopener noreferrer' style='text-decoration: underline;'>intentional synchrony</a>.
+
+Choosing the 5pm class instead of 6, visiting the farmers' market when you know your neighbours will be there too. It's subtle, but these moments play a quietly powerful role in reducing loneliness at scale.
+
+Surprisingly, almost none of the platforms we use today are designed around this natural principle. Instead, we're usually just observing each other's lives from a distance.
+
+Kineship doesn't ask you to schedule anything. It simply reveals the overlaps — who else is heading to Pilates today? Spin? Barry's?
+
+By offering these soft cues, I'm hoping it'll be a little easier to say hi, share laughs, linger a bit longer, make plans.
+
+something as simple as a smoothie after class 🫶`, 
     date: "12/04/25",
     timeframe: 'recent',
     pinned: false
   },
   { 
-    id: 4, 
-    title: "apples", 
+    id: 3,
+    title: 'apples',
     content: `sugarbee - 10/10
     pink lady - 9/10
     pinata - 9/10
@@ -57,9 +75,27 @@ the kineship app shares your workout calendar with your circles. the underlying 
     to try:
     black diamond
     gravenstein
-    calville blanc d'hiver`, 
-    date: "28/03/25",
+    calville blanc d'hiver`,
+    date: '28/03/25',
     timeframe: 'recent',
     pinned: false
+  },
+  { 
+    id: 5, 
+    title: "dinner tables", 
+    content: "", 
+    date: "🔒", 
+    timeframe: 'older',
+    pinned: false,
+    locked: true,
+    style: { color: 'rgba(128, 128, 128, 0.5)', pointerEvents: 'none' }
+  },
+  { 
+    id: 6, 
+    title: "layering a social stack", 
+    content: "", 
+    date: "", 
+    timeframe: 'older',
+    locked: true
   }
 ]; 

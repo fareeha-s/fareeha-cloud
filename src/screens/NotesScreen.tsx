@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { AppScreenProps } from '../types';
 import { motion, useAnimation, useReducedMotion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronDown, X } from 'lucide-react';
+import { ChevronRight, ChevronDown, X, Lock } from 'lucide-react';
 import { createTactileEffect } from '../App';
 import { notes, NoteItem } from '../data/notes';
 import ReactDOM from 'react-dom';
@@ -379,6 +379,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     return monthName;
   };
 
+  // Filter out locked notes for the widget
+  const widgetNotes = notes.filter(note => !note.locked);
+  
   // New filters for pinned notes and all notes
   const pinnedNotes = notes.filter(note => note.pinned);
   
@@ -494,6 +497,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   }, [selectedNote]);
 
   const handleNoteClick = (note: NoteItem) => {
+    if (note.locked) return; // Prevent opening locked notes
     // Mark the note as viewed immediately
     markNoteAsViewed(note.id);
     
@@ -863,14 +867,16 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                       {allNotes.map((note, index) => (
                         <motion.div 
                           key={`all-${note.id}`}
-                          className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative"
+                          className="flex group px-1 py-0.5 rounded-md relative"
                           onClick={(e) => {
                             e.stopPropagation();
-                            createTactileEffect();
-                            handleNoteClick(note);
+                            if (!note.locked) {
+                              createTactileEffect();
+                              handleNoteClick(note);
+                            }
                           }}
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.98 }}
+                          whileHover={{ scale: note.locked ? 1 : 1.01 }}
+                          whileTap={{ scale: note.locked ? 1 : 0.98 }}
                           transition={{ duration: 0.2 }}
                         >
                           <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
@@ -884,13 +890,13 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                           </div>
                           <div className="ml-1 flex-1 flex justify-between items-center">
                             <div className="flex-1 pr-3">
-                              <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
+                              <h3 className={`text-base font-normal ${note.locked ? 'text-white/60' : 'text-white/90'} break-words transition-colors duration-200`}>
                                 {note.title}
                               </h3>
                             </div>
                             <div className="flex-shrink-0 flex items-center">
-                              <span className="text-[14px] text-white/50 whitespace-nowrap">
-                                {getRelativeDate(note.date)}
+                              <span className="text-[14px] ${note.locked ? 'text-white/60' : 'text-white/50'} whitespace-nowrap">
+                                {note.locked ? <Lock size={16} className="text-white/60" /> : getRelativeDate(note.date)}
                               </span>
                             </div>
                           </div>

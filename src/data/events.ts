@@ -43,9 +43,9 @@ limited capacity! tell us what you'd share 🫶🏼`,
       fallback: "./images/partiful/ms-fallback.jpg"
     },
     hosts: [
-      { id: 1, image: '/icons/hosts/fareeha.jpg' },
-      { id: 2, image: '/icons/hosts/1-b975ea56.jpg' },
-      { id: 3, image: '/icons/hosts/2-b975ea56.jpg' }
+      { id: 1, image: './icons/hosts/fareeha.jpg' },
+      { id: 2, image: './icons/hosts/1-b975ea56.jpg' },
+      { id: 3, image: './icons/hosts/2-b975ea56.jpg' }
     ]
   },
   {
@@ -68,10 +68,10 @@ one whole hour to celebrate strawberries being in season 😊 🍓 🍓 🍓`,
       fallback: "./images/partiful/sh-giphy.webp"
     },
     hosts: [
-      { id: 1, image: '/icons/hosts/fareeha.jpg' },
-      { id: 2, image: '/icons/hosts/3-64896426.jpg' },
-      { id: 3, image: '/icons/hosts/4-64896426.jpg' },
-      { id: 4, image: '/icons/hosts/1-b975ea56.jpg' }
+      { id: 1, image: './icons/hosts/fareeha.jpg' },
+      { id: 2, image: './icons/hosts/3-64896426.jpg' },
+      { id: 3, image: './icons/hosts/4-64896426.jpg' },
+      { id: 4, image: './icons/hosts/1-b975ea56.jpg' }
     ]
   },
   {
@@ -94,9 +94,9 @@ missing this will be cosmic treason; your absence will haunt you. 🌑`,
       fallback: "./images/partiful/bmr.jpeg"
     },
     hosts: [
-      { id: 1, image: '/icons/hosts/fareeha.jpg' },
-      { id: 2, image: '/icons/hosts/5-64896426.jpg' },
-      { id: 3, image: '/icons/hosts/6-64896426.jpg' }
+      { id: 1, image: './icons/hosts/fareeha.jpg' },
+      { id: 2, image: './icons/hosts/5-64896426.jpg' },
+      { id: 3, image: './icons/hosts/6-64896426.jpg' }
     ]
   },
   {
@@ -128,8 +128,8 @@ xoxo`,
       fallback: "./images/partiful/ooo.jpeg"
     },
     hosts: [
-      { id: 1, image: '/icons/hosts/7-dd1a51c0.jpg' },
-      { id: 2, image: '/icons/hosts/fareeha.jpg' }
+      { id: 1, image: './icons/hosts/7-dd1a51c0.jpg' },
+      { id: 2, image: './icons/hosts/fareeha.jpg' }
     ]
   },
   {
@@ -152,8 +152,8 @@ Few things bring us more joy than cooking for others, so there will be lots of b
       fallback: "./images/partiful/ti-giphy.webp"
     },
     hosts: [
-      { id: 1, image: '/icons/hosts/1-b975ea56.jpg' },
-      { id: 2, image: '/icons/hosts/fareeha.jpg' }
+      { id: 1, image: './icons/hosts/1-b975ea56.jpg' },
+      { id: 2, image: './icons/hosts/fareeha.jpg' }
     ]
   },
   {
@@ -177,8 +177,8 @@ bring a consumer product hot take. hottest take gets a high five`,
       fallback: "./images/partiful/cs-giphy.webp"
     },
     hosts: [
-      { id: 1, image: '/icons/hosts/fareeha.jpg' },
-      { id: 2, image: '/icons/hosts/4-64896426.jpg' }
+      { id: 1, image: './icons/hosts/fareeha.jpg' },
+      { id: 2, image: './icons/hosts/4-64896426.jpg' }
     ]
   },
   {
@@ -201,8 +201,8 @@ dress code: pastels, watercolor washes, artisan details 🪷`,
       fallback: "./images/partiful/w-giphy.webp"
     },
     hosts: [
-      { id: 1, image: '/icons/hosts/8-dd1a51c0.jpg' },
-      { id: 2, image: '/icons/hosts/fareeha.jpg' }
+      { id: 1, image: './icons/hosts/8-dd1a51c0.jpg' },
+      { id: 2, image: './icons/hosts/fareeha.jpg' }
     ]
   },
   {
@@ -227,9 +227,9 @@ APARTMENT 206`,
       fallback: "./images/partiful/s.jpg"
     },
     hosts: [
-      { id: 1, image: '/icons/hosts/1-b975ea56.jpg' },
-      { id: 2, image: '/icons/hosts/fareeha.jpg' },
-      { id: 3, image: '/icons/hosts/9-dd1a51c0.jpg' }
+      { id: 1, image: './icons/hosts/1-b975ea56.jpg' },
+      { id: 2, image: './icons/hosts/fareeha.jpg' },
+      { id: 3, image: './icons/hosts/9-dd1a51c0.jpg' }
     ]
   }
 ]; 

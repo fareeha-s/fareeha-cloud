@@ -202,10 +202,8 @@ bring a consumer product hot take. hottest take gets a high five`,
     date: '19/09/25',
     time: '6:30pm',
     attendees: 20,
-    backgroundColor: 'rgba(220, 175, 191, 0.7)', // Light lavender with transparency
+    backgroundColor: 'rgba(219, 175, 191, 0.7)', // Light lavender with transparency
     accentColor: '#B19CD9', // Deeper lavender
-    spotifyLink: '',
-    spotifyLyrics: '',
     description: `Watercolour 🎨
 
 We wanted to bring some of our favorite people in the city together for an intimate seated dinner, to celebrate each other and to create space for creative community.
@@ -501,7 +499,7 @@ export const EventPage: React.FC<EventPageProps> = ({ onBack, eventData, eventTy
                          eventType === 'out-of-office' ? 'rgba(144, 190, 109, 0.7)' :
                          eventType === 'threading-in' ? 'rgba(35, 25, 15, 0.7)' :
                          eventType === 'consumer-social' ? 'rgba(10, 20, 40, 0.7)' :
-                         eventType === 'watercolour' ? 'rgba(220, 175, 191, 0.7)' :
+                         eventType === 'watercolour' ? 'rgba(219, 175, 191, 0.7)' :
                          eventType === 'scrumptious' ? 'rgba(77, 166, 255, 0.7)' : 'rgba(14, 43, 23, 0.7)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',

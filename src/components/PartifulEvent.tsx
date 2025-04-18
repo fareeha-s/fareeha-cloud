@@ -565,14 +565,14 @@ limited capacity! tell us what you'd share 🫶🏼`;
                 ],
                 // Purples-pinks
                 [
-                  { bg: 'linear-gradient(135deg, #5871FF, #8257E5)', pattern: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
-                  { bg: 'linear-gradient(135deg, #8257E5, #FF7EB3)', pattern: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
-                  { bg: 'linear-gradient(135deg, #FF7EB3, #5CB6FF)', pattern: 'radial-gradient(circle at 30% 70%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
-                  { bg: 'linear-gradient(135deg, #5CB6FF, #9F7AEA)', pattern: 'radial-gradient(circle at 70% 70%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
-                  { bg: 'linear-gradient(135deg, #9F7AEA, #65D2FF)', pattern: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
-                  { bg: 'linear-gradient(135deg, #65D2FF, #8257E5)', pattern: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
-                  { bg: 'linear-gradient(135deg, #8257E5, #5871FF)', pattern: 'radial-gradient(circle at 70% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
-                  { bg: 'linear-gradient(135deg, #5871FF, #FF7EB3)', pattern: 'radial-gradient(circle at 50% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' }
+                    { bg: 'linear-gradient(135deg, #5871FF, #8257E5)', pattern: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #8257E5, #FF7EB3)', pattern: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #FF7EB3, #5CB6FF)', pattern: 'radial-gradient(circle at 30% 70%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #5CB6FF, #9F7AEA)', pattern: 'radial-gradient(circle at 70% 70%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #9F7AEA, #65D2FF)', pattern: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #65D2FF, #8257E5)', pattern: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #8257E5, #5871FF)', pattern: 'radial-gradient(circle at 70% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)' },
+                    { bg: 'linear-gradient(135deg, #5871FF, #FF7EB3)', pattern: 'radial-gradient(circle at 50% 30%, rgba(255,255,255,0.2) 0%, transparent 60%)' }
                 ],
                 // Reds-oranges
                 [
@@ -654,12 +654,12 @@ limited capacity! tell us what you'd share 🫶🏼`;
                   colors[index].bg = `linear-gradient(${gradientDirections[directionIndex]}, ${color1}, ${color2})`;
                 }
               }
-              
-              // Add subtle animation delay based on index
-              const animationDelay = `${index * 0.1}s`;
-              
+                  
+                  // Add subtle animation delay based on index
+                  const animationDelay = `${index * 0.1}s`;
+                  
               return (
-                <motion.div 
+                    <motion.div 
                   key={index} 
                   style={{ 
                     width: '32px',
@@ -668,46 +668,46 @@ limited capacity! tell us what you'd share 🫶🏼`;
                     position: 'relative',
                     marginLeft: index === 0 ? '0' : '-8px',
                     zIndex: 8 - index,
-                    border: '2px solid rgba(255, 255, 255, 0.3)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.1)',
-                    background: colors[index].bg,
-                    opacity: 0.85,
-                    overflow: 'hidden'
-                  }}
-                  initial={{ scale: 0.9, opacity: 0.7 }}
-                  animate={{ 
-                    scale: [0.9, 1.05, 1],
-                    opacity: [0.7, 0.9, 0.85]
-                  }}
-                  transition={{ 
-                    duration: 0.5, 
-                    delay: parseFloat(animationDelay),
-                    ease: "easeOut"
-                  }}
-                >
-                  {/* Pattern overlay - larger than the circle */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '-50%',
-                    left: '-50%',
-                    width: '200%',
-                    height: '200%',
-                    background: colors[index].pattern,
-                    opacity: 0.7
-                  }} />
-                  
-                  {/* Shine effect - larger than the circle */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '-150%',
-                    left: '-150%',
-                    width: '400%',
-                    height: '400%',
-                    background: 'linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
-                    transform: 'rotate(45deg)',
-                    animation: `shine 3s infinite ${animationDelay}`
-                  }} />
-                </motion.div>
+                        border: '2px solid rgba(255, 255, 255, 0.3)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.1)',
+                        background: colors[index].bg,
+                        opacity: 0.85,
+                        overflow: 'hidden'
+                      }}
+                      initial={{ scale: 0.9, opacity: 0.7 }}
+                      animate={{ 
+                        scale: [0.9, 1.05, 1],
+                        opacity: [0.7, 0.9, 0.85]
+                      }}
+                      transition={{ 
+                        duration: 0.5, 
+                        delay: parseFloat(animationDelay),
+                        ease: "easeOut"
+                      }}
+                    >
+                      {/* Pattern overlay - larger than the circle */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '-50%',
+                        left: '-50%',
+                        width: '200%',
+                        height: '200%',
+                        background: colors[index].pattern,
+                        opacity: 0.7
+                      }} />
+                      
+                      {/* Shine effect - larger than the circle */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '-150%',
+                        left: '-150%',
+                        width: '400%',
+                        height: '400%',
+                        background: 'linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
+                        transform: 'rotate(45deg)',
+                        animation: `shine 3s infinite ${animationDelay}`
+                      }} />
+                    </motion.div>
               );
             })}
           </div>
