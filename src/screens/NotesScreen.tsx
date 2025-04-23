@@ -317,14 +317,19 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
           const blurElements = document.querySelectorAll('.backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm');
           blurElements.forEach(el => {
             (el as HTMLElement).style.backdropFilter = 'none';
-            (el as HTMLElement).style.WebkitBackdropFilter = 'none';
+            // Use setAttribute for vendor prefixed properties to avoid TypeScript errors
+            (el as HTMLElement).setAttribute('style', '-webkit-backdrop-filter: none');
           });
           
-          // Force reset any animations or transitions
-          document.documentElement.classList.add('no-animations');
+          // Ensure backdrop filters are properly reset
           setTimeout(() => {
-            document.documentElement.classList.remove('no-animations');
-          }, 100);
+            const blurElements = document.querySelectorAll('.backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm');
+            blurElements.forEach(el => {
+              (el as HTMLElement).style.backdropFilter = '';
+              // Use setAttribute for vendor prefixed properties to avoid TypeScript errors
+              (el as HTMLElement).setAttribute('style', '-webkit-backdrop-filter: none');
+            });
+          }, 300);
         } catch (e) {
           console.error('Error cleaning up UI:', e);
         }
@@ -537,13 +542,13 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         }
       });
       
-      // Ensure the main container has the correct classes
-      const mainContainer = document.querySelector('.main-container');
-      if (mainContainer) {
-        mainContainer.classList.remove('portrait-container');
-        mainContainer.classList.remove('expanded');
-        mainContainer.classList.remove('collapsing');
-      }
+      // Reset backdrop filters that might be causing the grey screen
+      const blurElements = document.querySelectorAll('.backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm');
+      blurElements.forEach(el => {
+        (el as HTMLElement).style.backdropFilter = 'none';
+        // Use setAttribute for vendor prefixed properties to avoid TypeScript errors
+        (el as HTMLElement).setAttribute('style', '-webkit-backdrop-filter: none');
+      });
     } catch (e) {
       console.error('Error cleaning up UI:', e);
     }
@@ -551,18 +556,24 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // Set flag to false BEFORE state changes for immediate effect
     setIsViewingDetail(false);
     
-    // For hello world note, go directly to home without animation
+    // For hello world note, go to home with buttery-smooth animation
     if (isHelloWorldNote && typeof window !== 'undefined') {
-      setSelectedNote(null);
-      
-      // Go to home immediately without delay
-      if (window.handleAppClick) {
-        window.handleAppClick('home');
-      }
+      // Small delay to ensure the note closing animation starts
+      setTimeout(() => {
+        setSelectedNote(null);
+        
+        // Enhanced timing for smoother transition
+        setTimeout(() => {
+          // This will close the notes app and go to home
+          if (window.handleAppClick) {
+            window.handleAppClick('home');
+          }
+        }, 200); // Increased for smoother transition
+      }, 80); // Slightly increased for better timing
       return;
     }
     
-    // For other notes, use normal animation
+    // For other notes, use enhanced buttery-smooth animation
     setTimeout(() => {
       // Special case: If we're viewing Kineship note (id: 2) that was opened from Hello World note (id: 1),
       // then go back to Hello World note instead of closing
@@ -582,13 +593,13 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         setSelectedNote(null);
       }
       createTactileEffect();
-    }, 100); // Reduced from 150ms to 100ms
+    }, 120); // Optimized timing for buttery-smooth transitions
   };
 
-  // Animation variants
+  // Enhanced animation variants for buttery-smooth transitions
   const chevronVariants = {
     initial: { x: 0 },
-    hover: { x: 2, transition: { repeat: 0, duration: 0.3 } }
+    hover: { x: 3, transition: { repeat: 0, duration: 0.4, ease: [0.25, 0.8, 0.25, 1] } }
   };
 
   const handleInteraction = () => {
@@ -698,7 +709,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     setVideoUrl(null);
   };
 
-  // Function to handle note navigation by swiping
+  // Function to handle note navigation by swiping with enhanced transitions
   const navigateToNextNote = () => {
     // Get all notes (both pinned and regular)
     const allNotesArray = [...pinnedNotes, ...allNotes];
@@ -710,10 +721,44 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // Don't navigate to locked notes
     if (nextNote.locked) return;
     
-    setSelectedNote(nextNote);
-    setCurrentNoteIndex(currentNoteIndex + 1);
-    markNoteAsViewed(nextNote.id);
-    createTactileEffect();
+    // Prepare the DOM for transition - this helps reduce jank
+    document.documentElement.classList.add('note-transition');
+    
+    // Smooth transition: First scroll to top if needed
+    if (noteContentRef.current && noteContentRef.current.scrollTop > 0) {
+      // Use direct style manipulation for better performance
+      noteContentRef.current.style.scrollBehavior = 'smooth';
+      noteContentRef.current.scrollTop = 0;
+      
+      // Short delay before changing notes to allow scroll to complete
+      setTimeout(() => {
+        setSelectedNote(nextNote);
+        setCurrentNoteIndex(currentNoteIndex + 1);
+        markNoteAsViewed(nextNote.id);
+        createTactileEffect();
+        
+        // Reset scroll behavior
+        if (noteContentRef.current) {
+          noteContentRef.current.style.scrollBehavior = '';
+        }
+        
+        // Remove transition class after animation completes
+        setTimeout(() => {
+          document.documentElement.classList.remove('note-transition');
+        }, 400);
+      }, 120);
+    } else {
+      // If already at top, change immediately
+      setSelectedNote(nextNote);
+      setCurrentNoteIndex(currentNoteIndex + 1);
+      markNoteAsViewed(nextNote.id);
+      createTactileEffect();
+      
+      // Remove transition class after animation completes
+      setTimeout(() => {
+        document.documentElement.classList.remove('note-transition');
+      }, 400);
+    }
     
     // Hide dots permanently after first swipe
     setShowDots(false);
@@ -731,14 +776,108 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // Don't navigate to locked notes
     if (prevNote.locked) return;
     
-    setSelectedNote(prevNote);
-    setCurrentNoteIndex(currentNoteIndex - 1);
-    markNoteAsViewed(prevNote.id);
-    createTactileEffect();
+    // Prepare the DOM for transition - this helps reduce jank
+    document.documentElement.classList.add('note-transition');
+    
+    // Smooth transition: First scroll to top if needed
+    if (noteContentRef.current && noteContentRef.current.scrollTop > 0) {
+      // Use direct style manipulation for better performance
+      noteContentRef.current.style.scrollBehavior = 'smooth';
+      noteContentRef.current.scrollTop = 0;
+      
+      // Short delay before changing notes to allow scroll to complete
+      setTimeout(() => {
+        setSelectedNote(prevNote);
+        setCurrentNoteIndex(currentNoteIndex - 1);
+        markNoteAsViewed(prevNote.id);
+        createTactileEffect();
+        
+        // Reset scroll behavior
+        if (noteContentRef.current) {
+          noteContentRef.current.style.scrollBehavior = '';
+        }
+        
+        // Remove transition class after animation completes
+        setTimeout(() => {
+          document.documentElement.classList.remove('note-transition');
+        }, 400);
+      }, 120);
+    } else {
+      // If already at top, change immediately
+      setSelectedNote(prevNote);
+      setCurrentNoteIndex(currentNoteIndex - 1);
+      markNoteAsViewed(prevNote.id);
+      createTactileEffect();
+      
+      // Remove transition class after animation completes
+      setTimeout(() => {
+        document.documentElement.classList.remove('note-transition');
+      }, 400);
+    }
     
     // Hide dots permanently after first swipe
     setShowDots(false);
     localStorage.setItem('hasUsedNoteSwipe', 'true');
+  };
+
+  // Create a tactile effect when swiping between notes - optimized for performance
+  const createTactileEffect = () => {
+    if (typeof window !== 'undefined') {
+      // Check if an effect is already in progress
+      if (document.querySelector('.tactile-effect')) return;
+      
+      // Use requestAnimationFrame for smoother animation
+      requestAnimationFrame(() => {
+        const element = document.createElement('div');
+        element.className = 'fixed inset-0 bg-white/5 pointer-events-none z-50 tactile-effect';
+        element.style.willChange = 'opacity'; // Optimize for GPU acceleration
+        document.body.appendChild(element);
+        
+        // Use nested requestAnimationFrame for smoother animation
+        requestAnimationFrame(() => {
+          // Fade out with optimized timing
+          element.style.transition = 'opacity 100ms cubic-bezier(0.2, 0.65, 0.3, 0.9)';
+          
+          setTimeout(() => {
+            element.style.opacity = '0';
+            
+            setTimeout(() => {
+              if (document.body.contains(element)) {
+                document.body.removeChild(element);
+              }
+            }, 100);
+          }, 20);
+        });
+      });
+    }
+  };
+
+  // Function to handle swipe gestures with enhanced transitions
+  const handleSwipe = (direction: 'left' | 'right') => {
+    // Prepare for transition by ensuring content is at top
+    if (noteContentRef.current && noteContentRef.current.scrollTop > 0) {
+      // Use smooth scrolling with optimized performance
+      noteContentRef.current.style.scrollBehavior = 'smooth';
+      noteContentRef.current.scrollTop = 0;
+      
+      // Short delay to allow scroll to complete before navigating
+      setTimeout(() => {
+        if (direction === 'left') {
+          navigateToNextNote();
+        } else {
+          navigateToPrevNote();
+        }
+        // Reset scroll behavior
+        noteContentRef.current!.style.scrollBehavior = '';
+      }, 120);
+    } else {
+      // If already at top, navigate immediately
+      if (direction === 'left') {
+        navigateToNextNote();
+      } else {
+        navigateToPrevNote();
+      }
+    }
   };
 
   return (
@@ -757,12 +896,17 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         {selectedNote ? (
           <motion.div 
             key="note-detail"
-            className="h-full w-full" 
+            className="h-full w-full will-change-transform" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the note
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ 
+              duration: 0.4, 
+              ease: [0.2, 0.65, 0.3, 0.9],
+              opacity: { duration: 0.35 },
+              scale: { duration: 0.4 }
+            }}
             // Only add swipe handlers for mobile devices
             onTouchStart={isMobileDevice ? (e) => {
               // Don't initialize swipe if user is interacting with text (potential copy operation)
@@ -793,7 +937,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               }
               
               // Increased threshold for swipe detection to avoid accidental swipes
-              if (Math.abs(diff) > 20) {
+              if (Math.abs(diff) > 80) {
                 const newDirection = diff > 0 ? 'right' : 'left';
                 if (swipeDirection !== newDirection) {
                   setSwipeDirection(newDirection);
@@ -823,11 +967,11 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               }
               
               // Increased minimum swipe distance for better differentiation
-              if (Math.abs(diff) > 80) { // Increased from 50 to 80
+              if (Math.abs(diff) > 80) { 
                 if (swipeDirection === 'right') {
-                  navigateToPrevNote(); // Right swipe navigates to previous note
+                  handleSwipe('right');
                 } else {
-                  navigateToNextNote(); // Left swipe navigates to next note
+                  handleSwipe('left');
                 }
               }
               
@@ -951,10 +1095,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                   {showDots && (
                     <motion.div 
                       className="flex items-center justify-center mt-4 mb-2 py-2 space-x-2"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.35, ease: [0.25, 0.8, 0.25, 1] }}
                     >
                       <div
                         className="h-[6px] w-[6px] rounded-full bg-white/40 transition-all duration-200 cursor-pointer hover:bg-white/60"
@@ -981,10 +1125,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
           <motion.div 
             key="note-list"
             className="h-full w-full"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.35, ease: [0.25, 0.8, 0.25, 1] }}
           >
             <div className="h-full overflow-y-auto scrollbar-subtle">
               <div className="space-y-3 p-6">
