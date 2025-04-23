@@ -1,6 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background-color: #131518; color: white;">
   <head>
+    <!-- Critical dark mode styles to prevent flash - must be first in head -->
+    <style>
+      html { background-color: #131518 !important; }
+      body { background-color: #131518 !important; }
+    </style>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
@@ -10,7 +15,7 @@
     <!-- Comprehensive fixes to prevent white flash on mobile -->
     <style>
       html, body, #root {
-        background-color: #000000;
+        background-color: #131518 !important;
         color: white;
       }
       
@@ -22,8 +27,17 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: #000000;
+        background-color: #131518 !important;
         z-index: -1;
+      }
+      
+      /* Prevent any white flash during transitions */
+      *, *::before, *::after {
+        transition-property: none !important;
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
       }
     </style>
 
@@ -72,7 +86,7 @@
         -webkit-overflow-scrolling: touch;
         touch-action: manipulation;
         height: var(--app-height);
-        background-color: #000000;
+        background-color: #131518 !important;
         color: white;
         font-family: var(--font-sans);
       }
@@ -97,7 +111,7 @@
         position: fixed;
         inset: 0;
         z-index: -1;
-        background-color: #000000; /* Add black background color */
+        background-color: #131518 !important; /* Match the dark theme color */
         background-image: url('/optimized/background-placeholder.webp');
         background-size: cover;
         background-position: center;
@@ -253,7 +267,7 @@
       // Run detection immediately
       detectDevicePerformance();
     </script>
-    <script type="module" crossorigin src="/assets/index-D0K8Dd3t.js"></script>
+    <script type="module" crossorigin src="/assets/index-DorN34SA.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/react-vendor-DcYyfGB6.js">
     <link rel="modulepreload" crossorigin href="/assets/motion-vendor-DXYzeKKA.js">
     <link rel="stylesheet" crossorigin href="/assets/index-ByZSfXQi.css">
