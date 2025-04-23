@@ -204,6 +204,8 @@ bring a consumer product hot take. hottest take gets a high five`,
     attendees: 20,
     backgroundColor: 'rgba(219, 175, 191, 0.7)', // Light lavender with transparency
     accentColor: '#B19CD9', // Deeper lavender
+    spotifyLink: 'https://open.spotify.com/track/5tz69p7tJuGPeMGwNTxYuV?si=7d9a9c1e8e8f4e8a',
+    spotifyLyrics: 'watercolour painting the skies',
     description: `Watercolour 🎨
 
 We wanted to bring some of our favorite people in the city together for an intimate seated dinner, to celebrate each other and to create space for creative community.
