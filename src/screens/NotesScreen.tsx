@@ -151,34 +151,37 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Create a ref for the note content container
   const noteContentRef = useRef<HTMLDivElement>(null);
   
-  // IMPORTANT: We've completely removed the auto-opening of notes to prevent navigation issues
-  // This ensures the site always opens to the notes list first, which is more stable
+  // Simple approach to handle opening the hello world note directly
   useEffect(() => {
-    // Reset any window flags that might cause navigation issues
-    if (typeof window !== 'undefined') {
-      window.openNoteDirectly = false;
-      window.initialNoteId = undefined;
-      window.isViewingNoteDetail = false;
-      
-      // Clean up any UI artifacts that might be causing issues
-      try {
-        const mainContainer = document.querySelector('.main-container');
-        if (mainContainer) {
-          mainContainer.classList.remove('portrait-container');
-          mainContainer.classList.remove('expanded');
-          mainContainer.classList.remove('collapsing');
-        }
+    // Check for the openNoteDirectly flag to open note in detail view directly
+    if (typeof window !== 'undefined' && window.openNoteDirectly && window.initialNoteId) {
+      // Find the note with the specified ID
+      const noteToOpen = notes.find(note => note.id === window.initialNoteId);
+      if (noteToOpen) {
+        // Open the note directly in detail view
+        console.log('Opening note directly in detail view:', noteToOpen.id);
+        setSelectedNote(noteToOpen);
+        setIsViewingDetail(true);
+        // Set the current note index for navigation
+        const noteIndex = notes.findIndex(note => note.id === noteToOpen.id);
+        setCurrentNoteIndex(noteIndex);
         
-        // Remove any overlay elements that might be causing the grey box
-        const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
-        overlays.forEach(overlay => {
-          if (document.body.contains(overlay)) {
-            document.body.removeChild(overlay);
-          }
-        });
-      } catch (e) {
-        console.error('Error cleaning up UI:', e);
+        // Reset the openNoteDirectly flag to avoid reopening on component re-renders
+        window.openNoteDirectly = false;
       }
+    }
+    
+    // Clean up any UI artifacts that might be causing issues
+    try {
+      // Remove any overlay elements that might be causing the grey box
+      const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
+      overlays.forEach(overlay => {
+        if (document.body.contains(overlay)) {
+          document.body.removeChild(overlay);
+        }
+      });
+    } catch (e) {
+      console.error('Error cleaning up UI:', e);
     }
   }, []);
   
