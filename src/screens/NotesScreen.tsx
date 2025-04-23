@@ -312,6 +312,19 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               document.body.removeChild(overlay);
             }
           });
+          
+          // Remove any backdrop blur effects that might be causing the grey screen
+          const blurElements = document.querySelectorAll('.backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm');
+          blurElements.forEach(el => {
+            (el as HTMLElement).style.backdropFilter = 'none';
+            (el as HTMLElement).style.WebkitBackdropFilter = 'none';
+          });
+          
+          // Force reset any animations or transitions
+          document.documentElement.classList.add('no-animations');
+          setTimeout(() => {
+            document.documentElement.classList.remove('no-animations');
+          }, 100);
         } catch (e) {
           console.error('Error cleaning up UI:', e);
         }
@@ -504,9 +517,6 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     });
 
   const closeNote = () => {
-    // Set flag to false BEFORE state changes for immediate effect
-    setIsViewingDetail(false);
-    
     // Check if this is the hello world note
     const isHelloWorldNote = selectedNote?.id === 1;
     
@@ -517,7 +527,42 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       setWidgetNoteId(null);
     }
     
-    // Add longer delay before changing React state to ensure animation completes
+    // Clean up any UI artifacts that might be causing the grey screen
+    try {
+      // Remove any overlay elements that might be causing the grey box
+      const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
+      overlays.forEach(overlay => {
+        if (document.body.contains(overlay)) {
+          document.body.removeChild(overlay);
+        }
+      });
+      
+      // Ensure the main container has the correct classes
+      const mainContainer = document.querySelector('.main-container');
+      if (mainContainer) {
+        mainContainer.classList.remove('portrait-container');
+        mainContainer.classList.remove('expanded');
+        mainContainer.classList.remove('collapsing');
+      }
+    } catch (e) {
+      console.error('Error cleaning up UI:', e);
+    }
+    
+    // Set flag to false BEFORE state changes for immediate effect
+    setIsViewingDetail(false);
+    
+    // For hello world note, go directly to home without animation
+    if (isHelloWorldNote && typeof window !== 'undefined') {
+      setSelectedNote(null);
+      
+      // Go to home immediately without delay
+      if (window.handleAppClick) {
+        window.handleAppClick('home');
+      }
+      return;
+    }
+    
+    // For other notes, use normal animation
     setTimeout(() => {
       // Special case: If we're viewing Kineship note (id: 2) that was opened from Hello World note (id: 1),
       // then go back to Hello World note instead of closing
@@ -535,20 +580,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       } else {
         // Normal behavior for other notes
         setSelectedNote(null);
-        
-        // If this is the hello world note, go to home page
-        if (isHelloWorldNote && typeof window !== 'undefined') {
-          // Small delay to ensure the note is closed first
-          setTimeout(() => {
-            // This will close the notes app and go to home
-            if (window.handleAppClick) {
-              window.handleAppClick('home');
-            }
-          }, 50);
-        }
       }
       createTactileEffect();
-    }, 150); // Increased from 50ms to 150ms
+    }, 100); // Reduced from 150ms to 100ms
   };
 
   // Animation variants
@@ -571,8 +605,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       return false;
     }
 
-    // If user came from widget, highlight that specific note
-    // but hide it only while actually viewing the note
+    // ONLY show pulsing dot if the note was accessed through the widget
+    // and hide it only while actually viewing the note
     if (widgetNoteId !== null && widgetNoteId === noteId) {
       // Only hide the dot if this note is currently being viewed
       // This ensures the dot appears again after going back to home screen
@@ -582,21 +616,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       }
       return true;
     }
-
-    // For notes not accessed through widget, check if viewed before
-    const viewedNotes = JSON.parse(localStorage.getItem('viewedNotes') || '[]');
-    if (viewedNotes.includes(noteId)) {
-      return false;
-    }
     
-    // Since users always land on hello world note first, don't show pulsing dot for it
-    // unless it was specifically accessed through a widget (handled above)
-    if (noteId === 1) { // Hello world note ID is 1
-      return false;
-    }
-    
-    // For other unread notes, show a pulsing dot
-    return !viewedNotes.includes(noteId);
+    // For all other cases, don't show pulsing dot
+    return false;
   };
 
   // Add function to mark note as viewed
