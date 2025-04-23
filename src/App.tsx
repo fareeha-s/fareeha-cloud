@@ -156,12 +156,26 @@ const getRelativeDate = (dateStr: string) => {
 };
 
 function App() {
-  // Set 'notes' as the default active app but don't auto-open any note
+  // Set 'notes' as the default active app and set up to open hello world note
   const [activeApp, setActiveApp] = useState<string | null>('notes');
   const appsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   
-  // IMPORTANT: We've removed the auto-opening of hello world note to prevent navigation issues
-  // This ensures the site always opens to the notes list first, which is more stable
+  // Simple approach to open the hello world note directly
+  useEffect(() => {
+    if (activeApp === 'notes') {
+      // Set a timeout to allow the component to fully mount first
+      setTimeout(() => {
+        // Find the hello world note
+        const helloWorldNote = notes.find(note => note.title.includes("hello world"));
+        if (helloWorldNote) {
+          // Set the initialNoteId to the hello world note's ID
+          window.initialNoteId = helloWorldNote.id;
+          // Set flag to open note directly in detail view
+          window.openNoteDirectly = true;
+        }
+      }, 300); // Delay to ensure components are fully mounted
+    }
+  }, [activeApp]);
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [appPosition, setAppPosition] = useState<AnimationPosition | null>(null);

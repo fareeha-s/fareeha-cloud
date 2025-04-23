@@ -19,7 +19,7 @@ export const notes: NoteItem[] = [
     content: `Hi, I'm Fareeha! 
 I think the most beautiful thing is watching people light up around each other—my compass keeps pointing there :)
    
-I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span>: a social layer for workouts, guided by a north star of designing tech that centres human longevity <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(publishing on this soon!)</span>
+I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span> - a social layer for workouts, guided by a north star of designing tech that centres human longevity <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(publishing on this soon!)</span>
 
 <span style="font-weight: bold;">alignment:</span>
 ▹ early community architect at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed, HF0)</a></span>
