@@ -215,7 +215,7 @@ function App() {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
   
-  // Check if this is the first visit
+  // Check if this is the first visit and immediately open hello world note
   useEffect(() => {
     // Check localStorage for previous visits
     const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
@@ -226,6 +226,19 @@ function App() {
       localStorage.setItem('hasVisitedBefore', 'true');
       setIsFirstVisit(true);
     }
+    
+    // Immediately open the notes app with hello world note to prevent white flash
+    // This simulates clicking on the notes app icon and opening the hello world note
+    setTimeout(() => {
+      // Set up the necessary window properties for the notes app
+      window.initialNoteId = 1; // ID of the hello world note
+      window.openNoteDirectly = true; // Signal to open this note directly in detail view
+      (window as any).widgetNoteId = 1;
+      (window as any).isFirstTimeOpeningApp = true;
+      
+      // Trigger the app click to open notes
+      handleAppClick('notes');
+    }, 10); // Minimal timeout to ensure component is ready
   }, []);
   
   // Always select the "hello world!" note when the site opens
@@ -539,6 +552,26 @@ function App() {
   const handleClose = () => {
     if (isAnimating) return;
     
+    // Clean up any UI artifacts that might be causing the grey screen
+    try {
+      // Remove any overlay elements
+      const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
+      overlays.forEach(overlay => {
+        if (document.body.contains(overlay)) {
+          document.body.removeChild(overlay);
+        }
+      });
+      
+      // Remove any backdrop blur elements
+      const blurElements = document.querySelectorAll('.backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm');
+      blurElements.forEach(el => {
+        (el as HTMLElement).style.backdropFilter = 'none';
+        (el as HTMLElement).style.WebkitBackdropFilter = 'none';
+      });
+    } catch (e) {
+      console.error('Error cleaning up UI:', e);
+    }
+    
     // Check if there's a specific screen back handler active
     // This allows screens like NotesScreen to handle internal navigation
     if (activeApp === 'notes' && window.noteScreenBackHandler && window.noteScreenBackHandler()) {
@@ -546,7 +579,15 @@ function App() {
       // go to home screen instead of staying in notes app
       if ((window as any).isFirstTimeOpeningApp) {
         (window as any).isFirstTimeOpeningApp = false; // Reset the flag
-        setActiveApp(null); // Go to home screen
+        
+        // Immediately go to home screen without animation
+        setActiveApp(null);
+        setAppPosition(null);
+        setClonedAppIcon({
+          app: null,
+          rect: null
+        });
+        setIsAnimating(false);
         return;
       }
       return; // If the screen handler returns true, it handled the back action
@@ -559,18 +600,17 @@ function App() {
     
     setIsAnimating(true);
     
-    // Start closing animation
+    // Start closing animation - immediately
+    setActiveApp(null);
+    setAppPosition(null);
+    setClonedAppIcon({
+      app: null,
+      rect: null
+    });
+    
+    // Reset animation state after a very short delay
     setTimeout(() => {
-      setActiveApp(null);
-      setAppPosition(null);
-      setClonedAppIcon({
-        app: null,
-        rect: null
-      });
-      // Reset animation state only after animation completes
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 250);
+      setIsAnimating(false);
     }, 50);
   };
 
