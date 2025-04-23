@@ -151,42 +151,33 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Create a ref for the note content container
   const noteContentRef = useRef<HTMLDivElement>(null);
   
-  // Check for the openNoteDirectly flag to open note in detail view directly
+  // IMPORTANT: We've completely removed the auto-opening of notes to prevent navigation issues
+  // This ensures the site always opens to the notes list first, which is more stable
   useEffect(() => {
-    // Force open the hello world note on initial load
-    const forceOpenHelloWorldNote = () => {
-      // Find the hello world note (id: 1)
-      const helloWorldNote = notes.find(note => note.id === 1);
-      if (helloWorldNote) {
-        console.log('Force opening hello world note in detail view');
-        setSelectedNote(helloWorldNote);
-        setIsViewingDetail(true);
-        // Set the current note index for navigation
-        const noteIndex = notes.findIndex(note => note.id === helloWorldNote.id);
-        setCurrentNoteIndex(noteIndex);
-      }
-    };
-    
-    // If the openNoteDirectly flag is set, and we have an initialNoteId
+    // Reset any window flags that might cause navigation issues
     if (typeof window !== 'undefined') {
-      if (window.openNoteDirectly && window.initialNoteId) {
-        // Find the note with the specified ID
-        const noteToOpen = notes.find(note => note.id === window.initialNoteId);
-        if (noteToOpen) {
-          // Open the note directly in detail view
-          console.log('Opening note directly in detail view:', noteToOpen.id);
-          setSelectedNote(noteToOpen);
-          setIsViewingDetail(true);
-          // Set the current note index for navigation
-          const noteIndex = notes.findIndex(note => note.id === noteToOpen.id);
-          setCurrentNoteIndex(noteIndex);
-          
-          // Reset the openNoteDirectly flag to avoid reopening on component re-renders
-          window.openNoteDirectly = false;
+      window.openNoteDirectly = false;
+      window.initialNoteId = undefined;
+      window.isViewingNoteDetail = false;
+      
+      // Clean up any UI artifacts that might be causing issues
+      try {
+        const mainContainer = document.querySelector('.main-container');
+        if (mainContainer) {
+          mainContainer.classList.remove('portrait-container');
+          mainContainer.classList.remove('expanded');
+          mainContainer.classList.remove('collapsing');
         }
-      } else {
-        // If no explicit flag is set, still force open the hello world note
-        forceOpenHelloWorldNote();
+        
+        // Remove any overlay elements that might be causing the grey box
+        const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
+        overlays.forEach(overlay => {
+          if (document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+          }
+        });
+      } catch (e) {
+        console.error('Error cleaning up UI:', e);
       }
     }
   }, []);
@@ -292,59 +283,41 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     }
   }, [chevronControls, prefersReducedMotion, hasInteracted]);
 
-  // Set up back handler - MOVED OUTSIDE the conditional rendering
+  // Completely simplified back handler to avoid navigation issues
   useEffect(() => {
-    // If we have a selected note and the App's back button is clicked,
-    // we should close the note view first instead of closing the app
     const handleAppBackClick = () => {
       if (selectedNote) {
+        // Immediately clean up UI elements that might cause the grey box
+        try {
+          // Clean up any UI artifacts
+          const mainContainer = document.querySelector('.main-container');
+          if (mainContainer) {
+            mainContainer.classList.remove('portrait-container');
+            mainContainer.classList.remove('expanded');
+            mainContainer.classList.remove('collapsing');
+          }
+          
+          // Remove any overlay elements
+          const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
+          overlays.forEach(overlay => {
+            if (document.body.contains(overlay)) {
+              document.body.removeChild(overlay);
+            }
+          });
+        } catch (e) {
+          console.error('Error cleaning up UI:', e);
+        }
+        
         // Set flag to false BEFORE state changes for immediate effect
         setIsViewingDetail(false);
+        window.isViewingNoteDetail = false;
         
-        // Always just go back to the notes list view instead of trying to go home
-        // This simplifies the navigation and prevents the grey box issue
+        // Simply go back to notes list view with no special cases
         setTimeout(() => {
-          // Special case: If we're viewing Kineship note (id: 2) that was opened from Hello World note (id: 1),
-          // then go back to Hello World note instead of closing
-          if (selectedNote.id === 2 && openedFromHelloWorld) {
-            const helloWorldNote = notes.find(note => note.id === 1);
-            if (helloWorldNote) {
-              setSelectedNote(helloWorldNote);
-              // Reset the flag since we're no longer in Kineship opened from Hello World
-              setOpenedFromHelloWorld(false);
-              localStorage.removeItem('openedKineshipFromHelloWorld');
-            } else {
-              // Fallback if Hello World note not found
-              setSelectedNote(null);
-            }
-          } else {
-            // Normal behavior for all notes - just go back to notes list
-            setSelectedNote(null);
-            
-            // Remove the complex home screen navigation that's causing issues
-            // Instead, just ensure we're in the notes view
-            try {
-              // Clean up any UI artifacts that might be causing the grey box
-              const mainContainer = document.querySelector('.main-container');
-              if (mainContainer) {
-                mainContainer.classList.remove('portrait-container');
-                mainContainer.classList.remove('expanded');
-                mainContainer.classList.remove('collapsing');
-              }
-              
-              // Remove any overlay elements that might be causing the grey box
-              const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
-              overlays.forEach(overlay => {
-                if (document.body.contains(overlay)) {
-                  document.body.removeChild(overlay);
-                }
-              });
-            } catch (e) {
-              console.error('Error cleaning up UI:', e);
-            }
-          }
+          setSelectedNote(null);
           createTactileEffect();
-        }, 150); // Increased from 50ms to 150ms
+        }, 50);
+        
         return true; // Event was handled
       }
       return false; // Let App handle the default behavior
