@@ -133,6 +133,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Add state for video player
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   
+  // Add state to track if Kineship note was opened from Hello World note
+  const [openedFromHelloWorld, setOpenedFromHelloWorld] = useState<boolean>(false);
+  
   // Create a ref to use for directly setting the window property
   const isViewingDetailRef = useRef(false);
   
@@ -278,7 +281,23 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         
         // Add longer delay before changing React state to ensure animation completes
         setTimeout(() => {
-          setSelectedNote(null);
+          // Special case: If we're viewing Kineship note (id: 2) that was opened from Hello World note (id: 1),
+          // then go back to Hello World note instead of closing
+          if (selectedNote.id === 2 && openedFromHelloWorld) {
+            const helloWorldNote = notes.find(note => note.id === 1);
+            if (helloWorldNote) {
+              setSelectedNote(helloWorldNote);
+              // Reset the flag since we're no longer in Kineship opened from Hello World
+              setOpenedFromHelloWorld(false);
+              localStorage.removeItem('openedKineshipFromHelloWorld');
+            } else {
+              // Fallback if Hello World note not found
+              setSelectedNote(null);
+            }
+          } else {
+            // Normal behavior for other notes
+            setSelectedNote(null);
+          }
           createTactileEffect();
         }, 150); // Increased from 50ms to 150ms
         return true; // Event was handled
@@ -304,6 +323,19 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     setIsViewingDetail(selectedNote !== null);
     console.log('Setting isViewingNoteDetail:', selectedNote !== null);
     
+    // If a note is selected, ensure the content is scrolled to the top
+    if (selectedNote !== null && noteContentRef.current) {
+      // Scroll to top immediately
+      noteContentRef.current.scrollTop = 0;
+      
+      // Also add a small delay to ensure scroll happens after rendering
+      setTimeout(() => {
+        if (noteContentRef.current) {
+          noteContentRef.current.scrollTop = 0;
+        }
+      }, 50);
+    }
+    
     return () => {
       // Clean up when component unmounts
       setIsViewingDetail(false);
@@ -311,7 +343,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     };
   }, [selectedNote]);
 
-  // Add effect to check for initialNoteId
+  // Add effect to check for initialNoteId and also check if we're coming from Hello World
   useEffect(() => {
     // Check if we have an initial note ID to highlight from the widget
     if (window.initialNoteId) {
@@ -320,11 +352,24 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       window.initialNoteId = undefined;
     }
     
+    // Check if we need to track Kineship being opened from Hello World
+    const openedKineshipFromHelloWorld = localStorage.getItem('openedKineshipFromHelloWorld') === 'true';
+    if (openedKineshipFromHelloWorld) {
+      setOpenedFromHelloWorld(true);
+    }
+    
     // Set up the openNoteWithId function in the window object
     window.openNoteWithId = (noteId: number) => {
       // Find the note with this ID
       const noteToOpen = notes.find(note => note.id === noteId);
       if (noteToOpen) {
+        // Check if this is the Kineship note (id: 2) being opened from Hello World note (id: 1)
+        if (noteId === 2 && selectedNote?.id === 1) {
+          // Set flag to track that Kineship was opened from Hello World
+          setOpenedFromHelloWorld(true);
+          localStorage.setItem('openedKineshipFromHelloWorld', 'true');
+        }
+        
         // Close current note first if one is open
         setIsViewingDetail(false);
         
@@ -412,7 +457,23 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     
     // Add longer delay before changing React state to ensure animation completes
     setTimeout(() => {
-      setSelectedNote(null);
+      // Special case: If we're viewing Kineship note (id: 2) that was opened from Hello World note (id: 1),
+      // then go back to Hello World note instead of closing
+      if (selectedNote?.id === 2 && openedFromHelloWorld) {
+        const helloWorldNote = notes.find(note => note.id === 1);
+        if (helloWorldNote) {
+          setSelectedNote(helloWorldNote);
+          // Reset the flag since we're no longer in Kineship opened from Hello World
+          setOpenedFromHelloWorld(false);
+          localStorage.removeItem('openedKineshipFromHelloWorld');
+        } else {
+          // Fallback if Hello World note not found
+          setSelectedNote(null);
+        }
+      } else {
+        // Normal behavior for other notes
+        setSelectedNote(null);
+      }
       createTactileEffect();
     }, 150); // Increased from 50ms to 150ms
   };
@@ -733,10 +794,19 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                             // Check if this is an internal note link
                             if (url.startsWith('note:')) {
                               const noteId = parseInt(url.substring(5));
-                              return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
-                                e.stopPropagation(); 
-                                window.openNoteWithId(${noteId});
-                              })(event)">${text}</a>`;
+                              // Special case for Kineship note (id: 2) when opened from Hello World note (id: 1)
+                              if (noteId === 2 && selectedNote?.id === 1) {
+                                return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
+                                  e.stopPropagation(); 
+                                  localStorage.setItem('openedKineshipFromHelloWorld', 'true');
+                                  window.openNoteWithId(${noteId});
+                                })(event)">${text}</a>`;
+                              } else {
+                                return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
+                                  e.stopPropagation(); 
+                                  window.openNoteWithId(${noteId});
+                                })(event)">${text}</a>`;
+                              }
                             }
                             
                             // Check if this is a video link

@@ -493,6 +493,17 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
         animate="show"
       >
         <div className="space-y-3 p-6">
+          {/* Partiful Events Explanation */}
+          <motion.div 
+            className="mb-5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <p className="text-white/60 text-[14px] px-2">
+              Just some thoughtful, informal gatherings I've enjoyed planning with friends over the years. ✨
+            </p>
+          </motion.div>
           {/* Past Month section */}
           {pastMonthEvents.length > 0 && (
             <div>

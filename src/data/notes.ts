@@ -15,20 +15,22 @@ export type NoteItem = {
 export const notes: NoteItem[] = [
   { 
     id: 1, 
-    title: "hello world", 
+    title: "hello world 🧭", 
     content: `Hi, I'm Fareeha! I think the best part of life is watching people light up around each other. My compass always points that way :)
    
-Right now I’m building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span> - a social layer for workouts, guided by my north star of designing tech that centres human longevity.
+Right now I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span> - a social layer for workouts, guided by my north star of designing tech that centres human longevity. <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(publishing on this soon!)</span>
 
-<span style="font-weight: bold;">adventures:</span>
+<span style="font-weight: bold;">alignment:</span>
 ▹ early community architect at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed, HF0)</a></span>
 ▹ experience-led social design - [h&s gala](video:https://youtu.be/VMxSzVREUgY), [dc fashion show](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni)
-▹ winning team, healthcare innovation [(mit bc x harvard med)](video:https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR)
+▹ winning team, healthcare innovation [<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(mit bc x harvard med)</span>](video:https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR)
 
 <span style="font-weight: bold;">things i love:</span>  
 ▹ taking forever to [set a table](app:partiful)
 ▹ giving people [apples](note:3) they didn't ask for 
 ▹ chasing sunsets on two wheels 🫶
+
+If any of this resonates with you, [please say hi!](app:socials)
  `,
     date: "15/04/25",
     timeframe: 'recent',
