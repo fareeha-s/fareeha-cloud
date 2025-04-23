@@ -393,20 +393,27 @@ function App() {
     // Additional event for mobile browsers
     window.addEventListener('touchmove', () => setHeight(), { passive: true });
     
-    // Optimize loading sequence - apply immediate background color and reduce initial delay
+    // Optimize loading sequence - apply immediate background color and disable animations until loaded
     // Set background color immediately to prevent flash
     document.documentElement.style.backgroundColor = '#131518';
     document.body.style.backgroundColor = '#131518';
     
+    // Add a class to disable all transitions and animations during initial load
+    document.documentElement.classList.add('no-animations');
+    
+    // Set loaded state immediately to prevent white flash
+    setIsLoaded(true);
+    
+    // Use a very short timeout to ensure the dark background is applied before any rendering
     const initialTimer = setTimeout(() => {
-      setIsLoaded(true);
-      // Reduce secondary delay to 300ms
-      const fullLoadTimer = setTimeout(() => {
-        // Force recompute height to ensure proper display
-        setHeight();
-      }, 300); // Reduced from 600ms
-      return () => clearTimeout(fullLoadTimer);
-    }, 50); // Reduced from 100ms
+      // Remove the no-animations class after a delay to allow animations after initial render
+      setTimeout(() => {
+        document.documentElement.classList.remove('no-animations');
+      }, 500);
+      
+      // Force recompute height to ensure proper display
+      setHeight();
+    }, 10); // Very short delay
     
     return () => {
       window.removeEventListener('resize', setHeight);
@@ -441,6 +448,13 @@ function App() {
         overflow: hidden !important;
         font-family: var(--font-sans) !important;
         background-color: #131518 !important; /* Dark background to prevent white flash */
+      }
+      
+      /* Disable all animations and transitions during initial load */
+      .no-animations * {
+        transition-property: none !important;
+        animation: none !important;
+        transition: none !important;
       }
       
       /* Fix for mobile browsers and notches */
@@ -732,6 +746,7 @@ function App() {
           className="absolute inset-0 bg-gradient-to-br from-[#131518] to-[#1d1c21]"
           style={{ 
             opacity: 1,
+            backgroundColor: '#131518', /* Ensure dark background during load */
           }}
         >
           {/* Subtle bokeh effect overlay */}
@@ -751,6 +766,7 @@ function App() {
           style={{ 
               opacity: isLoaded ? 0.9 : 0,
               transition: 'opacity 1s ease',
+              backgroundColor: '#131518', /* Ensure dark background during image load */
             }}
             onError={(e) => {
               // If webp fails, try jpg
