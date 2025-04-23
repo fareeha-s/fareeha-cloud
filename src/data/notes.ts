@@ -16,15 +16,15 @@ export const notes: NoteItem[] = [
   { 
     id: 1, 
     title: "hello world 🧭", 
-    content: `Hey, I'm Fareeha :)
+    content: `Hey, I'm Fareeha ✨
 
-I think the most beautiful thing is watching people light up around each other - my compass seems to keep pointing there!
-   
-I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span> - a social layer for workouts. The north star is to design tech that centres human longevity <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(writing on this soon!)</span>
+I love watching people light up around each other - my compass seems to keep pointing that way.
 
-<span style="font-weight: bold;">alignment:</span>
-▹ early community architect at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed, HF0)</a></span>
-▹ experience-led social design ([h&s gala](video:https://youtu.be/VMxSzVREUgY), [dc fashion show](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni))
+I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span>, a social layer for workouts. The north star is to design tech that [centres human longevity](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full).
+
+<span style="font-weight: bold;">in line with that:</span>
+▹ early experience designer at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed, HF0)</a></span>
+▹ social design in health & community ([h&s gala](video:https://youtu.be/VMxSzVREUgY), [dc fashion show](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni))
 ▹ winning team, healthcare innovation [<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(mit bc x harvard med)</span>](video:https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR)
 
 <span style="font-weight: bold;">things i love:</span>  
@@ -32,8 +32,7 @@ I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); fo
 ▹ giving people [apples](note:3) they didn't ask for 
 ▹ chasing sunsets on two wheels 🫶
 
-If any of this feels like home, [please say hi!](app:socials)
- `,
+If this feels like your kind of world, I'd love to [hear from you.](app:socials)`,
     date: "15/04/25",
     timeframe: 'recent',
     pinned: true

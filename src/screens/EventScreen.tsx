@@ -243,18 +243,27 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     // Check if this is first time use (no viewed events)
     const isFirstTimeUse = viewedEvents.length === 0;
     
-    // If this is first time use, show the orb on the top event (newest upcoming event)
+    // If this is first time use, show the orb on the most recent upcoming event (2025 events)
     if (isFirstTimeUse) {
       // Get the top upcoming event or first event if none are upcoming
       const firstTimeUpcomingEvents = events.filter(event => event.timeframe === 'upcoming');
       if (firstTimeUpcomingEvents.length > 0) {
-        // Sort by date (closest first)
+        // Sort by date (closest first, but ensuring 2025 events come before 2024 events)
         const sortedEvents = [...firstTimeUpcomingEvents].sort((a, b) => {
           const [dayA, monthA, yearA] = a.date.split('/').map(Number);
           const [dayB, monthB, yearB] = b.date.split('/').map(Number);
           
-          if (yearA !== yearB) return yearA - yearB;
+          // Convert to full years for proper comparison
+          const fullYearA = 2000 + yearA;
+          const fullYearB = 2000 + yearB;
+          
+          // Sort by year first - note we want newest years (e.g. 2025) first
+          if (fullYearA !== fullYearB) return fullYearB - fullYearA;
+          
+          // Then by month
           if (monthA !== monthB) return monthA - monthB;
+          
+          // Then by day
           return dayA - dayB;
         });
         
@@ -501,7 +510,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <p className="text-white/60 text-[14px] px-2">
-              some thoughtful, informal gatherings i've enjoyed planning with friends - hope this inspires!
+            ▹ Some fun, informal gatherings I've enjoyed planning with friends - hope this inspires!
             </p>
           </motion.div>
           {/* Past Month section */}

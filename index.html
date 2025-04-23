@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" style="background-color: #131518; color: white;">
+<html lang="en" style="background:#131518!important; color:white!important;">
   <head>
     <!-- Critical dark mode styles to prevent flash - must be first in head -->
     <style>
@@ -9,6 +9,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
+    <meta name="theme-color" content="#131518" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';">
     <title>fareeha</title>
     
@@ -46,6 +47,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" as="style">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+    <link rel="preload" as="style" href="/src/index.css">
+    <link rel="stylesheet" href="/src/index.css">
                             
     <!-- Add inline font-display:swap rule for immediate text visibility -->
     <style>
@@ -223,55 +226,12 @@
       // Force hello world note to open on initial page load
       window.initialNoteId = 1; // Hello world note ID
       window.openNoteDirectly = true;
-      
-      // Optimized progressive image loading
-      document.addEventListener('DOMContentLoaded', function() {
-        // Load placeholder immediately
-        const placeholderImg = new Image();
-        placeholderImg.src = '/optimized/background-placeholder.webp';
-        placeholderImg.onload = function() {
-          document.body.classList.add('placeholder-loaded');
-          
-          // Then preload the full image 
-          const fullImg = new Image();
-          fullImg.src = '/optimized/background.webp';
-          fullImg.onload = function() {
-            document.body.classList.add('final-loaded');
-          };
-        };
-        
-        // Fallback if placeholder fails
-        setTimeout(() => {
-          if (!document.body.classList.contains('placeholder-loaded')) {
-            document.body.classList.add('placeholder-loaded');
-          }
-        }, 200);
-        
-        // Fallback if full image fails
-        setTimeout(() => {
-          if (!document.body.classList.contains('final-loaded')) {
-            document.body.classList.add('final-loaded');
-          }
-        }, 800);
-      });
-
-      // Detect high-end devices for smoother animations
-      function detectDevicePerformance() {
-        // Simple heuristic using device memory API
-        if (navigator.deviceMemory && navigator.deviceMemory >= 4) {
-          document.documentElement.classList.add('high-performance-device');
-        } else {
-          document.documentElement.classList.add('standard-performance-device');
-        }
-      }
-      // Run detection immediately
-      detectDevicePerformance();
     </script>
   </head>
   <body>
     <div id="root">
       <!-- Initial loading indicator that will be replaced by React -->
-      <div class="initial-loader"></div>
+
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

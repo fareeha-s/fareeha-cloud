@@ -6,8 +6,7 @@ import { SocialsScreen } from './screens/SocialsScreen';
 import { EventScreen } from './screens/EventScreen';
 import type { AppIcon as AppIconType } from './types';
 import { ChevronLeft, StickyNote } from 'lucide-react';
-import axios from 'axios';
-import { getSession } from 'next-auth/react';
+// Removed unused imports
 
 // Import shared notes data
 import { notes } from './data/notes';
@@ -158,6 +157,9 @@ const getRelativeDate = (dateStr: string) => {
 function App() {
   // Set 'notes' as the default active app and set up to open hello world note
   const [activeApp, setActiveApp] = useState<string | null>('notes');
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedScreen, setSelectedScreen] = useState<string | null>(null);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const appsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   
   // Only open hello world note on initial page load, not when clicking on notes
@@ -194,6 +196,26 @@ function App() {
   const [swipeStartX, setSwipeStartX] = useState<number | null>(null);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [isSwiping, setIsSwiping] = useState(false);
+  
+  // Handle widget navigation (prev/next)
+  const handleWidgetNavigation = (direction: 'prev' | 'next') => {
+    // Create tactile feedback for better UX
+    if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(3); // Subtle vibration
+    }
+    
+    // Update the widget index based on direction
+    setCurrentWidgetIndex(prevIndex => {
+      if (direction === 'prev') {
+        // Go to previous widget, loop to end if at beginning
+        return prevIndex === 0 ? widgets.length - 1 : prevIndex - 1;
+      } else {
+        // Go to next widget, loop to beginning if at end
+        return prevIndex === widgets.length - 1 ? 0 : prevIndex + 1;
+      }
+    });
+  };
+  
   const widgetRef = useRef<HTMLDivElement>(null);
   const [hasShownFirstDisplay, setHasShownFirstDisplay] = useState(false);
   const [lastManualNavigation, setLastManualNavigation] = useState<number | null>(null);
@@ -570,7 +592,7 @@ function App() {
     localStorage.setItem('widgetNoteId', noteId);
   };
 
-  // Handle app closing with proper animation
+  // Handle app closing with proper animation - enhanced for elegant roll-up
   const handleClose = () => {
     if (isAnimating) return;
     
@@ -591,18 +613,36 @@ function App() {
           el.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
+      
+      // If we're in a note detail view, first transition back to square shape
+      if ((activeApp === 'notes' && window.isViewingNoteDetail) || 
+          (activeApp === 'partiful' && window.isViewingEventDetail)) {
+        // First update the window flag to trigger shape animation
+        if (activeApp === 'notes') {
+          window.isViewingNoteDetail = false;
+        } else if (activeApp === 'partiful') {
+          window.isViewingEventDetail = false;
+        }
+        
+        // Give the shape animation time to complete before closing
+        setTimeout(() => {
+          setIsOpen(false);
+          setTimeout(() => {
+            setSelectedScreen(null);
+            setSelectedNoteId(null);
+          }, 400); // Increased timeout for smoother transition
+        }, 250); // Wait for shape transition to complete
+      } else {
+        // Standard closing animation if not in detail view
+        setIsOpen(false);
+        setTimeout(() => {
+          setSelectedScreen(null);
+          setSelectedNoteId(null);
+        }, 400); // Increased timeout for smoother transition
+      }
     } catch (e) {
       console.error('Error cleaning up UI:', e);
     }
-    
-    // Add a slight delay before closing to allow scroll to complete
-    setTimeout(() => {
-      setIsOpen(false);
-      setTimeout(() => {
-        setSelectedScreen(null);
-        setSelectedNoteId(null);
-      }, 400); // Increased timeout for smoother transition
-    }, 50);
     
     // Check if there's a specific screen back handler active
     // This allows screens like NotesScreen to handle internal navigation
@@ -947,54 +987,32 @@ function App() {
         
         {/* Main container - with glass solid effect instead of blur */}
         <motion.div 
-          className={`w-[290px] aspect-square rounded-[24px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container ${
+          className={`w-[290px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container ${
             activeApp ? 'glass-solid-shine' : ''
           } ${activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail ? 'portrait-container expanded' : ''} ${activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail ? 'portrait-container expanded' : ''}`}
+          style={{
+            borderRadius: '24px',
+            transition: 'aspect-ratio 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)'
+          }}
           onClick={(e) => {
             e.stopPropagation();
             if (activeApp && !isAnimating) handleClose();
           }}
-          style={(() => {
-            // Debug log for rendering
-            if (activeApp === 'partiful') {
-              console.log('App.tsx rendering - isViewingEventDetail:', typeof window !== 'undefined' ? window.isViewingEventDetail : 'undefined');
-            }
-            if (activeApp === 'notes') {
-              console.log('App.tsx rendering - isViewingNoteDetail:', typeof window !== 'undefined' ? window.isViewingNoteDetail : 'undefined');
-            }
-            
-            // We need to ensure that when in event detail view, the portrait styles are applied
-            // This is a more reliable approach since window properties might be unreliable
-            if (activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail) {
-              return {
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset',
-                transform: 'translateZ(0)',
-                WebkitTransform: 'translateZ(0)',
-                opacity: 1,
-                aspectRatio: '3/4',
-                height: '390px',
-                width: '290px',
-              };
-            }
-            if (activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail) {
-              return {
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset',
-                transform: 'translateZ(0)',
-                WebkitTransform: 'translateZ(0)',
-                opacity: 1,
-                aspectRatio: '3/4',
-                height: '390px',
-                width: '290px',
-              };
-            }
-            
-            return {
-              boxShadow: activeApp ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset' : '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.12) inset',
-              transform: 'translateZ(0)',
-              WebkitTransform: 'translateZ(0)',
-              opacity: 1,
-            };
-          })()}
+          animate={{
+            boxShadow: activeApp ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset' : '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.12) inset',
+            aspectRatio: (activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail) || 
+                        (activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail) ? 
+                        '3/4' : '1/1',
+            height: (activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail) || 
+                    (activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail) ? 
+                    '390px' : '290px',
+            width: '290px',
+          }}
+          transition={{
+            aspectRatio: { duration: 0.4, ease: [0.25, 0.8, 0.25, 1] },
+            height: { duration: 0.4, ease: [0.25, 0.8, 0.25, 1] },
+            boxShadow: { duration: 0.4, ease: [0.25, 0.8, 0.25, 1] },
+          }}
         >
           {/* Light reflection effects */}
           <div 
@@ -1113,9 +1131,9 @@ function App() {
                     
                     if (Math.abs(diff) > 50) { // Minimum swipe distance
                       if (swipeDirection === 'right') {
-                        handlePrevWidget();
+                        handleWidgetNavigation('prev');
                       } else {
-                        handleNextWidget();
+                        handleWidgetNavigation('next');
                       }
                     }
                     
