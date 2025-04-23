@@ -156,8 +156,29 @@ const getRelativeDate = (dateStr: string) => {
 };
 
 function App() {
-  const [activeApp, setActiveApp] = useState<string | null>(null);
+  // Set 'notes' as the default active app to land directly on the hello world note
+  const [activeApp, setActiveApp] = useState<string | null>('notes');
   const appsRef = useRef<Map<string, HTMLDivElement>>(new Map());
+  
+  // We're using window.isFirstTimeOpeningApp instead of a state variable
+  
+  // Set up the hello world note to open by default
+  useEffect(() => {
+    if (activeApp === 'notes') {
+      // Find the hello world note
+      const helloWorldNote = notes.find(note => note.title.includes("hello world"));
+      if (helloWorldNote) {
+        // Set the initialNoteId to the hello world note's ID
+        window.initialNoteId = helloWorldNote.id;
+        // Set flag to open note directly in detail view
+        window.openNoteDirectly = true;
+        // Set a flag to track if this is the first time opening the app
+        (window as any).isFirstTimeOpeningApp = localStorage.getItem('hasVisitedBefore') !== 'true';
+        // Mark that the user has visited before
+        localStorage.setItem('hasVisitedBefore', 'true');
+      }
+    }
+  }, []);
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [appPosition, setAppPosition] = useState<AnimationPosition | null>(null);
@@ -467,6 +488,11 @@ function App() {
     // Make handleAppClick available to the window object for links in notes
     window.handleAppClick = (appId: string) => {
       console.log('App link clicked:', appId);
+      // Special case: if appId is 'home', go to home screen
+      if (appId === 'home') {
+        setActiveApp(null);
+        return;
+      }
       handleAppClick(appId);
     };
     
@@ -498,6 +524,13 @@ function App() {
     // Check if there's a specific screen back handler active
     // This allows screens like NotesScreen to handle internal navigation
     if (activeApp === 'notes' && window.noteScreenBackHandler && window.noteScreenBackHandler()) {
+      // If this is the first time opening the app and we're viewing the hello world note,
+      // go to home screen instead of staying in notes app
+      if ((window as any).isFirstTimeOpeningApp) {
+        (window as any).isFirstTimeOpeningApp = false; // Reset the flag
+        setActiveApp(null); // Go to home screen
+        return;
+      }
       return; // If the screen handler returns true, it handled the back action
     }
     
@@ -590,45 +623,78 @@ function App() {
 
   // Handle navigation between apps
   const handleWidgetClick = (widgetType: string) => {
-    // Special case for workout widget to navigate directly to the kineship note detail view
+    // Don't allow widget clicks during animations
+    if (isAnimating) return;
+    
+    // Create tactile feedback for the widget interaction
+    createWidgetSwipeFeedback();
+    
+    // Map widget types to app IDs
+    let appId: string | null = null;
+    
+    // Determine which app to open based on widget type
     if (widgetType === 'workout') {
-      // Open the kineship note directly in detail view
+      // Special case for workout widget to navigate directly to the kineship note detail view
       window.initialNoteId = 2; // ID of the kineship note
       window.openNoteDirectly = true; // Signal to open this note directly in detail view
-      handleAppClick('notes');
-      return;
+      // Set widgetNoteId to make the pulsing orb appear
+      (window as any).widgetNoteId = 2;
+      appId = 'notes';
+    } else if (widgetType === 'notes') {
+      // Set widgetNoteId to the hello world note to make the pulsing orb appear
+      window.initialNoteId = 1; // ID of the hello world note
+      (window as any).widgetNoteId = 1;
+      appId = 'notes';
+    } else if (widgetType === 'socials') {
+      appId = 'socials';
+    } else if (widgetType === 'partiful') {
+      appId = 'partiful';
     }
     
-    // Special case for notes widget to open the notes list
-    if (widgetType === 'notes') {
-      // Set up global variable to tell NotesScreen which note to highlight
-      // Filter out locked notes to ensure we never highlight a locked note
-      const unlockNotes = notes.filter(note => !note.locked);
-      const noteToHighlight = unlockNotes.find(note => note.id === selectedNote.id) || unlockNotes[0];
-      window.initialNoteId = noteToHighlight.id;
-      window.openNoteDirectly = false; // Reset this flag
-      handleAppClick(widgetType);
-      return;
+    // If we have a valid app ID, open it with animation
+    if (appId) {
+      // Get the app element from the ref map
+      const appElement = appsRef.current.get(appId);
+      const containerElement = mainContainerRef.current;
+      
+      if (!appElement || !containerElement) return;
+      
+      setIsAnimating(true);
+      
+      // Get app's absolute position
+      const appRect = appElement.getBoundingClientRect();
+      const containerRect = containerElement.getBoundingClientRect();
+      
+      // Find the selected app
+      const selectedApp = apps.find(app => app.id === appId) || null;
+      
+      // Store the app's position relative to the container
+      setAppPosition({
+        x: appRect.left - containerRect.left + (appRect.width / 2),
+        y: appRect.top - containerRect.top + (appRect.height / 2),
+        width: appRect.width,
+        height: appRect.height
+      });
+      
+      // Store a clone of the app icon for animation
+      setClonedAppIcon({
+        app: selectedApp,
+        rect: appRect
+      });
+      
+      // Set the current app element for scale calculations
+      setCurrentAppElement(appElement);
+      
+      // Small delay to ensure animation settings are in place
+      setTimeout(() => {
+        setActiveApp(appId);
+      }, 10);
+      
+      // Reset animation flag after animation completes
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 400);
     }
-    
-    // Special case for partiful widget to open the specific event
-    if (widgetType === 'partiful') {
-      // Set up global variable to tell EventScreen which event to open
-      window.initialEventId = selectedEvent.id;
-      // Reset note opening flag
-      window.openNoteDirectly = false;
-    }
-    
-    // Navigate to the appropriate app screen for other widget types
-    handleAppClick(widgetType);
-  };
-
-  // Function to handle swipe navigation - simpler approach
-  const handlePrevWidget = () => {
-    setCurrentWidgetIndex((prevIndex) => {
-      return (prevIndex - 1 + widgets.length) % widgets.length;
-    });
-    createWidgetSwipeFeedback();
   };
   
   const handleNextWidget = () => {

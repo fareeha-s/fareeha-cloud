@@ -1211,7 +1211,7 @@ function App() {
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes' 
                           ? (selectedNote.title.includes("hello world") 
-                              ? "my north star: to design a social stack intentionally calibrated for human longevity..."
+                              ? "my north star: designing tech that centres human longevity..."
                               : (selectedNote.content && selectedNote.content.endsWith('...') 
                                   ? selectedNote.content 
                                   : (selectedNote.content || '') + '...'))

@@ -136,6 +136,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Add state to track if Kineship note was opened from Hello World note
   const [openedFromHelloWorld, setOpenedFromHelloWorld] = useState<boolean>(false);
   
+  // Track if this is the first time viewing hello world note directly
+  const [isFirstViewOfHelloWorld, setIsFirstViewOfHelloWorld] = useState<boolean>(false);
+  
   // Create a ref to use for directly setting the window property
   const isViewingDetailRef = useRef(false);
   
@@ -279,6 +282,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         // Set flag to false BEFORE state changes for immediate effect
         setIsViewingDetail(false);
         
+        // Check if this is the hello world note and it's the first time viewing it
+        const isHelloWorldNote = selectedNote.id === 1;
+        const shouldGoToHome = isHelloWorldNote && isFirstViewOfHelloWorld;
+        
         // Add longer delay before changing React state to ensure animation completes
         setTimeout(() => {
           // Special case: If we're viewing Kineship note (id: 2) that was opened from Hello World note (id: 1),
@@ -297,6 +304,22 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
           } else {
             // Normal behavior for other notes
             setSelectedNote(null);
+            
+            // If this is the first view of hello world, signal to go to home
+            if (shouldGoToHome) {
+              // Reset the first view flag
+              setIsFirstViewOfHelloWorld(false);
+              // Tell the App component to go to home
+              // Small delay to ensure the note is closed first
+              setTimeout(() => {
+                // Go back to home screen by setting activeApp to null
+                // We need to access the parent App component's state
+                // Use the window object to communicate with the parent
+                if (typeof window !== 'undefined' && window.handleAppClick) {
+                  window.handleAppClick(null as any); // This will go to home screen
+                }
+              }, 50);
+            }
           }
           createTactileEffect();
         }, 150); // Increased from 50ms to 150ms
@@ -348,6 +371,19 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // Check if we have an initial note ID to highlight from the widget
     if (window.initialNoteId) {
       setWidgetNoteId(window.initialNoteId);
+      
+      // Check if this is the hello world note (id: 1) and it's being opened directly
+      if (window.initialNoteId === 1 && window.openNoteDirectly) {
+        // Check if we've seen the hello world note before
+        const hasSeenHelloWorld = localStorage.getItem('hasSeenHelloWorld') === 'true';
+        if (!hasSeenHelloWorld) {
+          // Mark that this is the first view of hello world
+          setIsFirstViewOfHelloWorld(true);
+          // Store that we've seen hello world now
+          localStorage.setItem('hasSeenHelloWorld', 'true');
+        }
+      }
+      
       // Clear the initialNoteId after using it
       window.initialNoteId = undefined;
     }
@@ -448,6 +484,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // Set flag to false BEFORE state changes for immediate effect
     setIsViewingDetail(false);
     
+    // Check if this is the hello world note
+    const isHelloWorldNote = selectedNote?.id === 1;
+    
     // Reset widgetNoteId when closing a note
     // This ensures that if the user goes back to home and clicks the same note
     // from the widget again, the orb will reappear
@@ -473,6 +512,17 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       } else {
         // Normal behavior for other notes
         setSelectedNote(null);
+        
+        // If this is the hello world note, go to home page
+        if (isHelloWorldNote && typeof window !== 'undefined') {
+          // Small delay to ensure the note is closed first
+          setTimeout(() => {
+            // This will close the notes app and go to home
+            if (window.handleAppClick) {
+              window.handleAppClick('home');
+            }
+          }, 50);
+        }
       }
       createTactileEffect();
     }, 150); // Increased from 50ms to 150ms
