@@ -729,7 +729,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                       }}
                       dangerouslySetInnerHTML={{
                         __html: selectedNote?.content
-                          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+                          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
                             // Check if this is an internal note link
                             if (url.startsWith('note:')) {
                               const noteId = parseInt(url.substring(5));
@@ -760,7 +760,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                             // External link
                             return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="event.stopPropagation()">${text}</a>`;
                           })
-                          .replace(/(__[^_]+__)/g, (match, part) => {
+                          .replace(/(__[^_]+__)/g, (_, part) => {
                             // Process underlined sections
                             return `<span class="underline decoration-white/90">${part.slice(2, -2)}</span>`;
                           })
@@ -837,7 +837,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                               variants={chevronVariants}
                               initial="initial"
                               whileHover="hover"
-                              animate={index === 0 && note.title.includes("hello world!") && !hasInteracted ? chevronControls : undefined}
+                              animate={index === 0 && note.title.includes("hello world") && !hasInteracted ? chevronControls : undefined}
                             >
                               <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
                             </motion.div>
@@ -887,7 +887,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
                       All
                     </h2>
                     <div className="space-y-0.5">
-                      {allNotes.map((note, index) => (
+                      {allNotes.map((note) => (
                         <motion.div 
                           key={`all-${note.id}`}
                           className="flex group px-1 py-0.5 rounded-md relative"
