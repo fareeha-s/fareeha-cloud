@@ -17,9 +17,9 @@ export const notes: NoteItem[] = [
     id: 1, 
     title: "hello world 🧭", 
     content: `Hi, I'm Fareeha! 
-    I think a wonderful part of life is watching people light up around each other. My compass always seems to point that way :)
+Ithink the most beautiful thing is watching people light up around each other—my compass keeps pointing there :)
    
-Right now I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span> - a social layer for workouts, guided by a north star of designing tech that centres human longevity. <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(publishing on this soon!)</span>
+I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span>: a social layer for workouts, guided by a north star of designing tech that centres human longevity <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(publishing on this soon!)</span>
 
 <span style="font-weight: bold;">alignment:</span>
 ▹ early community architect at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed, HF0)</a></span>
@@ -31,7 +31,7 @@ Right now I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255,
 ▹ giving people [apples](note:3) they didn't ask for 
 ▹ chasing sunsets on two wheels 🫶
 
-If any of this resonates with you, [please say hi!](app:socials)
+If any of this feels like home, [please say hi!](app:socials)
  `,
     date: "15/04/25",
     timeframe: 'recent',
