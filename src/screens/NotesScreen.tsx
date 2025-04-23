@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { AppScreenProps } from '../types';
 import { motion, useAnimation, useReducedMotion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronDown, X, Lock } from 'lucide-react';
+import { ChevronRight, X, Lock } from 'lucide-react';
 import { createTactileEffect } from '../App';
 import { notes, NoteItem } from '../data/notes';
 import ReactDOM from 'react-dom';
@@ -136,8 +136,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Add state to track if Kineship note was opened from Hello World note
   const [openedFromHelloWorld, setOpenedFromHelloWorld] = useState<boolean>(false);
   
-  // Track if this is the first time viewing hello world note directly
-  const [isFirstViewOfHelloWorld, setIsFirstViewOfHelloWorld] = useState<boolean>(false);
+  // Track if this is the first time viewing hello world note directly - unused but kept for future use
+  const [, setIsFirstViewOfHelloWorld] = useState<boolean>(false);
   
   // Create a ref to use for directly setting the window property
   const isViewingDetailRef = useRef(false);
@@ -301,11 +301,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         // Set flag to false BEFORE state changes for immediate effect
         setIsViewingDetail(false);
         
-        // Check if this is the hello world note and it's the first time viewing it
-        const isHelloWorldNote = selectedNote.id === 1;
-        const shouldGoToHome = isHelloWorldNote && isFirstViewOfHelloWorld;
-        
-        // Add longer delay before changing React state to ensure animation completes
+        // Always just go back to the notes list view instead of trying to go home
+        // This simplifies the navigation and prevents the grey box issue
         setTimeout(() => {
           // Special case: If we're viewing Kineship note (id: 2) that was opened from Hello World note (id: 1),
           // then go back to Hello World note instead of closing
@@ -321,23 +318,29 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               setSelectedNote(null);
             }
           } else {
-            // Normal behavior for other notes
+            // Normal behavior for all notes - just go back to notes list
             setSelectedNote(null);
             
-            // If this is the first view of hello world, signal to go to home
-            if (shouldGoToHome) {
-              // Reset the first view flag
-              setIsFirstViewOfHelloWorld(false);
-              // Tell the App component to go to home
-              // Small delay to ensure the note is closed first
-              setTimeout(() => {
-                // Go back to home screen by setting activeApp to null
-                // We need to access the parent App component's state
-                // Use the window object to communicate with the parent
-                if (typeof window !== 'undefined' && window.handleAppClick) {
-                  window.handleAppClick(null as any); // This will go to home screen
+            // Remove the complex home screen navigation that's causing issues
+            // Instead, just ensure we're in the notes view
+            try {
+              // Clean up any UI artifacts that might be causing the grey box
+              const mainContainer = document.querySelector('.main-container');
+              if (mainContainer) {
+                mainContainer.classList.remove('portrait-container');
+                mainContainer.classList.remove('expanded');
+                mainContainer.classList.remove('collapsing');
+              }
+              
+              // Remove any overlay elements that might be causing the grey box
+              const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
+              overlays.forEach(overlay => {
+                if (document.body.contains(overlay)) {
+                  document.body.removeChild(overlay);
                 }
-              }, 50);
+              });
+            } catch (e) {
+              console.error('Error cleaning up UI:', e);
             }
           }
           createTactileEffect();
@@ -466,7 +469,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     const yesterday = `${String(yesterdayDate.getDate()).padStart(2, '0')}/${String(yesterdayDate.getMonth() + 1).padStart(2, '0')}/${String(yesterdayDate.getFullYear()).slice(-2)}`;
     
     // Parse the provided date to get the month
-    const [day, month, year] = dateStr.split('/').map(Number);
+    const [, month] = dateStr.split('/').map(Number);
     
     // Special cases for very recent dates
     if (dateStr === today) return 'Today';
@@ -479,9 +482,6 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     return monthName;
   };
 
-  // Filter out locked notes for the widget
-  const widgetNotes = notes.filter(note => !note.locked);
-  
   // New filters for pinned notes and all notes
   const pinnedNotes = notes.filter(note => note.pinned);
   
