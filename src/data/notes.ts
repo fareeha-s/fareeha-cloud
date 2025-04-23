@@ -15,18 +15,20 @@ export type NoteItem = {
 export const notes: NoteItem[] = [
   { 
     id: 1, 
-    title: "hello world!", 
-    content: `<span style="font-weight: bold;">my north star</span> 
-▹ to design a social stack intentionally calibrated for human longevity 
+    title: "hello world", 
+    content: `Hi, I'm Fareeha! I think the best part of life is watching people light up around each other. My compass always points that way :)
+   
+Right now I’m building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span> - a social layer for workouts, guided by my north star of designing tech that centres human longevity.
 
-<span style="font-weight: bold;">building</span>
-▹ [kineship](note:2)
-▹ early community architect at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <a href="https://www.hf0.com/" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed via HF0)</a>
+<span style="font-weight: bold;">adventures:</span>
+▹ early community architect at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed, HF0)</a></span>
+▹ experience-led social design - [h&s gala](video:https://youtu.be/VMxSzVREUgY), [dc fashion show](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni)
+▹ winning team, healthcare innovation [(mit bc x harvard med)](video:https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR)
 
-<span style="font-weight: bold;">contributing</span>
-▹ [gala committee](video:https://youtu.be/VMxSzVREUgY), heart and stroke foundation
-▹ [fashion show committee](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), diabetes canada
-▹ [hosting](app:partiful) with my favourite people 🫶
+<span style="font-weight: bold;">things i love:</span>  
+▹ taking forever to [set a table](app:partiful)
+▹ giving people [apples](note:3) they didn't ask for 
+▹ chasing sunsets on two wheels 🫶
  `,
     date: "15/04/25",
     timeframe: 'recent',
@@ -39,26 +41,21 @@ export const notes: NoteItem[] = [
 <div style="display: flex; align-items: center;">
   <img src="/icons/apps/kineship.png" alt="Kineship" style="width:60px; height:60px; border-radius: 12px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); background: linear-gradient(to bottom, #f8f9fa, #e2e6ea); transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; margin-top: -10px;" onmouseover="this.style.transform='scale(1.1)'; this.style.background='linear-gradient(to bottom, #e2e6ea, #f8f9fa)'; this.style.boxShadow='0 12px 24px rgba(0, 0, 0, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.background='linear-gradient(to bottom, #f8f9fa, #e2e6ea)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';" onclick="window.open('https://kineship.com', '_blank')" />
   <span style="font-size: 12px; font-style: italic; margin-left: 15px;">pre-launch</span>
-</div>
-<b><i>another social app?!</i></b>
+</div> 
+Much of how we connect today involves adding more: more invites, more plans, more coordination.
 
-This one won't ask you to post — just to notice!
+Lately, I’ve been wondering if there might be a kind of closeness that fits into the day as it is.
 
-Many social apps connect us by adding more: more invites, more plans, more coordination.
+Like when you swap your usual 6pm class for the 5, because your friend’s going to that one. Or wandering to the farmers’ market the same time as your neighbours... your day suddenly feels a touch warmer.
 
-Lately, I've been wondering if there's also something meaningful in adding less, but noticing more.
+It might seem small, but psychologists call it <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC5137339/' target='_blank' rel='noopener noreferrer' style='text-decoration: underline;'>intentional synchrony</a>, a natural human principle rooted in our nervous systems. These overlaps are tied to lower loneliness, better regulation, and long-term wellbeing - core to how we rebuild connection at scale.
 
-I find myself drawn to the idea of just allowing our everyday moments to feel more mutual. Our nervous systems register a kind of comfort in this <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC5137339/' target='_blank' rel='noopener noreferrer' style='text-decoration: underline;'>intentional synchrony</a>.
+Surprisingly, almost none of the social platforms we use today are designed to support this. Instead, they often keep us observing each other’s lives from a distance.
 
-Choosing the 5pm class instead of 6, visiting the farmers' market when you know your neighbours will be there too. It's subtle, but these moments play a quietly powerful role in reducing loneliness at scale.
+Kineship is built around a gentler kind of togetherness. It doesn’t ask you to schedule anything or make a plan. It simply shows you when your paths could align—spin, pilates, Barry’s, whatever your thing is. Some soft cues toward shared presence, and a bit more everyday serendipity.
 
-Surprisingly, almost none of the platforms we use today are designed around this natural principle. Instead, we're usually just observing each other's lives from a distance.
-
-Kineship doesn't ask you to schedule anything. It simply reveals the overlaps — who else is heading to Pilates today? Spin? Barry's?
-
-By offering these soft cues, I'm hoping it'll be a little easier to say hi, share laughs, linger a bit longer, make plans.
-
-something as simple as a smoothie after class 🫶`, 
+I'm hoping it makes it just a little easier to say hi, share laughs, linger a bit longer. Even with people you often see around, but don't quite know (yet!) As simple as a smoothie after class 🫶
+    `,
     date: "12/04/25",
     timeframe: 'recent',
     pinned: false

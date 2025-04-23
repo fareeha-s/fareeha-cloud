@@ -216,6 +216,17 @@
   }
 }
 
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Override default cursor for GitHub link */
+.github-link {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
 @layer utilities {
   .text-shadow-sm {
     text-shadow: none;

@@ -208,21 +208,14 @@ function App() {
     }
   }, []);
   
-  // Select notes based on visit history
+  // Always select the "hello world!" note when the site opens
   const selectedNote = useMemo(() => {
     // Filter out locked notes to ensure we never select a locked note
     const unlockNotes = notes.filter(note => !note.locked);
     
-    // For first visit - show the "hello world!" note
-    if (isFirstVisit) {
-      return unlockNotes.find(note => note.title.includes("hello world!")) || unlockNotes[0];
-    } 
-    // For subsequent visits - show random notes
-    else {
-      const randomIndex = Math.floor(Math.random() * unlockNotes.length);
-      return unlockNotes[randomIndex];
-    }
-  }, [isFirstVisit]);
+    // Always show the "hello world!" note
+    return unlockNotes.find(note => note.title.includes("hello world")) || unlockNotes[0];
+  }, []);
   
   // Select events based on visit history
   const selectedEvent = useMemo(() => {
@@ -777,13 +770,16 @@ function App() {
               }}
             >
               <span className="flex items-center">
+                {isFirstVisit && <span style={{ fontSize: "0.65em", color: "rgba(255, 255, 255, 0.5)", marginRight: "4px", animation: "fadeOut 2.5s ease-in forwards 3s", display: "inline-block", transform: "translateY(2px)" }}>shipped by</span>}
                 fareeha
-                <img 
-                  src="./icons/hosts/fareeha.jpg" 
-                  alt="Fareeha" 
-                  className="ml-1 rounded-full w-6 h-6 object-cover border border-white/20" 
-                  style={{ zIndex: 9999 }}
-                />
+                <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer' }} className="github-link">
+                  <img 
+                    src="./icons/hosts/fareeha.jpg" 
+                    alt="Fareeha" 
+                    className="ml-1 rounded-full w-6 h-6 object-cover border border-white/20 hover:border-white/50 transition-all duration-300" 
+                    style={{ zIndex: 9999 }}
+                  />
+                </a>
               </span>
             </motion.h2>
           )}
@@ -1118,8 +1114,8 @@ function App() {
                         fontSize: '12px'
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes' 
-                          ? (selectedNote.title.includes("hello world!") 
-                              ? "my north star: to design a social stack intentionally calibrated for human longevity..."
+                          ? (selectedNote.title.includes("hello world") 
+                              ? "my north star: designing tech that centres human longevity..."
                               : selectedNote.title.includes("kineship") 
                                 ? "the kineship app shares your workout calendar with your circles..."
                                 : (selectedNote.content && selectedNote.content.endsWith('...') 

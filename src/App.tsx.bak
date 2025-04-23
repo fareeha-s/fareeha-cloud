@@ -193,9 +193,9 @@ function App() {
   
   // Select notes based on visit history
   const selectedNote = useMemo(() => {
-    // For first visit - show the "hello world!" note
+    // For first visit - show the "hello world" note
     if (isFirstVisit) {
-      return notes.find(note => note.title.includes("hello world!")) || notes[0];
+      return notes.find(note => note.title.includes("hello world")) || notes[0];
     } 
     // For subsequent visits - show random notes
     else {
@@ -1210,7 +1210,7 @@ function App() {
                         fontSize: '12px'
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes' 
-                          ? (selectedNote.title.includes("hello world!") 
+                          ? (selectedNote.title.includes("hello world") 
                               ? "my north star: to design a social stack intentionally calibrated for human longevity..."
                               : (selectedNote.content && selectedNote.content.endsWith('...') 
                                   ? selectedNote.content 
