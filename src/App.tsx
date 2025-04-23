@@ -156,33 +156,12 @@ const getRelativeDate = (dateStr: string) => {
 };
 
 function App() {
-  // Set 'notes' as the default active app to land directly on the hello world note
+  // Set 'notes' as the default active app but don't auto-open any note
   const [activeApp, setActiveApp] = useState<string | null>('notes');
   const appsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   
-  // We're using window.isFirstTimeOpeningApp instead of a state variable
-  
-  // Set up the hello world note to open by default - with immediate execution
-  useEffect(() => {
-    if (activeApp === 'notes') {
-      // Find the hello world note
-      const helloWorldNote = notes.find(note => note.title.includes("hello world"));
-      if (helloWorldNote) {
-        // Set the initialNoteId to the hello world note's ID
-        window.initialNoteId = helloWorldNote.id;
-        // Set flag to open note directly in detail view
-        window.openNoteDirectly = true;
-        // Force this to be true to ensure it opens
-        localStorage.removeItem('hasVisitedBefore');
-        // Set a flag to track if this is the first time opening the app
-        (window as any).isFirstTimeOpeningApp = true;
-        // Mark that the user has visited before - but do this after a delay
-        setTimeout(() => {
-          localStorage.setItem('hasVisitedBefore', 'true');
-        }, 2000);
-      }
-    }
-  }, [activeApp]); // Add activeApp as a dependency to ensure this runs when it changes
+  // IMPORTANT: We've removed the auto-opening of hello world note to prevent navigation issues
+  // This ensures the site always opens to the notes list first, which is more stable
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [appPosition, setAppPosition] = useState<AnimationPosition | null>(null);
