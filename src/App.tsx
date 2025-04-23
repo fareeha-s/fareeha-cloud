@@ -213,7 +213,7 @@ function App() {
     // Filter out locked notes to ensure we never select a locked note
     const unlockNotes = notes.filter(note => !note.locked);
     
-    // Always show the "hello world!" note
+    // Always show the "hello world" note with compass emoji
     return unlockNotes.find(note => note.title.includes("hello world")) || unlockNotes[0];
   }, []);
   
