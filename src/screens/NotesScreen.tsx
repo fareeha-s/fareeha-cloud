@@ -153,21 +153,40 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   
   // Check for the openNoteDirectly flag to open note in detail view directly
   useEffect(() => {
-    // If the openNoteDirectly flag is set, and we have an initialNoteId
-    if (typeof window !== 'undefined' && window.openNoteDirectly && window.initialNoteId) {
-      // Find the note with the specified ID
-      const noteToOpen = notes.find(note => note.id === window.initialNoteId);
-      if (noteToOpen) {
-        // Open the note directly in detail view
-        console.log('Opening note directly in detail view:', noteToOpen.id);
-        setSelectedNote(noteToOpen);
+    // Force open the hello world note on initial load
+    const forceOpenHelloWorldNote = () => {
+      // Find the hello world note (id: 1)
+      const helloWorldNote = notes.find(note => note.id === 1);
+      if (helloWorldNote) {
+        console.log('Force opening hello world note in detail view');
+        setSelectedNote(helloWorldNote);
         setIsViewingDetail(true);
         // Set the current note index for navigation
-        const noteIndex = notes.findIndex(note => note.id === noteToOpen.id);
+        const noteIndex = notes.findIndex(note => note.id === helloWorldNote.id);
         setCurrentNoteIndex(noteIndex);
-        
-        // Reset the openNoteDirectly flag to avoid reopening on component re-renders
-        window.openNoteDirectly = false;
+      }
+    };
+    
+    // If the openNoteDirectly flag is set, and we have an initialNoteId
+    if (typeof window !== 'undefined') {
+      if (window.openNoteDirectly && window.initialNoteId) {
+        // Find the note with the specified ID
+        const noteToOpen = notes.find(note => note.id === window.initialNoteId);
+        if (noteToOpen) {
+          // Open the note directly in detail view
+          console.log('Opening note directly in detail view:', noteToOpen.id);
+          setSelectedNote(noteToOpen);
+          setIsViewingDetail(true);
+          // Set the current note index for navigation
+          const noteIndex = notes.findIndex(note => note.id === noteToOpen.id);
+          setCurrentNoteIndex(noteIndex);
+          
+          // Reset the openNoteDirectly flag to avoid reopening on component re-renders
+          window.openNoteDirectly = false;
+        }
+      } else {
+        // If no explicit flag is set, still force open the hello world note
+        forceOpenHelloWorldNote();
       }
     }
   }, []);

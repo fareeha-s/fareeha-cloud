@@ -17,7 +17,7 @@ export const notes: NoteItem[] = [
     id: 1, 
     title: "hello world 🧭", 
     content: `Hi, I'm Fareeha! 
-Ithink the most beautiful thing is watching people light up around each other—my compass keeps pointing there :)
+I think the most beautiful thing is watching people light up around each other—my compass keeps pointing there :)
    
 I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span>: a social layer for workouts, guided by a north star of designing tech that centres human longevity <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(publishing on this soon!)</span>
 
