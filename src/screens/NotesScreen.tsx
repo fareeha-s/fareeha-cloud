@@ -166,6 +166,11 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         const noteIndex = notes.findIndex(note => note.id === noteToOpen.id);
         setCurrentNoteIndex(noteIndex);
         
+        // Mark the hello world note as viewed since users always see it first
+        if (noteToOpen.id === 1) { // Hello world note ID is 1
+          markNoteAsViewed(1);
+        }
+        
         // Reset the openNoteDirectly flag to avoid reopening on component re-renders
         window.openNoteDirectly = false;
       }
@@ -286,7 +291,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     }
   }, [chevronControls, prefersReducedMotion, hasInteracted]);
 
-  // Completely simplified back handler to avoid navigation issues
+  // Back handler with special case for Kineship to hello world navigation
   useEffect(() => {
     const handleAppBackClick = () => {
       if (selectedNote) {
@@ -315,11 +320,34 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         setIsViewingDetail(false);
         window.isViewingNoteDetail = false;
         
-        // Simply go back to notes list view with no special cases
-        setTimeout(() => {
-          setSelectedNote(null);
-          createTactileEffect();
-        }, 50);
+        // Special case: If we're viewing Kineship note (id: 2) and it was opened from Hello World
+        // Check if we opened Kineship from Hello World
+        const openedFromHelloWorldFlag = localStorage.getItem('openedKineshipFromHelloWorld') === 'true';
+        
+        if (selectedNote.id === 2 && openedFromHelloWorldFlag) {
+          // Go back to Hello World note instead of notes list
+          console.log('Going back to Hello World note from Kineship');
+          setTimeout(() => {
+            const helloWorldNote = notes.find(note => note.id === 1);
+            if (helloWorldNote) {
+              setSelectedNote(helloWorldNote);
+              setIsViewingDetail(true);
+              window.isViewingNoteDetail = true;
+              // Clear the flag
+              localStorage.removeItem('openedKineshipFromHelloWorld');
+            } else {
+              // Fallback if hello world note not found
+              setSelectedNote(null);
+            }
+            createTactileEffect();
+          }, 50);
+        } else {
+          // Normal case - go back to notes list
+          setTimeout(() => {
+            setSelectedNote(null);
+            createTactileEffect();
+          }, 50);
+        }
         
         return true; // Event was handled
       }
@@ -537,6 +565,12 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
 
   // Helper function to determine if a note should have a pulsing dot
   const shouldShowPulsingDot = (noteId: number) => {
+    // First, check if the note is locked - never show pulsing dot for locked notes
+    const noteItem = notes.find(note => note.id === noteId);
+    if (noteItem?.locked) {
+      return false;
+    }
+
     // If user came from widget, highlight that specific note
     // but hide it only while actually viewing the note
     if (widgetNoteId !== null && widgetNoteId === noteId) {
@@ -555,8 +589,14 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       return false;
     }
     
-    // Otherwise, highlight the first note in the list
-    return notes.length > 0 && notes[0].id === noteId;
+    // Since users always land on hello world note first, don't show pulsing dot for it
+    // unless it was specifically accessed through a widget (handled above)
+    if (noteId === 1) { // Hello world note ID is 1
+      return false;
+    }
+    
+    // For other unread notes, show a pulsing dot
+    return !viewedNotes.includes(noteId);
   };
 
   // Add function to mark note as viewed

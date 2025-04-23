@@ -55,7 +55,7 @@ It might seem small, but psychologists call it <a href='https://pmc.ncbi.nlm.nih
 
 Surprisingly, almost none of the social platforms we use today are designed to support this. Instead, they often keep us observing each other’s lives from a distance.
 
-Kineship is built around a gentler kind of togetherness. It doesn’t ask you to schedule anything or make a plan. It simply shows you when your paths could align—spin, pilates, Barry’s, whatever your thing is. Some soft cues toward shared presence, and a bit more everyday serendipity.
+Kineship is meant to embrace a gentler kind of togetherness. It doesn’t ask you to schedule anything or make a plan. It simply shows you when your paths could align—spin, pilates, Barry’s, whatever your thing is. Some soft cues toward shared presence, and a bit more everyday serendipity.
 
 I'm hoping it makes it just a little easier to say hi, share laughs, linger a bit longer. Even with people you often see around, but don't quite know (yet!) As simple as a smoothie after class 🫶
     `,
