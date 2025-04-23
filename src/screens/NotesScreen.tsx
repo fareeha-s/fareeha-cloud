@@ -151,7 +151,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   // Create a ref for the note content container
   const noteContentRef = useRef<HTMLDivElement>(null);
   
-  // Simple approach to handle opening the hello world note directly
+  // Only open hello world note on initial page load
   useEffect(() => {
     // Check for the openNoteDirectly flag to open note in detail view directly
     if (typeof window !== 'undefined' && window.openNoteDirectly && window.initialNoteId) {

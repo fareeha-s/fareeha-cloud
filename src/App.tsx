@@ -160,22 +160,24 @@ function App() {
   const [activeApp, setActiveApp] = useState<string | null>('notes');
   const appsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   
-  // Simple approach to open the hello world note directly
+  // Only open hello world note on initial page load, not when clicking on notes
   useEffect(() => {
-    if (activeApp === 'notes') {
-      // Set a timeout to allow the component to fully mount first
-      setTimeout(() => {
-        // Find the hello world note
-        const helloWorldNote = notes.find(note => note.title.includes("hello world"));
-        if (helloWorldNote) {
-          // Set the initialNoteId to the hello world note's ID
-          window.initialNoteId = helloWorldNote.id;
-          // Set flag to open note directly in detail view
-          window.openNoteDirectly = true;
-        }
-      }, 300); // Delay to ensure components are fully mounted
+    // Check if this is the initial page load
+    const isInitialPageLoad = !localStorage.getItem('hasVisitedSite');
+    
+    if (isInitialPageLoad && activeApp === 'notes') {
+      // This is the initial page load, so open hello world note
+      const helloWorldNote = notes.find(note => note.title.includes("hello world"));
+      if (helloWorldNote) {
+        console.log('Initial page load: Setting hello world note to open directly');
+        window.initialNoteId = helloWorldNote.id;
+        window.openNoteDirectly = true;
+      }
+      
+      // Mark that the user has visited the site
+      localStorage.setItem('hasVisitedSite', 'true');
     }
-  }, [activeApp]);
+  }, [activeApp]); // Only run when activeApp changes
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [appPosition, setAppPosition] = useState<AnimationPosition | null>(null);
