@@ -215,7 +215,7 @@ function App() {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
   
-  // Check if this is the first visit and immediately open hello world note
+  // Check if this is the first visit
   useEffect(() => {
     // Check localStorage for previous visits
     const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
@@ -227,28 +227,41 @@ function App() {
       setIsFirstVisit(true);
     }
     
-    // Immediately open the notes app with hello world note to prevent white flash
-    // This simulates clicking on the notes app icon and opening the hello world note
-    setTimeout(() => {
-      // Set up the necessary window properties for the notes app
-      window.initialNoteId = 1; // ID of the hello world note
-      window.openNoteDirectly = true; // Signal to open this note directly in detail view
-      (window as any).widgetNoteId = 1;
-      (window as any).isFirstTimeOpeningApp = true;
-      
-      // Trigger the app click to open notes
-      handleAppClick('notes');
-    }, 10); // Minimal timeout to ensure component is ready
+    // Only for the very first visit, we'll open the hello world note
+    // to prevent white flash on initial page load
+    if (!hasVisitedBefore) {
+      setTimeout(() => {
+        // Set up the necessary window properties for the notes app
+        window.initialNoteId = 1; // ID of the hello world note
+        window.openNoteDirectly = true; // Signal to open this note directly in detail view
+        (window as any).widgetNoteId = 1;
+        (window as any).isFirstTimeOpeningApp = true;
+        
+        // Trigger the app click to open notes
+        handleAppClick('notes');
+      }, 10); // Minimal timeout to ensure component is ready
+    }
   }, []);
   
-  // Always select the "hello world!" note when the site opens
+  // Select a random unlocked note for the widget display
   const selectedNote = useMemo(() => {
     // Filter out locked notes to ensure we never select a locked note
     const unlockNotes = notes.filter(note => !note.locked);
     
-    // Always show the "hello world" note with compass emoji
-    return unlockNotes.find(note => note.title.includes("hello world")) || unlockNotes[0];
-  }, []);
+    // For first-time visitors, show the hello world note
+    if (isFirstVisit) {
+      return unlockNotes.find(note => note.title.includes("hello world")) || unlockNotes[0];
+    }
+    
+    // For returning visitors, show a random unlocked note
+    // Use a deterministic but seemingly random selection based on the date
+    // This ensures the note changes periodically but stays consistent within a day
+    const today = new Date();
+    const dateKey = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    const noteIndex = dateKey % unlockNotes.length;
+    
+    return unlockNotes[noteIndex];
+  }, [isFirstVisit]);
   
   // Select events based on visit history
   const selectedEvent = useMemo(() => {
@@ -406,24 +419,16 @@ function App() {
     // Additional event for mobile browsers
     window.addEventListener('touchmove', () => setHeight(), { passive: true });
     
-    // Optimize loading sequence - apply immediate background color and disable animations until loaded
+    // Optimize loading sequence - apply immediate background color
     // Set background color immediately to prevent flash
     document.documentElement.style.backgroundColor = '#131518';
     document.body.style.backgroundColor = '#131518';
-    
-    // Add a class to disable all transitions and animations during initial load
-    document.documentElement.classList.add('no-animations');
     
     // Set loaded state immediately to prevent white flash
     setIsLoaded(true);
     
     // Use a very short timeout to ensure the dark background is applied before any rendering
     const initialTimer = setTimeout(() => {
-      // Remove the no-animations class after a delay to allow animations after initial render
-      setTimeout(() => {
-        document.documentElement.classList.remove('no-animations');
-      }, 500);
-      
       // Force recompute height to ensure proper display
       setHeight();
     }, 10); // Very short delay
@@ -463,12 +468,7 @@ function App() {
         background-color: #131518 !important; /* Dark background to prevent white flash */
       }
       
-      /* Disable all animations and transitions during initial load */
-      .no-animations * {
-        transition-property: none !important;
-        animation: none !important;
-        transition: none !important;
-      }
+
       
       /* Fix for mobile browsers and notches */
       @supports (-webkit-touch-callout: none) {
@@ -548,6 +548,28 @@ function App() {
     { id: 'partiful', name: 'partiful', icon: 'Partiful', color: '', component: EventScreen },
   ];
 
+  // Function to handle opening a specific note with enhanced transitions
+  const handleOpenNote = (noteId: string) => {
+    // Clear any existing transition artifacts first
+    const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
+    overlays.forEach(overlay => {
+      if (document.body.contains(overlay)) {
+        document.body.removeChild(overlay);
+      }
+    });
+    
+    // Ensure we're starting fresh
+    document.body.classList.remove('backdrop-blur');
+    
+    setSelectedNoteId(noteId);
+    setSelectedScreen('notes');
+    setIsOpen(true);
+    
+    // Set this to track that the note was opened from the widget
+    // Used to determine whether to show the pulsing dots
+    localStorage.setItem('widgetNoteId', noteId);
+  };
+
   // Handle app closing with proper animation
   const handleClose = () => {
     if (isAnimating) return;
@@ -562,15 +584,25 @@ function App() {
         }
       });
       
-      // Remove any backdrop blur elements
-      const blurElements = document.querySelectorAll('.backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm');
-      blurElements.forEach(el => {
-        (el as HTMLElement).style.backdropFilter = 'none';
-        (el as HTMLElement).style.WebkitBackdropFilter = 'none';
+      // Ensure smooth scrolling to top before closing
+      const contentElements = document.querySelectorAll('.overflow-y-auto');
+      contentElements.forEach(el => {
+        if (el instanceof HTMLElement && el.scrollTop > 0) {
+          el.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       });
     } catch (e) {
       console.error('Error cleaning up UI:', e);
     }
+    
+    // Add a slight delay before closing to allow scroll to complete
+    setTimeout(() => {
+      setIsOpen(false);
+      setTimeout(() => {
+        setSelectedScreen(null);
+        setSelectedNoteId(null);
+      }, 400); // Increased timeout for smoother transition
+    }, 50);
     
     // Check if there's a specific screen back handler active
     // This allows screens like NotesScreen to handle internal navigation
@@ -600,18 +632,20 @@ function App() {
     
     setIsAnimating(true);
     
-    // Start closing animation - immediately
-    setActiveApp(null);
-    setAppPosition(null);
-    setClonedAppIcon({
-      app: null,
-      rect: null
-    });
-    
-    // Reset animation state after a very short delay
+    // Start closing animation with enhanced buttery-smooth transitions
     setTimeout(() => {
-      setIsAnimating(false);
-    }, 50);
+      setActiveApp(null);
+      setAppPosition(null);
+      setClonedAppIcon({
+        app: null,
+        rect: null
+      });
+      
+      // Reset animation state after animation completes with longer duration for smoother feel
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 350); // Increased for smoother transition
+    }, 60); // Slightly increased for better timing
   };
 
   // True Apple-style app opening animation
@@ -670,13 +704,13 @@ function App() {
      apps.find(app => app.id === activeApp)?.name) 
     : null;
   
-  // Precise iOS app opening animation timing
+  // Enhanced iOS app opening animation timing for buttery-smooth transitions
   const appOpeningTransition = {
     type: "spring",
-    stiffness: 350,
-    damping: 35,
-    mass: 1.2,
-    duration: 0.3
+    stiffness: 300, // Slightly reduced for smoother motion
+    damping: 30,   // Slightly reduced for more natural bounce
+    mass: 1.0,     // Reduced mass for lighter feel
+    duration: 0.4  // Slightly longer for more luxurious feel
   };
 
   // Handle navigation between apps
@@ -848,7 +882,7 @@ function App() {
           style={{
             opacity: isLoaded ? 1 : 0,
             transform: `translateY(${isLoaded ? '0' : '-10px'})`,
-            transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+            transition: "opacity 0.9s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.9s cubic-bezier(0.25, 0.8, 0.25, 1)",
             transitionDelay: "0.1s",
             height: "30px",
             pointerEvents: "none"
@@ -861,8 +895,8 @@ function App() {
               animate={{ 
                 opacity: 1,
                 transition: {
-                  duration: 0.8,
-                  ease: [0.22, 1, 0.36, 1]
+                  duration: 0.9,
+                  ease: [0.25, 0.8, 0.25, 1] // Enhanced easing for buttery-smooth transitions
                 }
               }}
               style={{ 
@@ -884,8 +918,8 @@ function App() {
               animate={{ 
                 opacity: 1,
                 transition: {
-                  duration: 0.8,
-                  ease: [0.22, 1, 0.36, 1]
+                  duration: 0.9,
+                  ease: [0.25, 0.8, 0.25, 1] // Enhanced easing for buttery-smooth transitions
                 }
               }}
               style={{ 
@@ -1003,7 +1037,7 @@ function App() {
             className={`absolute inset-0 z-10 ${activeApp ? 'pointer-events-none' : ''}`}
             style={{
               opacity: activeApp ? 0 : 1,
-              transition: 'opacity 0.2s ease-out',
+              transition: 'opacity 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)',
             }}
           >
             <div className="h-full flex flex-col pt-5 px-5 pb-5 will-change-transform" style={{ opacity: 1.1 }}>
@@ -1037,8 +1071,8 @@ function App() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ 
-                    duration: 0.4, 
-                    ease: [0.32, 0.72, 0, 1] // Apple's default cubic-bezier easing
+                    duration: 0.5, // Slightly longer for smoother feel
+                    ease: [0.25, 0.8, 0.25, 1] // Enhanced cubic-bezier for buttery-smooth transitions
                   }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
