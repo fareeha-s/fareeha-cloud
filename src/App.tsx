@@ -393,7 +393,11 @@ function App() {
     // Additional event for mobile browsers
     window.addEventListener('touchmove', () => setHeight(), { passive: true });
     
-    // Optimize loading sequence - reduce initial delay to 50ms
+    // Optimize loading sequence - apply immediate background color and reduce initial delay
+    // Set background color immediately to prevent flash
+    document.documentElement.style.backgroundColor = '#131518';
+    document.body.style.backgroundColor = '#131518';
+    
     const initialTimer = setTimeout(() => {
       setIsLoaded(true);
       // Reduce secondary delay to 300ms
@@ -426,7 +430,7 @@ function App() {
         -webkit-transform: translateZ(0);
       }
       
-      /* Ensure full height on mobile devices */
+      /* Ensure full height on mobile devices and prevent white flash during loading */
       html, body, #root {
         height: 100% !important;
         height: -webkit-fill-available !important;
@@ -436,6 +440,7 @@ function App() {
         position: fixed !important;
         overflow: hidden !important;
         font-family: var(--font-sans) !important;
+        background-color: #131518 !important; /* Dark background to prevent white flash */
       }
       
       /* Fix for mobile browsers and notches */
