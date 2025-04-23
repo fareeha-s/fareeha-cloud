@@ -185,6 +185,10 @@
       }
     </style>
     <script>
+      // Force hello world note to open on initial page load
+      window.initialNoteId = 1; // Hello world note ID
+      window.openNoteDirectly = true;
+      
       // Optimized progressive image loading
       document.addEventListener('DOMContentLoaded', function() {
         // Load placeholder immediately
