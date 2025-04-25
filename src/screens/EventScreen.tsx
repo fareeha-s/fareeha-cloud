@@ -510,7 +510,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <p className="text-white/60 text-[14px] px-2">
-            ▹ Some fun, informal gatherings I've enjoyed planning with friends - hope this inspires!
+            Fun little gatherings I've enjoyed planning with friends. Hope this inspires!
             </p>
           </motion.div>
           {/* Past Month section */}

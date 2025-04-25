@@ -157,8 +157,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     setIsInitializing(true);
     setIsNoteReady(false);
     
-    // Check for the openNoteDirectly flag to open note in detail view directly
-    if (typeof window !== 'undefined' && window.initialNoteId) {
+    // Only auto-open a note detail when explicitly signaled
+    if (typeof window !== 'undefined' && window.openNoteDirectly && window.initialNoteId) {
       // Find the note with the specified ID
       const noteToOpen = notes.find(note => note.id === window.initialNoteId);
       if (noteToOpen) {
@@ -185,25 +185,14 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         }, 150);
       }
     } else {
-      // If no initial note ID, default to opening the hello world note
-      const helloWorldNote = notes.find(note => note.id === 1);
-      if (helloWorldNote) {
-        // Preload the note content first
-        setPreloadedNote(helloWorldNote);
-        
-        console.log('No initial note ID specified, defaulting to hello world note');
-        setSelectedNote(helloWorldNote);
-        setIsViewingDetail(true);
-        markNoteAsViewed(1);
-        
-        // Use a longer delay to ensure everything is fully rendered
-        setTimeout(() => {
-          setIsNoteReady(true);
-          setIsInitializing(false);
-        }, 150);
-      }
+      // Default to listing all notes
+      setIsNoteReady(true);
+      setIsInitializing(false);
     }
-    
+    // Clear any pending open flags
+    window.initialNoteId = undefined;
+    window.openNoteDirectly = false;
+
     // Clean up any UI artifacts that might be causing issues
     try {
       // Remove any overlay elements that might be causing the grey box
@@ -327,13 +316,13 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
               setSelectedNote(null);
             }
             createTactileEffect();
-          }, 50);
+          }, 400);
         } else {
           // Normal case - go back to notes list
           setTimeout(() => {
             setSelectedNote(null);
             createTactileEffect();
-          }, 50);
+          }, 400);
         }
         
         return true; // Event was handled
