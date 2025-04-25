@@ -1115,7 +1115,8 @@ function App() {
               <motion.div 
                   ref={widgetRef}
                   key={`widget-${currentWidgetIndex}`}
-                  className={`w-full mt-auto rounded-[16px] overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''}`}
+                  className={`w-full aspect-square mt-auto rounded-[16px] overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''}`}
+                  style={{ aspectRatio: '1/1' }}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
