@@ -694,7 +694,12 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
 
   return (
     <div 
-      className="h-full w-full" 
+      className="h-full w-full aspect-square" 
+      style={{
+        aspectRatio: "1/1",
+        display: "block",
+        position: "relative"
+      }}
       onClick={(e) => {
         e.stopPropagation();
         if (selectedNote) {
@@ -708,7 +713,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         {selectedNote && isNoteReady ? (
           <motion.div 
             key="note-detail"
-            className="h-full w-full will-change-transform" 
+            className="h-full w-full will-change-transform aspect-square" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the note
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -720,6 +725,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             // Only add swipe handlers for mobile devices
             // Removed all swipe gesture handlers for mobile and desktop
             style={{
+              aspectRatio: "1/1",
+              display: "block",
+              width: "100%",
+              height: "100%",
               cursor: 'auto' // Always use default cursor for web users
             }}
           >
@@ -834,11 +843,12 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
           !isInitializing && (
             <motion.div 
               key="note-list"
-              className="h-full w-full"
+              className="h-full w-full aspect-[1/1]" /* Add aspect ratio constraint */
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.35, ease: [0.25, 0.8, 0.25, 1] }}
+              style={{ aspectRatio: "1/1" }} /* Ensure it's already square during initial render */
             >
             <div className="h-full overflow-y-auto scrollbar-subtle">
               <div className="space-y-3 p-6">
