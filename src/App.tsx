@@ -161,6 +161,7 @@ function App() {
   const [selectedScreen, setSelectedScreen] = useState<string | null>(null);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const appsRef = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [contentReady, setContentReady] = useState(false);
   
   // Only open hello world note on initial page load, not when clicking on notes
   useEffect(() => {
@@ -189,6 +190,46 @@ function App() {
   const [, setIsAppleDevice] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
+  
+  // Add an effect to preload all content and prevent flashes
+  useEffect(() => {
+    // Use Promise.all to track both image and font loading
+    const fontReady = document.fonts.ready;
+    
+    // Function to preload the background image
+    const preloadImage = (src) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+    };
+    
+    // Wait for both fonts and background image to load
+    Promise.all([
+      fontReady,
+      preloadImage('/images/background.webp')
+    ])
+    .then(() => {
+      // Once everything is loaded, mark content as ready
+      setTimeout(() => {
+        setIsLoaded(true);
+        document.body.classList.add('content-loaded');
+      }, 50); // Small delay to ensure styles apply
+    })
+    .catch((err) => {
+      console.error('Resource loading error:', err);
+      // Even if there's an error, still show content after a delay
+      setTimeout(() => {
+        setIsLoaded(true);
+        document.body.classList.add('content-loaded');
+      }, 100);
+    });
+    
+    // Clean up not necessary for this effect
+  }, []);
+  
   const [recentTracks] = useState<SpotifyTrack[]>([]);
   const [currentWidgetIndex, setCurrentWidgetIndex] = useState(0);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
@@ -837,21 +878,11 @@ function App() {
   };
 
   return (
-    <motion.div 
-      className="h-screen w-screen fixed inset-0 overflow-hidden flex items-center justify-center"
-      style={{
-        height: windowHeight,
-        width: '100%',
-        transform: 'translateZ(0)',
-        WebkitTransform: 'translateZ(0)',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      }}
+    <div
+      className="relative h-full w-full overflow-hidden bg-background bg-dots-darker content-container" 
+      ref={mainContainerRef}
+      style={{ height: windowHeight }}
       onClick={activeApp && !isAnimating ? handleClose : undefined}
-      drag={false}
     >
       {/* Background Wrapper - Simplified with single image and fallback */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
@@ -874,7 +905,7 @@ function App() {
         
           {/* Background image that loads on top of the gradient */}
           <img 
-            src="./optimized/background.webp" 
+            src="./images/background.webp" 
             alt=""
             className="absolute inset-0 w-full h-full object-cover"
           style={{ 
@@ -1460,7 +1491,7 @@ function App() {
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }
 

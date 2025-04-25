@@ -23,7 +23,7 @@ I love watching people light up around each other - my compass seems to keep poi
 I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> (<a href="https://loi.ac/labs" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">loi labs</a>)</span>, a social layer for workouts. The north star is to design tech that [centres human longevity](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full).
 
 <span style="font-weight: bold;">in line with that:</span>
-▹ early experience designer at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed, HF0)</a></span>
+▹ early experience designer at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;">(<a href="https://www.hf0.com/" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">$1M pre-seed, HF0</a>)</span>
 ▹ social design in health & community ([h&s gala](video:https://youtu.be/VMxSzVREUgY), [dc fashion show](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni))
 ▹ winning team, healthcare innovation [<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(mit bc x harvard med)</span>](video:https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR)
 
