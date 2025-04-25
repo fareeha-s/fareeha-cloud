@@ -85,7 +85,8 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           borderLeftColor: "rgba(255, 255, 255, 0.2)",
           borderBottomColor: "rgba(255, 255, 255, 0.08)",
           borderRightColor: "rgba(255, 255, 255, 0.08)",
-          boxShadow: "0 3px 10px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(255, 255, 255, 0.08) inset"
+          boxShadow: "0 3px 10px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(255, 255, 255, 0.08) inset",
+          aspectRatio: "1/1" /* Ensure perfect square */
         }}
       >
         {/* Bottom highlight */}
