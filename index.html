@@ -6,6 +6,10 @@
       html { background-color: #131518 !important; }
       body { background-color: #131518 !important; }
     </style>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/images/background.webp" as="image" fetchpriority="high" />
+    <link rel="preload" href="/optimized/background-placeholder.webp" as="image" />
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
@@ -108,27 +112,28 @@
         font-family: var(--font-sans);
       }
       
-      /* Progressive image loading for background */
+      /* Progressive image loading for background - immediate loading */
       body::before {
         content: "";
         position: fixed;
         inset: 0;
         z-index: -1;
         background-color: #131518 !important; /* Match the dark theme color */
-        background-image: url('/optimized/background-placeholder.webp');
+        background-image: url('/images/background.webp');
         background-size: cover;
         background-position: center;
         opacity: 1; /* Start with visible background */
+      }
+      
+      /* Hide real content until fonts and background are loaded */
+      .content-container {
+        opacity: 0;
         transition: opacity 0.3s ease-out;
       }
       
-      body.placeholder-loaded::before {
+      /* Once everything is ready */
+      .content-loaded .content-container {
         opacity: 1;
-      }
-      
-      body.final-loaded::before {
-        background-image: url('/optimized/background.webp');
-        transition: opacity 1s ease-out, background-image 0s 0.5s;
       }
       
       /* Progressive blur animation keyframes */
