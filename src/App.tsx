@@ -810,7 +810,7 @@ function App() {
       // Special case for workout widget to navigate directly to the kineship note detail view
       window.initialNoteId = 2; // ID of the kineship note
       window.openNoteDirectly = true; // Signal to open this note directly in detail view
-      // Set widgetNoteId to make the pulsing orb appear
+      // Set widgetNoteId to make the pulsing dots appear
       (window as any).widgetNoteId = 2;
       appId = 'notes';
     } else if (widgetType === 'notes') {
@@ -1018,12 +1018,12 @@ function App() {
         
         {/* Main container - with glass solid effect instead of blur */}
         <motion.div 
-          className={`w-[290px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container ${
+          className={`w-[290px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container border border-white/10 ${ // Added border classes
             activeApp ? 'glass-solid-shine' : ''
           } ${activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail ? 'portrait-container expanded' : ''} ${activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail ? 'portrait-container expanded' : ''}`}
           style={{
             borderRadius: '24px',
-            transition: 'aspect-ratio 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)'
+            transition: 'boxShadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)'
           }}
           onClick={(e) => {
             e.stopPropagation();
@@ -1031,17 +1031,9 @@ function App() {
           }}
           animate={{
             boxShadow: activeApp ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset' : '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.12) inset',
-            aspectRatio: (activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail) || 
-                        (activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail) ? 
-                        '3/4' : '1/1',
-            height: (activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail) || 
-                    (activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail) ? 
-                    '390px' : '290px',
             width: '290px',
           }}
           transition={{
-            aspectRatio: { duration: 0.4, ease: [0.25, 0.8, 0.25, 1] },
-            height: { duration: 0.4, ease: [0.25, 0.8, 0.25, 1] },
             boxShadow: { duration: 0.4, ease: [0.25, 0.8, 0.25, 1] },
           }}
         >

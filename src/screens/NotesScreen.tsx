@@ -207,38 +207,33 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     }
   }, []);
   
-  // Function to update both the ref and window property
-  const setIsViewingDetail = (value: boolean) => {
-    isViewingDetailRef.current = value;
-    window.isViewingNoteDetail = value;
-    console.log('Setting isViewingNoteDetail via function:', value);
-    
-    // Directly apply the class to the DOM as a fallback mechanism
-    try {
-      const mainContainer = document.querySelector('.main-container');
-      if (mainContainer) {
-        if (value) {
-          mainContainer.classList.add('portrait-container');
-          mainContainer.classList.add('expanded');
-          console.log('Directly added portrait-container expanded classes to DOM');
+    // Function to update the container state when viewing details
+    const setIsViewingDetail = (value: boolean) => {
+      isViewingDetailRef.current = value;
+      window.isViewingNoteDetail = value;
+      console.log('Setting isViewingNoteDetail via function:', value);
+  
+      try {
+        const mainContainer = document.querySelector('.main-container');
+        if (mainContainer) {
+          if (value) {
+            // When showing details, add portrait-container and expanded classes
+            mainContainer.classList.add('portrait-container'); // Keep adding this if needed for identification/other styles
+            mainContainer.classList.add('expanded');
+            console.log('Directly added portrait/expanded classes to DOM');
+          } else {
+            // When going back to list, immediately remove expanded and portrait classes
+            mainContainer.classList.remove('expanded');
+            mainContainer.classList.remove('portrait-container'); // Remove matching class
+            console.log('Directly removed expanded/portrait classes from DOM');
+          }
         } else {
-          // Force a DOM reflow before removing classes to ensure animation happens
-          void (mainContainer as HTMLElement).offsetWidth;
-          mainContainer.classList.remove('portrait-container');
-          mainContainer.classList.remove('expanded');
-          // Add a transient class to control the collapse animation specifically
-          mainContainer.classList.add('collapsing');
-          // Remove the transient class after animation completes
-          setTimeout(() => {
-            mainContainer.classList.remove('collapsing');
-          }, 500);
-          console.log('Directly removed portrait-container expanded classes from DOM');
+          console.error('.main-container not found');
         }
+      } catch (e) {
+        console.error('Error directly manipulating DOM:', e);
       }
-    } catch (e) {
-      console.error('Error directly manipulating DOM:', e);
-    }
-  };
+    };
 
   // Run a subtle animation sequence on first render
   useEffect(() => {
@@ -274,7 +269,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
           // Clean up any UI artifacts
           const mainContainer = document.querySelector('.main-container');
           if (mainContainer) {
-            mainContainer.classList.remove('portrait-container');
+            // Keep portrait-container class since both views use it now
             mainContainer.classList.remove('expanded');
             mainContainer.classList.remove('collapsing');
           }
@@ -683,9 +678,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
 
   return (
     <div 
-      className="h-full w-full aspect-square" 
+      className="h-full w-full" 
       style={{
-        aspectRatio: "1/1",
         display: "block",
         position: "relative"
       }}
@@ -702,11 +696,11 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
         {selectedNote && isNoteReady ? (
           <motion.div 
             key="note-detail"
-            className="h-full w-full will-change-transform aspect-square" 
+            className="flex flex-col h-full w-full overflow-hidden" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the note
-            initial={{ opacity: 0, scale: 0.98 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ 
               duration: 0.3, 
               ease: [0.2, 0.65, 0.3, 0.9]
@@ -714,10 +708,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             // Only add swipe handlers for mobile devices
             // Removed all swipe gesture handlers for mobile and desktop
             style={{
-              aspectRatio: "1/1",
               display: "block",
-              width: "100%",
-              height: "100%",
+              width: "290px",
+              height: "390px",
+              aspectRatio: "3/4",
               cursor: 'auto' // Always use default cursor for web users
             }}
           >
@@ -832,35 +826,34 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
           !isInitializing && (
             <motion.div 
               key="note-list"
-              className="h-full w-full aspect-[1/1]" /* Add aspect ratio constraint */
-              initial={{ opacity: 0, scale: 0.98 }}
+              className="flex flex-col h-full w-full overflow-hidden" 
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
+              exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.35, ease: [0.25, 0.8, 0.25, 1] }}
-              style={{ aspectRatio: "1/1" }} /* Ensure it's already square during initial render */
             >
-            <div className="h-full overflow-y-auto scrollbar-subtle">
-              <div className="space-y-3 p-6">
-                {/* Pinned notes section */}
-                {pinnedNotes.length > 0 && (
-                  <div>
-                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2 flex items-center">
-                      <PinIcon />
-                      Pinned
-                    </h2>
-                    <div className="space-y-0.5">
-                      {pinnedNotes.map((note, index) => (
-                        <motion.div 
-                          key={`pinned-${note.id}`}
-                          className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            createTactileEffect();
-                            handleNoteClick(note);
-                          }}
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.98 }}
-                          transition={{ duration: 0.2 }}
+              <div className="h-full overflow-y-auto scrollbar-subtle">
+                <div className="space-y-3 p-6">
+                  {/* Pinned notes section */}
+                  {pinnedNotes.length > 0 && (
+                    <div>
+                      <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2 flex items-center">
+                        <PinIcon />
+                        Pinned
+                      </h2>
+                      <div className="space-y-0.5">
+                        {pinnedNotes.map((note, index) => (
+                          <motion.div 
+                            key={`pinned-${note.id}`}
+                            className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              createTactileEffect();
+                              handleNoteClick(note);
+                            }}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
                         >
                           <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
                             <motion.div
