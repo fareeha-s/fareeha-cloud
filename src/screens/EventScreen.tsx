@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { AppScreenProps } from '../types';
 import { motion, useReducedMotion, useAnimation, PanInfo, AnimatePresence } from 'framer-motion';
 import { createTactileEffect } from '../App';
@@ -6,17 +6,7 @@ import { PartifulEvent } from '../components/PartifulEvent';
 import { ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import { events, EventItem } from '../data/events';
 
-// Declare the global window property for TypeScript
-declare global {
-  interface Window {
-    noteScreenBackHandler?: () => boolean;
-    eventScreenBackHandler?: () => boolean;
-    initialEventId?: number;
-    isViewingEventDetail?: boolean; // Add new property to control container shape
-  }
-}
-
-export const EventScreen: React.FC<AppScreenProps> = () => {
+export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView }) => {
   const prefersReducedMotion = useReducedMotion();
   const [showPartiful, setShowPartiful] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -25,32 +15,6 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
   const [defaultHighlightEventId, setDefaultHighlightEventId] = useState<number | null>(null);
   const [showSwipeIndicator, setShowSwipeIndicator] = useState(false);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
-  
-  // Create a ref to use for directly setting the window property
-  const isViewingDetailRef = useRef(false);
-  
-  // Function to update both the ref and window property
-  const setIsViewingDetail = (value: boolean) => {
-    isViewingDetailRef.current = value;
-    window.isViewingEventDetail = value;
-    console.log('Setting isViewingEventDetail via function:', value);
-    
-    // Directly apply the class to the DOM as a fallback mechanism
-    try {
-      const mainContainer = document.querySelector('.main-container');
-      if (mainContainer) {
-        if (value) {
-          mainContainer.classList.add('portrait-container');
-          console.log('Directly added portrait-container class to DOM');
-        } else {
-          mainContainer.classList.remove('portrait-container');
-          console.log('Directly removed portrait-container class from DOM');
-        }
-      }
-    } catch (e) {
-      console.error('Error directly manipulating DOM:', e);
-    }
-  };
 
   // Add a special handler for the main App's back button
   useEffect(() => {
@@ -58,8 +22,11 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     // we should go back to the event list first instead of closing the app
     const handleAppBackClick = () => {
       if (showPartiful) {
-        // Set flag to false BEFORE state changes for immediate effect
-        setIsViewingDetail(false);
+        // Call the prop setter if it exists
+        if (setIsEventDetailView) {
+          setIsEventDetailView(false);
+        }
+        // Set internal state
         setShowPartiful(false);
         setSelectedEventId(null);
         createTactileEffect();
@@ -75,10 +42,8 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     return () => {
       // @ts-ignore
       delete window.eventScreenBackHandler;
-      // @ts-ignore
-      delete window.isViewingEventDetail;
     };
-  }, [showPartiful]);
+  }, [showPartiful, setIsEventDetailView]);
 
   // Modified to show swipe indicator when user scrolls to bottom of first event
   useEffect(() => {
@@ -96,18 +61,14 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     }
   }, [showPartiful, hasScrolledToBottom]);
 
-  // Restore this useEffect to ensure the portrait mode is properly maintained
+  // Use useEffect to call the prop setter when showPartiful changes
   useEffect(() => {
-    // Set the flag to control the container shape
-    setIsViewingDetail(showPartiful);
-    console.log('Setting isViewingEventDetail:', showPartiful);
-    
-    return () => {
-      // Clean up when component unmounts
-      setIsViewingDetail(false);
-      console.log('Cleanup: Setting isViewingEventDetail to false');
-    };
-  }, [showPartiful]);
+    if (setIsEventDetailView) {
+      setIsEventDetailView(showPartiful);
+      console.log('Calling setIsEventDetailView prop:', showPartiful);
+    }
+    // No cleanup needed here as App.tsx manages the state
+  }, [showPartiful, setIsEventDetailView]);
 
   // Check for initial event ID (similar to what we did for notes)
   useEffect(() => {
@@ -157,7 +118,7 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
       }
     }
   }, []);
-  
+
   // Simple helper function to format date
   const getRelativeDate = (dateStr: string) => {
     const today = "08/04/25"; // Assume today is 8th April 2025
@@ -287,13 +248,6 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
     }
   };
 
-  // Debug effect to monitor isViewingDetailRef changes
-  useEffect(() => {
-    console.log('showPartiful changed to:', showPartiful);
-    console.log('isViewingDetailRef is now:', isViewingDetailRef.current);
-    console.log('window.isViewingEventDetail is now:', window.isViewingEventDetail);
-  }, [showPartiful]);
-
   const handleEventPress = (event: EventItem) => {
     // Mark event as viewed for the pulsing dot
     markEventAsViewed(event.id);
@@ -305,6 +259,10 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
       setSelectedEventId(event.id);
       setShowPartiful(true);
       createTactileEffect();
+      // Call the prop setter if it exists
+      if (setIsEventDetailView) {
+        setIsEventDetailView(true);
+      }
     }
   };
 
@@ -394,8 +352,11 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
             <PartifulEvent 
               eventData={selectedEvent}
               onBack={() => {
-                // Set flag to false BEFORE state changes for immediate effect
-                setIsViewingDetail(false);
+                // Call the prop setter if it exists
+                if (setIsEventDetailView) {
+                  setIsEventDetailView(false);
+                }
+                // Set internal state
                 setShowPartiful(false);
                 setSelectedEventId(null);
                 createTactileEffect();
@@ -528,9 +489,6 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                       if (event.clickable) {
                         e.stopPropagation();
                         createTactileEffect();
-                        // Set flag BEFORE state changes for immediate effect
-                        setIsViewingDetail(true);
-                        console.log('Click handler: Setting isViewingEventDetail to true');
                         handleEventPress(event);
                       }
                     }}
@@ -600,9 +558,6 @@ export const EventScreen: React.FC<AppScreenProps> = () => {
                       if (event.clickable) {
                         e.stopPropagation();
                         createTactileEffect();
-                        // Set flag BEFORE state changes for immediate effect
-                        setIsViewingDetail(true);
-                        console.log('Click handler: Setting isViewingEventDetail to true');
                         handleEventPress(event);
                       }
                     }}

@@ -17,8 +17,14 @@ import { events } from './data/events';
 export const createTactileEffect = () => {
   if (typeof window !== 'undefined') {
     // Check if an effect is already in progress
-    if (document.querySelector('.tactile-effect')) return;
+    // if (document.querySelector('.tactile-effect')) return; // Keep check commented out for now
     
+    // Attempt haptic feedback first (if supported)
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(1); // Lightest vibration
+    }
+
+    /* Temporarily disable visual feedback:
     requestAnimationFrame(() => {
       const element = document.createElement('div');
       element.className = 'fixed inset-0 bg-white/5 pointer-events-none z-50 tactile-effect';
@@ -40,6 +46,7 @@ export const createTactileEffect = () => {
         }, 20);
       });
     });
+    */
   }
 };
 
@@ -155,6 +162,9 @@ const getRelativeDate = (dateStr: string) => {
 };
 
 function App() {
+  // Determine initial state based on window properties
+  const shouldOpenNoteInitially = typeof window !== 'undefined' && !!window.initialNoteId;
+  
   // Set 'notes' as the default active app and set up to open hello world note
   const [activeApp, setActiveApp] = useState<string | null>('notes');
   const [isOpen, setIsOpen] = useState(false);
@@ -190,6 +200,8 @@ function App() {
   const [, setIsAppleDevice] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
+  const [isNoteDetailView, setIsNoteDetailView] = useState(false);
+  const [isEventDetailView, setIsEventDetailView] = useState(false); // Add state for event detail view
   
   // Add an effect to preload all content and prevent flashes
   useEffect(() => {
@@ -635,7 +647,16 @@ function App() {
 
   // Handle app closing with proper animation - enhanced for elegant roll-up
   const handleClose = () => {
+    console.log(`handleClose called. isAnimating: ${isAnimating}`); // DEBUG
     if (isAnimating) return;
+
+    // Set detail view state to false first for potentially needed state coordination
+    if (activeApp === 'notes' && isNoteDetailView) {
+      setIsNoteDetailView(false);
+    }
+    if (activeApp === 'partiful' && isEventDetailView) {
+      setIsEventDetailView(false);
+    }
     
     // Clean up any UI artifacts that might be causing the grey screen
     try {
@@ -775,6 +796,19 @@ function App() {
     }, 400);
   };
 
+  // Define handleNavigate matching the type signature expected by AppScreenProps
+  const handleNavigate = (target: string, options?: { noteId?: number; eventId?: number }) => {
+    console.log(`Navigating to ${target} with options:`, options);
+    // Set the target screen as active
+    setActiveApp(target);
+    // Potentially handle options like setting initialNoteId/initialEventId state here if needed
+    if (options?.noteId) {
+      // Convert number to string if selectedNoteId expects a string
+      setSelectedNoteId(String(options.noteId)); 
+    }
+    // TODO: Add state for selectedEventId if needed and handle options.eventId
+  };
+
   const ActiveComponent = activeApp ? apps.find(app => app.id === activeApp)?.component : null;
   
   // Get the display name for the active app, with a special case for partiful to show as parti-folio
@@ -877,12 +911,34 @@ function App() {
     createWidgetSwipeFeedback();
   };
 
+  // Framer Motion variants for the main container frame animation
+  const frameVariants = {
+    closed: { // Square state
+      height: '290px',
+      aspectRatio: '1/1',
+      transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
+    },
+    open: { // Rectangle state (Note Detail)
+      height: '390px',
+      aspectRatio: '3/4',
+      transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
+    }
+  };
+
   return (
-    <div
-      className="relative h-full w-full overflow-hidden bg-background bg-dots-darker content-container" 
-      ref={mainContainerRef}
-      style={{ height: windowHeight }}
-      onClick={activeApp && !isAnimating ? handleClose : undefined}
+    // Apply background color directly to the top-level container
+    <div 
+      className="relative flex items-center justify-center min-h-screen"
+      style={{ backgroundColor: '#131518' }} // Ensure dark background covers entire viewport
+      // ADD onClick handler to the root element
+      onClick={(e) => { 
+        console.log('Root backdrop clicked.'); // DEBUG
+        if (activeApp && !isAnimating) {
+          handleClose();
+        } else {
+          console.log(`Root handleClose not called. activeApp: ${activeApp}, isAnimating: ${isAnimating}`); // DEBUG
+        }
+      }}
     >
       {/* Background Wrapper - Simplified with single image and fallback */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
@@ -935,6 +991,7 @@ function App() {
       <div 
         className="absolute flex flex-col items-center will-change-transform z-10"
         ref={mainContainerRef}
+        // ADD stopPropagation to prevent clicks here closing the app
         onClick={(e) => e.stopPropagation()}
         style={{
           opacity: isLoaded ? 1 : 0,
@@ -1019,59 +1076,49 @@ function App() {
         {/* Main container - with glass solid effect instead of blur */}
         <motion.div 
           className={`w-[290px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container border border-white/10 ${ // Added border classes
+            // Restore shine effect
             activeApp ? 'glass-solid-shine' : ''
-          } ${activeApp === 'partiful' && typeof window !== 'undefined' && window.isViewingEventDetail ? 'portrait-container expanded' : ''} ${activeApp === 'notes' && typeof window !== 'undefined' && window.isViewingNoteDetail ? 'portrait-container expanded' : ''}`}
+          } ${isNoteDetailView || isEventDetailView ? 'portrait-container expanded' : ''}`}
+          variants={frameVariants}
+          initial="closed"
+          animate={(isNoteDetailView && activeApp === 'notes') || (isEventDetailView && activeApp === 'partiful') ? 'open' : 'closed'} // Control animation state
           style={{
             borderRadius: '24px',
-            transition: 'boxShadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)'
+            backgroundColor: 'transparent', // Revert back to transparent
           }}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (activeApp && !isAnimating) handleClose();
-          }}
-          animate={{
-            boxShadow: activeApp ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.15) inset' : '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.12) inset',
-            width: '290px',
-          }}
-          transition={{
-            boxShadow: { duration: 0.4, ease: [0.25, 0.8, 0.25, 1] },
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
-          {/* Light reflection effects */}
-          <div 
-            className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] opacity-[0.03] rounded-full z-10 pointer-events-none" 
-            style={{
-              background: "radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%)",
-              transform: "rotate(-15deg)"
+          {/* Icon in center during expansion */}
+          <motion.div
+            className="absolute flex items-center justify-center"
+            initial={{
+              width: '290px',
+              height: '290px',
+              x: '50%',
+              y: '50%',
+              opacity: 1,
+              transform: 'translate(-50%, -50%)',
             }}
-          />
-          <div 
-            className="absolute bottom-[5%] right-[5%] w-[30%] h-[30%] opacity-[0.12] rounded-full z-10 pointer-events-none" 
-            style={{
-              background: "radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 70%)",
-              transform: "rotate(15deg)"
+            animate={{
+              opacity: 0,
+              scale: 0.5,
             }}
-          />
-          
-          {/* Edge highlights - diagonal light streaks */}
-          <div 
-            className="absolute top-[-5%] left-[-20%] w-[40%] h-[10%] opacity-[0.02] z-10 pointer-events-none" 
-            style={{
-              background: "linear-gradient(45deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%)",
-              transform: "rotate(35deg)",
-              borderRadius: "50%"
-            }}
-          />
-          
-          {/* Bottom edge highlight - now lighter */}
-          <div 
-            className="absolute bottom-[0%] left-[5%] right-[5%] h-[10%] opacity-[0.08] z-10 pointer-events-none" 
-            style={{
-              background: "linear-gradient(to top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)",
-              borderRadius: "50%",
-              filter: "blur(2px)"
-            }}
-          />
+            transition={{ duration: 0.15, delay: 0.1 }}
+          >
+            <div className={`bg-gradient-to-br ${clonedAppIcon?.app?.color || 'from-gray-700 to-gray-900'} h-full w-full rounded-[12px] flex items-center justify-center`}>
+              {clonedAppIcon?.app?.icon === 'Partiful' ? (
+                <img src="./icons/apps/partiful.png" alt="Partiful" className="w-6 h-6" />
+              ) : (
+                <AppIcon
+                  icon={clonedAppIcon?.app?.icon}
+                  name=""
+                  color={clonedAppIcon?.app?.color || 'from-gray-700 to-gray-900'}
+                  onClick={() => {}}
+                  showLabel={false}
+                />
+              )}
+            </div>
+          </motion.div>
           
           {/* Home Screen Layer - Always present */}
           <div 
@@ -1094,7 +1141,7 @@ function App() {
                     ref={(el) => {
                       if (el) appsRef.current.set(app.id, el);
                     }}
-                    className={clonedAppIcon.app?.id === app.id && activeApp ? 'invisible' : ''}
+                    className={clonedAppIcon?.app?.id === app.id && activeApp ? 'invisible' : ''}
                   />
                 ))}
               </div>
@@ -1377,7 +1424,7 @@ function App() {
           </div>
           
           {/* Expanding App Icon Animation */}
-          {appPosition && clonedAppIcon.app && !activeApp && (
+          {appPosition && clonedAppIcon?.app && !activeApp && (
             <motion.div
               className="absolute rounded-[12px] bg-black/35 backdrop-blur-2xl z-20 overflow-hidden"
               initial={{
@@ -1394,7 +1441,7 @@ function App() {
                 y: 0,
                 borderRadius: 24,
               }}
-              transition={clonedAppIcon.app?.id === 'partiful' 
+              transition={clonedAppIcon?.app?.id === 'partiful' 
                 ? { type: "spring", stiffness: 300, damping: 40, mass: 1.3, duration: 0.4 } 
                 : appOpeningTransition}
             >
@@ -1415,14 +1462,14 @@ function App() {
                 }}
                 transition={{ duration: 0.15, delay: 0.1 }}
               >
-                <div className={`bg-gradient-to-br ${clonedAppIcon.app.color} h-full w-full rounded-[12px] flex items-center justify-center`}>
-                  {clonedAppIcon.app.icon === 'Partiful' ? (
+                <div className={`bg-gradient-to-br ${clonedAppIcon?.app?.color || 'from-gray-700 to-gray-900'} h-full w-full rounded-[12px] flex items-center justify-center`}>
+                  {clonedAppIcon?.app?.icon === 'Partiful' ? (
                     <img src="./icons/apps/partiful.png" alt="Partiful" className="w-6 h-6" />
                   ) : (
                     <AppIcon
-                      icon={clonedAppIcon.app.icon}
+                      icon={clonedAppIcon?.app?.icon}
                       name=""
-                      color={clonedAppIcon.app.color}
+                      color={clonedAppIcon?.app?.color || 'from-gray-700 to-gray-900'}
                       onClick={() => {}}
                       showLabel={false}
                     />
@@ -1436,14 +1483,23 @@ function App() {
           {activeApp && ActiveComponent && (
             <div 
               className="absolute inset-0 z-30 overflow-hidden flex items-center justify-center"
-              style={{ 
-                opacity: activeApp ? 1 : 0,
-                transition: 'opacity 0.15s ease-in',
-                transitionDelay: '0.1s'
-              }}
+              // REMOVE incorrect onClick handler from here
             >
-              <AnimatePresence mode="wait">
-                <ActiveComponent key={activeApp} />
+              <AnimatePresence mode="wait" onExitComplete={() => setIsAnimating(false)}>
+                {ActiveComponent && (
+                  <ActiveComponent
+                    key={activeApp} // Use activeApp as key
+                    // Pass all possible props defined in the updated AppScreenProps
+                    onClose={handleClose}
+                    onNavigate={handleNavigate} // Use the new dedicated handler
+                    initialNoteId={selectedNoteId}
+                    // Omit initialEventId as no corresponding state exists yet
+                    isNoteDetailView={isNoteDetailView} // NotesScreen will use this
+                    setIsNoteDetailView={setIsNoteDetailView} // NotesScreen will use this
+                    isEventDetailView={isEventDetailView} // EventScreen will use this
+                    setIsEventDetailView={setIsEventDetailView} // EventScreen will use this
+                  />
+                )}
               </AnimatePresence>
             </div>
           )}

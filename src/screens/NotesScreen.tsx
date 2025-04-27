@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { AppScreenProps } from '../types';
+import type { AppScreenProps as BaseAppScreenProps } from '../types'; 
 import { motion, useAnimation, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, X, Lock } from 'lucide-react';
 import { createTactileEffect } from '../App';
@@ -10,12 +10,14 @@ import ReactDOM from 'react-dom';
 declare global {
   interface Window {
     noteScreenBackHandler?: () => boolean;
-    initialNoteId?: number;
+    initialNoteId?: number | null;
+    initialEventId?: number | null;
+    isNoteDetailView: boolean; 
+    setIsNoteDetailView: (value: boolean) => void; 
     isViewingNoteDetail?: boolean;
     openNoteWithId?: (noteId: number) => void;
     openEventWithId?: (eventId: number) => void;
     handleAppClick?: (appId: string) => void;
-    initialEventId?: number;
     handleVideoLink?: (url: string) => void;
     openNoteDirectly?: boolean;
   }
@@ -119,7 +121,15 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
   );
 };
 
-export const NotesScreen: React.FC<AppScreenProps> = () => {
+// Use the imported BaseAppScreenProps directly
+export const NotesScreen: React.FC<BaseAppScreenProps> = ({ 
+  onClose, 
+  onNavigate, 
+  initialNoteId, 
+  initialEventId, // Even if unused here, keep props consistent
+  isNoteDetailView, // Destructure from BaseAppScreenProps (optional)
+  setIsNoteDetailView // Destructure from BaseAppScreenProps (optional)
+}) => {
   const prefersReducedMotion = useReducedMotion();
   const [hasInteracted, setHasInteracted] = useState(false);
   const chevronControls = useAnimation();
@@ -212,26 +222,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       isViewingDetailRef.current = value;
       window.isViewingNoteDetail = value;
       console.log('Setting isViewingNoteDetail via function:', value);
-  
-      try {
-        const mainContainer = document.querySelector('.main-container');
-        if (mainContainer) {
-          if (value) {
-            // When showing details, add portrait-container and expanded classes
-            mainContainer.classList.add('portrait-container'); // Keep adding this if needed for identification/other styles
-            mainContainer.classList.add('expanded');
-            console.log('Directly added portrait/expanded classes to DOM');
-          } else {
-            // When going back to list, immediately remove expanded and portrait classes
-            mainContainer.classList.remove('expanded');
-            mainContainer.classList.remove('portrait-container'); // Remove matching class
-            console.log('Directly removed expanded/portrait classes from DOM');
-          }
-        } else {
-          console.error('.main-container not found');
-        }
-      } catch (e) {
-        console.error('Error directly manipulating DOM:', e);
+      
+      if (setIsNoteDetailView) { // Check if prop exists
+        setIsNoteDetailView(value);
       }
     };
 
@@ -500,6 +493,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     
     // Set flag to false BEFORE state changes for immediate effect
     setIsViewingDetail(false);
+    if (setIsNoteDetailView) { // Check if prop exists
+      setIsNoteDetailView(false);
+    }
     
     // For hello world note, go to home with buttery-smooth animation
     if (isHelloWorldNote && typeof window !== 'undefined') {
@@ -600,11 +596,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 15, scale: 0.95 },
+    hidden: { opacity: 0 }, // Only fade out
     show: { 
       opacity: 1, 
-      y: 0, 
-      scale: 1,
       transition: {
         type: "spring",
         stiffness: 300, 
@@ -613,13 +607,6 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       }
     }
   };
-
-  // Debug effect to monitor isViewingDetailRef changes
-  useEffect(() => {
-    console.log('selectedNote changed to:', selectedNote !== null);
-    console.log('isViewingDetailRef is now:', isViewingDetailRef.current);
-    console.log('window.isViewingNoteDetail is now:', window.isViewingNoteDetail);
-  }, [selectedNote]);
 
   const handleNoteClick = (note: NoteItem) => {
     if (note.locked) return; // Prevent opening locked notes
@@ -635,6 +622,9 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // Set flag to true BEFORE state changes for immediate effect
     setIsViewingDetail(true);
     console.log('Click handler: Setting isViewingNoteDetail to true');
+    if (setIsNoteDetailView) { // Check if prop exists
+      setIsNoteDetailView(true);
+    }
     
     // Find the index of the note in the combined array
     const allNotesArray = [...pinnedNotes, ...allNotes];
@@ -644,7 +634,8 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     createTactileEffect();
     
     // If this was the note highlighted from widget, clear the widget ID
-    // This will ensure the pulsing orb disappears when returning to the list
+    // This ensures that if the user goes back to home and clicks the same note
+    // from the widget again, the orb will reappear
     if (widgetNoteId === note.id) {
       setWidgetNoteId(null);
     }
@@ -652,10 +643,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
     // Set the selected note immediately
     setSelectedNote(note);
     
-    // Use a longer delay to ensure everything is fully rendered before showing
+    // Use a slightly longer delay to allow frame transition to start
     setTimeout(() => {
       setIsNoteReady(true);
-    }, 150);
+    }, 50); // Reduced delay, animation has its own delay
   };
 
   // Add function to handle video links
@@ -686,27 +677,26 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
       onClick={(e) => {
         e.stopPropagation();
         if (selectedNote) {
-          closeNote();
+          // Don't close the note here automatically on background click
+          // closeNote(); 
         }
         handleInteraction();
       }}
       onTouchStart={handleInteraction}
     >
       <AnimatePresence mode="wait">
-        {selectedNote && isNoteReady ? (
+        {selectedNote ? (
           <motion.div 
             key="note-detail"
             className="flex flex-col h-full w-full overflow-hidden" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the note
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
             transition={{ 
-              duration: 0.3, 
-              ease: [0.2, 0.65, 0.3, 0.9]
+              duration: 0.25, 
+              ease: "easeInOut"
             }}
-            // Only add swipe handlers for mobile devices
-            // Removed all swipe gesture handlers for mobile and desktop
             style={{
               display: "block",
               width: "290px",
@@ -716,7 +706,7 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             }}
           >
             <div 
-              className="h-full w-full rounded-lg bg-black/10 relative"
+              className="h-full w-full rounded-lg relative"
               style={{ 
                 touchAction: 'pan-y',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
@@ -827,10 +817,10 @@ export const NotesScreen: React.FC<AppScreenProps> = () => {
             <motion.div 
               key="note-list"
               className="flex flex-col h-full w-full overflow-hidden" 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.35, ease: [0.25, 0.8, 0.25, 1] }}
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              transition={{ duration: 0.25, ease: "easeInOut" }} 
             >
               <div className="h-full overflow-y-auto scrollbar-subtle">
                 <div className="space-y-3 p-6">
