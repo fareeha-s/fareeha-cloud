@@ -605,6 +605,13 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
         damping: 30,
         duration: 0.3
       }
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.2, // Quick fade-out (adjust as needed)
+        ease: "easeInOut" // Smooth easing
+      }
     }
   };
 
@@ -690,20 +697,9 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
             key="note-detail"
             className="flex flex-col h-full w-full overflow-hidden" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the note
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            transition={{ 
-              duration: 0.25, 
-              ease: "easeInOut"
-            }}
-            style={{
-              display: "block",
-              width: "290px",
-              height: "390px",
-              aspectRatio: "3/4",
-              cursor: 'auto' // Always use default cursor for web users
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             <div 
               className="h-full w-full rounded-lg relative"
@@ -735,7 +731,9 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                   className="flex flex-col"
                   variants={containerVariants}
                   initial="hidden"
-                  animate="show"
+                  animate={isNoteReady ? "show" : "hidden"}
+                  exit="exit" 
+                  className="space-y-3"
                 >
                   <motion.div 
                     className="flex flex-col"
@@ -815,152 +813,152 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
         ) : (
           !isInitializing && (
             <motion.div 
-              key="note-list"
-              className="flex flex-col h-full w-full overflow-hidden" 
+              key="note-list" 
               initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }} 
-              transition={{ duration: 0.25, ease: "easeInOut" }} 
+              transition={{ duration: 0.15 }} 
+              className="flex flex-col h-full w-full overflow-hidden"
             >
-              <div className="h-full overflow-y-auto scrollbar-subtle">
-                <div className="space-y-3 p-6">
-                  {/* Pinned notes section */}
-                  {pinnedNotes.length > 0 && (
-                    <div>
-                      <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2 flex items-center">
-                        <PinIcon />
-                        Pinned
-                      </h2>
-                      <div className="space-y-0.5">
-                        {pinnedNotes.map((note, index) => (
-                          <motion.div 
-                            key={`pinned-${note.id}`}
-                            className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              createTactileEffect();
-                              handleNoteClick(note);
-                            }}
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.98 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                          <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
-                            <motion.div
-                              variants={chevronVariants}
-                              initial="initial"
-                              whileHover="hover"
-                              animate={index === 0 && note.title.includes("hello world") && !hasInteracted ? chevronControls : undefined}
-                            >
-                              <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
-                            </motion.div>
-                          </div>
-                          <div className="ml-1 flex-1 flex justify-between items-center">
-                            <div className="flex-1 pr-3">
-                              <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
-                                {note.title}
-                              </h3>
-                            </div>
-                            <div className="flex-shrink-0 flex items-center">
-                              <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
-                                {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
-                              </span>
-                            </div>
-                          </div>
-                          {shouldShowPulsingDot(note.id) && (
-                            <div 
-                              className="absolute -right-1 top-1/3 -translate-y-1/2" 
-                            >
-                              <motion.div 
-                                className="w-2 h-2 rounded-full bg-white/70" 
-                                initial={{ opacity: 0.7 }}
-                                animate={{ 
-                                  opacity: [0.5, 0.9, 0.5],
-                                  scale: [1, 1.2, 1]
-                                }}
-                                transition={{ 
-                                  repeat: Infinity, 
-                                  repeatType: "reverse", 
-                                  duration: 1.5,
-                                  repeatDelay: 1
-                                }}
-                              />
-                            </div>
-                          )}
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* All notes section */}
-                {allNotes.length > 0 && (
+              <div className="h-full overflow-y-auto scrollbar-subtle p-6">
+                {/* Pinned notes section */}
+                {pinnedNotes.length > 0 && (
                   <div>
-                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2">
-                      All
+                    {/* Remove px-2 from header */}
+                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 flex items-center">
+                      <PinIcon />
+                      Pinned
                     </h2>
                     <div className="space-y-0.5">
-                      {allNotes.map((note) => (
+                      {pinnedNotes.map((note, index) => (
                         <motion.div 
-                          key={`all-${note.id}`}
-                          className="flex group px-1 py-0.5 rounded-md relative"
+                          key={`pinned-${note.id}`}
+                          className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative"
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (!note.locked) {
-                              handleNoteClick(note);
-                            }
+                            createTactileEffect();
+                            handleNoteClick(note);
                           }}
-                          whileHover={{ scale: note.locked ? 1 : 1.01 }}
-                          whileTap={{ scale: note.locked ? 1 : 0.98 }}
+                          whileHover={{ scale: 1.01 }}
+                          whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.2 }}
-                        >
-                          <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
-                            <motion.div
-                              variants={chevronVariants}
-                              initial="initial"
-                              whileHover="hover"
-                            >
-                              <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
-                            </motion.div>
+                      >
+                        <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
+                          <motion.div
+                            variants={chevronVariants}
+                            initial="initial"
+                            whileHover="hover"
+                            animate={index === 0 && note.title.includes("hello world") && !hasInteracted ? chevronControls : undefined}
+                          >
+                            <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                          </motion.div>
+                        </div>
+                        <div className="ml-1 flex-1 flex justify-between items-center">
+                          <div className="flex-1 pr-3">
+                            <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
+                              {note.title}
+                            </h3>
                           </div>
-                          <div className="ml-1 flex-1 flex justify-between items-center">
-                            <div className="flex-1 pr-3">
-                              <h3 className={`text-base font-normal ${note.locked ? 'text-white/60' : 'text-white/90'} break-words transition-colors duration-200`}>
-                                {note.title}
-                              </h3>
-                            </div>
-                            <div className="flex-shrink-0 flex items-center">
-                              <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
-                                {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
-                              </span>
-                            </div>
+                          <div className="flex-shrink-0 flex items-center">
+                            <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
+                              {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
+                            </span>
                           </div>
-                          {shouldShowPulsingDot(note.id) && (
-                            <div 
-                              className="absolute -right-1 top-1/3 -translate-y-1/2" 
-                            >
-                              <motion.div 
-                                className="w-2 h-2 rounded-full bg-white/70" 
-                                initial={{ opacity: 0.7 }}
-                                animate={{ 
-                                  opacity: [0.5, 0.9, 0.5],
-                                  scale: [1, 1.2, 1]
-                                }}
-                                transition={{ 
-                                  repeat: Infinity, 
-                                  repeatType: "reverse", 
-                                  duration: 1.5,
-                                  repeatDelay: 1
-                                }}
-                              />
-                            </div>
-                          )}
-                        </motion.div>
-                      ))}
-                    </div>
+                        </div>
+                        {shouldShowPulsingDot(note.id) && (
+                          <div 
+                            className="absolute -right-1 top-1/3 -translate-y-1/2" 
+                          >
+                            <motion.div 
+                              className="w-2 h-2 rounded-full bg-white/70" 
+                              initial={{ opacity: 0.7 }}
+                              animate={{ 
+                                opacity: [0.5, 0.9, 0.5],
+                                scale: [1, 1.2, 1]
+                              }}
+                              transition={{ 
+                                repeat: Infinity, 
+                                repeatType: "reverse", 
+                                duration: 1.5,
+                                repeatDelay: 1
+                              }}
+                            />
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+
+              {/* All notes section */}
+              {allNotes.length > 0 && (
+                <div>
+                  {/* Remove px-2 from header */}
+                  <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2">
+                    All
+                  </h2>
+                  <div className="space-y-0.5">
+                    {allNotes.map((note) => (
+                      <motion.div 
+                        key={`all-${note.id}`}
+                        className="flex group px-1 py-0.5 rounded-md relative"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!note.locked) {
+                            handleNoteClick(note);
+                          }
+                        }}
+                        whileHover={{ scale: note.locked ? 1 : 1.01 }}
+                        whileTap={{ scale: note.locked ? 1 : 0.98 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
+                          <motion.div
+                            variants={chevronVariants}
+                            initial="initial"
+                            whileHover="hover"
+                          >
+                            <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                          </motion.div>
+                        </div>
+                        <div className="ml-1 flex-1 flex justify-between items-center">
+                          <div className="flex-1 pr-3">
+                            <h3 className={`text-base font-normal ${note.locked ? 'text-white/60' : 'text-white/90'} break-words transition-colors duration-200`}>
+                              {note.title}
+                            </h3>
+                          </div>
+                          <div className="flex-shrink-0 flex items-center">
+                            <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
+                              {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
+                            </span>
+                          </div>
+                        </div>
+                        {shouldShowPulsingDot(note.id) && (
+                          <div 
+                            className="absolute -right-1 top-1/3 -translate-y-1/2" 
+                          >
+                            <motion.div 
+                              className="w-2 h-2 rounded-full bg-white/70" 
+                              initial={{ opacity: 0.7 }}
+                              animate={{ 
+                                opacity: [0.5, 0.9, 0.5],
+                                scale: [1, 1.2, 1]
+                              }}
+                              transition={{ 
+                                repeat: Infinity, 
+                                repeatType: "reverse", 
+                                duration: 1.5,
+                                repeatDelay: 1
+                              }}
+                            />
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
           )
