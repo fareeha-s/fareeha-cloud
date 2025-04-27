@@ -117,7 +117,7 @@ type SpotifyTrack = {
 };
 
 // Define types for our various widgets
-type WidgetData = {
+interface WidgetData {
   type: 'notes' | 'partiful' | 'workout';
   title: string;
   subtitle: string;
@@ -125,7 +125,9 @@ type WidgetData = {
   timestampLabel: string;
   progress: number;
   iconBgColor: string;
-};
+  eventId?: number;
+  attendees?: number;
+}
 
 // Simplified tactile effect for widget swipes
 const createWidgetSwipeFeedback = () => {
@@ -202,6 +204,7 @@ function App() {
   const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
   const [isNoteDetailView, setIsNoteDetailView] = useState(false);
   const [isEventDetailView, setIsEventDetailView] = useState(false); // Add state for event detail view
+  const [initialEventIdForScreen, setInitialEventIdForScreen] = useState<number | null>(null); // State for event ID
   
   // Add an effect to preload all content and prevent flashes
   useEffect(() => {
@@ -399,11 +402,28 @@ function App() {
     {
       type: 'partiful',
       title: selectedEvent.title,
-      subtitle: '',
-      timestamp: getRelativeDate(selectedEvent.date),
-      timestampLabel: 'latest events',
-      progress: 25,
-      iconBgColor: 'bg-[#FF4081]/20'
+      subtitle: '', // Keep subtitle empty or define as needed
+      timestamp: getRelativeDate(selectedEvent.date), // Use relative date for consistency
+      timestampLabel: (() => {
+        try {
+          const [day, month, year] = selectedEvent.date.split('/').map(Number);
+          // Assuming YY format, adjust for the correct century (e.g., 20xx)
+          const eventDate = new Date(2000 + year, month - 1, day);
+          eventDate.setHours(23, 59, 59, 999); // Set to end of the event day for comparison
+          
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // Set to start of today
+
+          return eventDate >= today ? 'upcoming' : 'recently';
+        } catch (e) {
+          console.error("Error parsing event date:", selectedEvent.date, e);
+          return 'Event'; // Fallback label
+        }
+      })(), // Calculate based on date comparison
+      progress: 0, // Set progress if applicable, otherwise 0
+      iconBgColor: 'bg-[#FF4081]/20', // Partiful color
+      eventId: selectedEvent.id, // Store the event ID
+      attendees: selectedEvent.attendees // Store the attendee count
     }
   ];
   
@@ -727,11 +747,6 @@ function App() {
       return; // If the screen handler returns true, it handled the back action
     }
     
-    // Check for event screen handler (partiful)
-    if (activeApp === 'partiful' && window.eventScreenBackHandler && window.eventScreenBackHandler()) {
-      return; // If the event screen handler returns true, it handled the back action
-    }
-    
     setIsAnimating(true);
     
     // Start closing animation with enhanced buttery-smooth transitions
@@ -742,6 +757,7 @@ function App() {
         app: null,
         rect: null
       });
+      setInitialEventIdForScreen(null); // Reset event ID state on close
       
       // Reset animation state after animation completes with longer duration for smoother feel
       setTimeout(() => {
@@ -1217,6 +1233,21 @@ function App() {
                     setLastManualNavigation(Date.now());
                     }
                   }}
+                  onTap={() => {
+                    createTactileEffect();
+                    const currentWidget = widgets[currentWidgetIndex];
+                    if (currentWidget.type === 'notes' && selectedNote) {
+                      // Store the ID in the window object before navigating
+                      (window as any).initialNoteId = selectedNote.id;
+                      handleAppClick('notes');
+                    } else if (currentWidget.type === 'partiful' && currentWidget.eventId) {
+                      setInitialEventIdForScreen(currentWidget.eventId);
+                      handleAppClick('partiful'); // Navigate to the EventScreen
+                    } else if (currentWidget.type === 'workout') {
+                      // Potentially handle workout click in the future
+                      // handleAppClick('workout'); 
+                    }
+                  }}
                   // Remove mouse-based swipes for desktop completely
                   onMouseDown={undefined}
                   onMouseMove={undefined}
@@ -1263,9 +1294,7 @@ function App() {
                           fontWeight: 400,
                           maxWidth: widgets[currentWidgetIndex].type === 'notes' ? '100%' : 'calc(100% - 45px)'
                         }}>
-                          {widgets[currentWidgetIndex].type === 'workout' ? 'barry\'s - lift x run' : 
-                           widgets[currentWidgetIndex].type === 'notes' ? selectedNote.title : 
-                           selectedEvent.title}
+                          {widgets[currentWidgetIndex].title}
                         </h3>
                         {/* Show timestamp for all widgets, including notes */}
                         <p className="text-[14px] text-white/70 text-sharp ml-1 flex-shrink-0" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 350 }}>
@@ -1295,7 +1324,7 @@ function App() {
                           {widgets[currentWidgetIndex].type === 'notes' ? 
                             '' : // Remove duplicate title for notes widget
                             widgets[currentWidgetIndex].type === 'partiful' ?
-                            `${selectedEvent.attendees} approved` :
+                            `${widgets[currentWidgetIndex].attendees} approved` :
                             'with megan, sam'}
                         </p>
                       </div>
@@ -1484,7 +1513,6 @@ function App() {
           {activeApp && ActiveComponent && (
             <div 
               className="absolute inset-0 z-30 overflow-hidden flex items-center justify-center"
-              // REMOVE incorrect onClick handler from here
             >
               <AnimatePresence mode="wait" onExitComplete={() => setIsAnimating(false)}>
                 {ActiveComponent && (
@@ -1493,8 +1521,8 @@ function App() {
                     // Pass all possible props defined in the updated AppScreenProps
                     onClose={handleClose}
                     onNavigate={handleNavigate} // Use the new dedicated handler
-                    initialNoteId={selectedNoteId}
-                    // Omit initialEventId as no corresponding state exists yet
+                    initialNoteId={activeApp === 'notes' ? selectedNoteId : undefined}
+                    initialEventId={initialEventIdForScreen} // Pass state directly
                     isNoteDetailView={isNoteDetailView} // NotesScreen will use this
                     setIsNoteDetailView={setIsNoteDetailView} // NotesScreen will use this
                     isEventDetailView={isEventDetailView} // EventScreen will use this

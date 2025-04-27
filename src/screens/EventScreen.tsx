@@ -6,7 +6,12 @@ import { PartifulEvent } from '../components/PartifulEvent';
 import { ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import { events, EventItem } from '../data/events';
 
-export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView }) => {
+interface AppScreenProps {
+  setIsEventDetailView: (isEventDetailView: boolean) => void;
+  initialEventId?: number | null;
+}
+
+export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView, initialEventId }) => {
   const prefersReducedMotion = useReducedMotion();
   const [showPartiful, setShowPartiful] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -44,6 +49,31 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView }) 
       delete window.eventScreenBackHandler;
     };
   }, [showPartiful, setIsEventDetailView]);
+
+  // Effect to initialize widgetEventId from prop or window property
+  useEffect(() => {
+    // Prioritize prop, then window object
+    console.log('[EventScreen useEffect] Received initialEventId prop:', initialEventId);
+    const idFromSource = initialEventId !== undefined && initialEventId !== null 
+      ? initialEventId 
+      : (window as any).initialEventId;
+    
+    console.log('[EventScreen useEffect] Determined idFromSource:', idFromSource);
+
+    if (typeof idFromSource === 'number') {
+      setWidgetEventId(idFromSource);
+      console.log('[EventScreen useEffect] Set widgetEventId state to:', idFromSource);
+      // Clear the window property after reading it to prevent reuse on subsequent visits
+      // Only delete if the source was the window property to avoid deleting prop-related info potentially needed elsewhere
+      if (!(initialEventId !== undefined && initialEventId !== null)) {
+         delete (window as any).initialEventId; 
+      }
+    } else {
+      // Clear widgetEventId if no initial ID is found
+      setWidgetEventId(null);
+      console.log('[EventScreen useEffect] Cleared widgetEventId state (no valid source ID)');
+    }
+  }, [initialEventId]); // Depend on the prop
 
   // Modified to show swipe indicator when user scrolls to bottom of first event
   useEffect(() => {
@@ -167,76 +197,23 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView }) 
     }
   };
 
-  // Helper function to determine if an event should have a pulsing dot
-  const shouldShowPulsingDot = (eventId: number) => {
-    // If user came from widget, highlight that specific event
-    // but hide it once they've viewed it
-    if (widgetEventId !== null && widgetEventId === eventId) {
-      if (selectedEventId === eventId) {
-        // The event is currently being viewed, so hide the dot
-        return false;
-      }
-      // The event was just clicked from widget but not yet viewed
-      return true;
-    }
-
-    // For non-widget clicks, check if this event has been viewed before
-    const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '[]');
-    if (viewedEvents.includes(eventId)) {
-      return false;
-    }
-    
-    // Check if this is first time use (no viewed events)
-    const isFirstTimeUse = viewedEvents.length === 0;
-    
-    // If this is first time use, show the orb on the most recent upcoming event (2025 events)
-    if (isFirstTimeUse) {
-      // Get the top upcoming event or first event if none are upcoming
-      const firstTimeUpcomingEvents = events.filter(event => event.timeframe === 'upcoming');
-      if (firstTimeUpcomingEvents.length > 0) {
-        // Sort by date (closest first, but ensuring 2025 events come before 2024 events)
-        const sortedEvents = [...firstTimeUpcomingEvents].sort((a, b) => {
-          const [dayA, monthA, yearA] = a.date.split('/').map(Number);
-          const [dayB, monthB, yearB] = b.date.split('/').map(Number);
-          
-          // Convert to full years for proper comparison
-          const fullYearA = 2000 + yearA;
-          const fullYearB = 2000 + yearB;
-          
-          // Sort by year first - note we want newest years (e.g. 2025) first
-          if (fullYearA !== fullYearB) return fullYearB - fullYearA;
-          
-          // Then by month
-          if (monthA !== monthB) return monthA - monthB;
-          
-          // Then by day
-          return dayA - dayB;
-        });
-        
-        // Show orb on the first upcoming event
-        return sortedEvents[0].id === eventId;
-      } else if (events.length > 0) {
-        // If no upcoming events, show orb on the first event
-        return events[0].id === eventId;
-      }
-    }
-    
-    return false;
-  };
-
-  // Add function to mark event as viewed
-  const markEventAsViewed = (eventId: number) => {
-    const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '[]');
-    if (!viewedEvents.includes(eventId)) {
-      viewedEvents.push(eventId);
-      localStorage.setItem('viewedEvents', JSON.stringify(viewedEvents));
-    }
-  };
-
   const handleEventPress = (event: EventItem) => {
     // Mark event as viewed for the pulsing dot
+    // Add function to mark event as viewed
+    const markEventAsViewed = (eventId: number) => {
+      const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '[]');
+      if (!viewedEvents.includes(eventId)) {
+        viewedEvents.push(eventId);
+        localStorage.setItem('viewedEvents', JSON.stringify(viewedEvents));
+      }
+    };
     markEventAsViewed(event.id);
     
+    // Clear the widget highlight if this event was the one highlighted
+    if (event.id === widgetEventId) {
+      setWidgetEventId(null);
+    }
+
     // Check if we need to show partiful data
     if (event.clickable) {
       // Reset scroll state when showing a new event
@@ -432,6 +409,12 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView }) 
   // Get all events that are not in the past month section
   const remainingEvents = allEvents.filter(event => !isPastMonth(event.date));
 
+  // Function to determine if the pulsing dot should be shown for an event
+  const shouldShowPulsingDot = (eventId: number) => {
+    console.log(`[EventScreen shouldShowPulsingDot] Checking eventId: ${eventId} against widgetEventId: ${widgetEventId}`);
+    return eventId === widgetEventId;
+  };
+
   return (
     <div 
       className="h-full w-full" 
@@ -454,7 +437,7 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView }) 
             className="mb-5"
           >
             <p className="text-white/60 text-[14px] px-2">
-            Fun little gatherings I've enjoyed planning with friends. Hope this inspires!
+            Fun little gatherings I've enjoyed planning with friends, hope this inspires!
             </p>
           </div>
           {/* Past Month section */}
