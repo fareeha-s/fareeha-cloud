@@ -10,7 +10,7 @@
   a, button, [role="button"], [type="button"], [type="submit"], [type="reset"],
   [style*="cursor: pointer"], [style*="cursor:pointer"], .cursor-pointer,
   *[onclick], *[role="link"] {
-    cursor: default !important;
+    cursor: default;
   }
   
   html, body, #root {
@@ -20,11 +20,11 @@
     color: white;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #131518 !important;
-    background-color: #131518 !important;
-    box-shadow: none !important;
-    transition: none !important;
-    animation: none !important;
+    background: #131518;
+    background-color: #131518;
+    box-shadow: none;
+    transition: none;
+    animation: none;
   }
   
   /* No need to redeclare iOS devices font here - using CSS variables from HTML */
@@ -228,8 +228,8 @@
 
 /* Override default cursor for GitHub link */
 .github-link {
-  cursor: pointer !important;
-  pointer-events: auto !important;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 @layer utilities {
@@ -264,10 +264,10 @@
   /* Reduce motion for users who prefer reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+      transition-duration: 0.01ms;
+      scroll-behavior: auto;
     }
   }
   
@@ -297,6 +297,66 @@
   }
 }
 
+/* === Styles moved from App.tsx useEffect hook === */
+
+/* Force hardware acceleration */
+.will-change-transform {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Ensure full height on mobile devices */
+html, body, #root {
+  height: 100%;
+  height: -webkit-fill-available; /* Mobile Safari */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  background-color: #131518; /* Base background */
+}
+
+/* Fix for mobile browsers and notches */
+@supports (-webkit-touch-callout: none) {
+  .h-screen, #root, body, html {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Force entire page container */
+#root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+/* Viewport height fix for mobile browsers */
+@media screen and (max-width: 768px) {
+  body, html, #root, .h-screen {
+    height: 100%;
+    min-height: 100%;
+    max-height: 100%;
+    font-family: var(--font-sans);
+  }
+}
+
+/* Widget animation classes for music widget */
+.music-widget-bg-animation {
+  animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  -webkit-animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes music-widget-bg-fade {
+  0% { background-color: rgba(255, 255, 255, 0.03); }
+  50%, 100% { background-color: rgba(255, 255, 255, 0.05); } /* Fade to 0.05 and stay */
+}
+
+/* === End of styles moved from App.tsx === */
+
 /* Define base state and single transition on .main-container */
 .main-container {
   width: 290px; /* Base width */
@@ -317,7 +377,7 @@
 .portrait-container [data-event-type="blood-moon-rising"] h1.blood-moon-title,
 h1.blood-moon-title,
 div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
-  font-size: 19px !important; /* Using important only where absolutely necessary */
+  font-size: 19px;
   white-space: normal;
   overflow: visible;
   max-width: 220px;
@@ -357,22 +417,73 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 
 /* Target blood moon rising title by ID - highest specificity */
 #blood-moon-title {
-  font-size: 19px !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  max-width: 220px !important;
-  margin: 0 auto !important;
-  text-align: center !important;
-  word-break: normal !important;
-  letter-spacing: 0.12em !important;
-  line-height: 1.1 !important;
-  font-weight: 600 !important;
-  color: white !important;
-  text-transform: lowercase !important;
-  font-family: 'Grotesk', -apple-system, BlinkMacSystemFont, Arial, sans-serif !important;
-  text-overflow: initial !important;
-  display: block !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 0 !important;
+  font-size: 19px;
+  white-space: normal;
+  overflow: visible;
+  max-width: 220px;
+  margin: 0 auto;
+  text-align: center;
+  word-break: normal;
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  font-weight: 600;
+  color: white;
+  text-transform: lowercase;
+  font-family: 'Grotesk', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  text-overflow: initial;
+  display: block;
+  width: auto;
+  height: auto;
+  padding: 0;
+}
+
+.tooltip-custom-class {
+  font-size: 19px;
+  white-space: normal;
+  overflow: visible;
+  max-width: 220px;
+  margin: 0 auto;
+  text-align: center;
+  word-break: normal;
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  font-weight: 600;
+  color: white;
+  text-transform: lowercase;
+  font-family: 'Grotesk', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  text-overflow: initial;
+  display: block;
+  width: auto;
+  height: auto;
+  padding: 0;
+}
+
+[disabled],
+[data-disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Radix fixes */
+/* Remove weird background on Radix popups */
+[data-radix-popper-content-wrapper] {
+  z-index: 100000;
+  filter: none;
+  background: #131518;
+  background-color: #131518;
+  box-shadow: none;
+  transition: none;
+  animation: none;
+}
+
+/* LINKS */
+.link-cursor,
+.link-cursor:hover {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* fix weird monaco editor font size issue on load */
+.mtk18 {
+  font-size: 19px;
 }
