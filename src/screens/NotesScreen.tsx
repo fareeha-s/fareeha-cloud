@@ -497,21 +497,25 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       setIsNoteDetailView(false);
     }
     
-    // For hello world note, go to home with buttery-smooth animation
+    // For hello world note, go to home with buttery-smooth animation ONLY on first leave
     if (isHelloWorldNote && typeof window !== 'undefined') {
-      // Small delay to ensure the note closing animation starts
-      setTimeout(() => {
-        setSelectedNote(null);
-        
-        // Enhanced timing for smoother transition
+      const hasLeftHelloWorldNote = localStorage.getItem('hasLeftHelloWorldNote') === 'true';
+      if (!hasLeftHelloWorldNote) {
+        localStorage.setItem('hasLeftHelloWorldNote', 'true');
+        // Small delay to ensure the note closing animation starts
         setTimeout(() => {
-          // This will close the notes app and go to home
-          if (window.handleAppClick) {
-            window.handleAppClick('home');
-          }
-        }, 200); // Increased for smoother transition
-      }, 80); // Slightly increased for better timing
-      return;
+          setSelectedNote(null);
+          // Enhanced timing for smoother transition
+          setTimeout(() => {
+            // This will close the notes app and go to home
+            if (window.handleAppClick) {
+              window.handleAppClick('home');
+            }
+          }, 200); // Increased for smoother transition
+        }, 80); // Slightly increased for better timing
+        return;
+      }
+      // If not first leave, just close the note as usual
     }
     
     // For other notes, use enhanced buttery-smooth animation
