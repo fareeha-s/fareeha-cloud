@@ -302,16 +302,13 @@
   width: 290px; /* Base width */
   aspect-ratio: 1/1; /* Base aspect ratio (square) */
   height: 290px; /* Base height */
-  transition: aspect-ratio 0.45s cubic-bezier(0.25, 0.8, 0.25, 1),
-              height 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
-  will-change: height, aspect-ratio; /* Optimize for changing properties */
+  /* REMOVE CSS Transition - Framer Motion handles it now */
 }
 
 /* Define expanded state styles and REMOVE transition */
 .main-container.expanded {
   aspect-ratio: 3/4; /* Target aspect ratio (rectangle) */
   height: 390px; /* Target height */
-  /* width: 290px !important; <= Width is constant, no need for !important */
 }
 
 /* Special handling for blood moon rising title - with extra specificity */
