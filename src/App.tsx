@@ -212,7 +212,7 @@ function App() {
     const fontReady = document.fonts.ready;
     
     // Function to preload the background image
-    const preloadImage = (src) => {
+    const preloadImage = (src: string) => {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.src = src;
@@ -535,77 +535,6 @@ function App() {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
       clearTimeout(initialTimer);
-    };
-  }, []);
-  
-  // Inject critical styles for proper mobile rendering
-  useEffect(() => {
-    // Create and inject critical styles to ensure proper rendering on mobile
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
-      /* Force hardware acceleration */
-      .will-change-transform {
-        will-change: transform;
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-      }
-      
-      /* Ensure full height on mobile devices and prevent white flash during loading */
-      html, body, #root {
-        height: 100% !important;
-        height: -webkit-fill-available !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        position: fixed !important;
-        overflow: hidden !important;
-        font-family: var(--font-sans) !important;
-        background-color: #131518 !important; /* Dark background to prevent white flash */
-      }
-      
-
-      
-      /* Fix for mobile browsers and notches */
-      @supports (-webkit-touch-callout: none) {
-        .h-screen, #root, body, html {
-          height: -webkit-fill-available !important;
-        }
-      }
-      
-      /* Force entire page container */
-      #root {
-        position: fixed !important;
-        inset: 0 !important;
-        overflow: hidden !important;
-        font-family: var(--font-sans) !important;
-      }
-      
-      /* Viewport height fix for mobile browsers */
-      @media screen and (max-width: 768px) {
-        body, html, #root, .h-screen {
-          height: 100% !important;
-          min-height: 100% !important;
-          max-height: 100% !important;
-          font-family: var(--font-sans) !important;
-        }
-      }
-      
-      /* Widget animation classes for music widget - actually used in the components */
-      .music-widget-bg-animation {
-        animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        -webkit-animation: music-widget-bg-fade 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-      
-      @keyframes music-widget-bg-fade {
-        0% { background-color: rgba(255, 255, 255, 0.03); }
-        50% { background-color: rgba(255, 255, 255, 0.05); }
-        100% { background-color: rgba(255, 255, 255, 0.07); }
-      }
-    `;
-    document.head.appendChild(styleElement);
-    
-    return () => {
-      document.head.removeChild(styleElement);
     };
   }, []);
   
@@ -1127,7 +1056,7 @@ function App() {
                 <img src="./icons/apps/partiful.png" alt="Partiful" className="w-6 h-6" />
               ) : (
                 <AppIcon
-                  icon={clonedAppIcon?.app?.icon}
+                  icon={clonedAppIcon?.app?.icon ?? ''}
                   name=""
                   color={clonedAppIcon?.app?.color || 'from-gray-700 to-gray-900'}
                   onClick={() => {}}
@@ -1497,7 +1426,7 @@ function App() {
                     <img src="./icons/apps/partiful.png" alt="Partiful" className="w-6 h-6" />
                   ) : (
                     <AppIcon
-                      icon={clonedAppIcon?.app?.icon}
+                      icon={clonedAppIcon?.app?.icon ?? ''}
                       name=""
                       color={clonedAppIcon?.app?.color || 'from-gray-700 to-gray-900'}
                       onClick={() => {}}
@@ -1521,7 +1450,7 @@ function App() {
                     // Pass all possible props defined in the updated AppScreenProps
                     onClose={handleClose}
                     onNavigate={handleNavigate} // Use the new dedicated handler
-                    initialNoteId={activeApp === 'notes' ? selectedNoteId : undefined}
+                    initialNoteId={activeApp === 'notes' && selectedNoteId ? parseInt(selectedNoteId, 10) : null}
                     initialEventId={initialEventIdForScreen} // Pass state directly
                     isNoteDetailView={isNoteDetailView} // NotesScreen will use this
                     setIsNoteDetailView={setIsNoteDetailView} // NotesScreen will use this

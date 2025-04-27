@@ -10,8 +10,6 @@ import ReactDOM from 'react-dom';
 declare global {
   interface Window {
     noteScreenBackHandler?: () => boolean;
-    initialNoteId?: number | null;
-    initialEventId?: number | null;
     isNoteDetailView: boolean; 
     setIsNoteDetailView: (value: boolean) => void; 
     isViewingNoteDetail?: boolean;
@@ -123,11 +121,6 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
 
 // Use the imported BaseAppScreenProps directly
 export const NotesScreen: React.FC<BaseAppScreenProps> = ({ 
-  onClose, 
-  onNavigate, 
-  initialNoteId, 
-  initialEventId, // Even if unused here, keep props consistent
-  isNoteDetailView, // Destructure from BaseAppScreenProps (optional)
   setIsNoteDetailView // Destructure from BaseAppScreenProps (optional)
 }) => {
   const prefersReducedMotion = useReducedMotion();
@@ -135,17 +128,11 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   const chevronControls = useAnimation();
   const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
-  const [currentNoteIndex, setCurrentNoteIndex] = useState<number>(0);
   const [isNoteReady, setIsNoteReady] = useState<boolean>(false);
-  const [preloadedNote, setPreloadedNote] = useState<NoteItem | null>(null);
   const [widgetNoteId, setWidgetNoteId] = useState<number | null>(null);
-  // Removed swipe state and note index state
   
   // Add state for video player
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  
-  // Add state to track if Kineship note was opened from Hello World note
-  const [openedFromHelloWorld, setOpenedFromHelloWorld] = useState<boolean>(false);
   
   // Track if this is the first time viewing hello world note directly - unused but kept for future use
   const [, setIsFirstViewOfHelloWorld] = useState<boolean>(false);
@@ -153,14 +140,85 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   // Create a ref to use for directly setting the window property
   const isViewingDetailRef = useRef(false);
   
-  // Removed pagination dots state
-  
-  // Removed mobile device detection state
-  // const [isMobileDevice, setIsMobileDevice] = useState(false);
-  
   // Create a ref for the note content container
   const noteContentRef = useRef<HTMLDivElement>(null);
-  
+
+  // Add function to mark note as viewed
+  const markNoteAsViewed = (noteId: number) => {
+    try {
+      const viewedNotes = JSON.parse(localStorage.getItem('viewedNotes') || '[]');
+      if (!viewedNotes.includes(noteId)) {
+        viewedNotes.push(noteId);
+        localStorage.setItem('viewedNotes', JSON.stringify(viewedNotes));
+      }
+    } catch (error) {
+        console.error("Error handling localStorage for viewedNotes:", error);
+    }
+  };
+
+  // Enhanced animation variants for buttery-smooth transitions
+  const chevronVariants = {
+    initial: { x: 0 },
+    hover: { x: 3, transition: { repeat: 0, duration: 0.4, ease: [0.25, 0.8, 0.25, 1] } }
+  };
+
+  // Handle interaction
+  const handleInteraction = () => {
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+  };
+
+  // Helper function to determine if a note should have a pulsing dot
+  const shouldShowPulsingDot = (noteId: number) => {
+    const noteItem = notes.find(note => note.id === noteId);
+    if (noteItem?.locked) {
+      return false;
+    }
+    if (widgetNoteId !== null && widgetNoteId === noteId) {
+      if (selectedNote && selectedNote.id === noteId) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  };
+
+  // Animation variants for beautiful entrance with minimal delay
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.05,
+        duration: 0.1
+      }
+    },
+    exit: { opacity: 0, transition: { duration: 0.2 } }
+  };
+
+  // Animation variants for items
+  const itemVariants = {
+    hidden: { opacity: 0 },
+    show: { 
+      opacity: 1, 
+      transition: {
+        type: "spring",
+        stiffness: 300, 
+        damping: 30,
+        duration: 0.3
+      }
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut"
+      }
+    }
+  };
+
   // Only open hello world note on initial page load
   useEffect(() => {
     // Start with initializing state to prevent flash of notes list
@@ -173,7 +231,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       const noteToOpen = notes.find(note => note.id === window.initialNoteId);
       if (noteToOpen) {
         // Preload the note content first
-        setPreloadedNote(noteToOpen);
+        // setPreloadedNote(noteToOpen);
         
         // Open the note directly in detail view
         console.log('Opening note directly in detail view:', noteToOpen.id);
@@ -378,19 +436,12 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       window.initialNoteId = undefined;
     }
     
-    // Check if we need to track Kineship being opened from Hello World
-    const openedKineshipFromHelloWorld = localStorage.getItem('openedKineshipFromHelloWorld') === 'true';
-    if (openedKineshipFromHelloWorld) {
-      setOpenedFromHelloWorld(true);
-    }
-    
     // Set up the openNoteWithId function in the window object
     window.openNoteWithId = (noteId: number) => {
   const noteToOpen = notes.find(note => note.id === noteId);
   if (noteToOpen) {
     // Special case for Kineship from Hello World
     if (noteId === 2 && selectedNote?.id === 1) {
-      setOpenedFromHelloWorld(true);
       localStorage.setItem('openedKineshipFromHelloWorld', 'true');
     }
     // Always set detail mode BEFORE setting selected note
@@ -459,173 +510,13 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       return dayB - dayA;
     });
 
-  const closeNote = () => {
-    // Check if this is the hello world note
-    const isHelloWorldNote = selectedNote?.id === 1;
-    
-    // Reset widgetNoteId when closing a note
-    // This ensures that if the user goes back to home and clicks the same note
-    // from the widget again, the orb will reappear
-    if (selectedNote && widgetNoteId === selectedNote.id) {
-      setWidgetNoteId(null);
-    }
-    
-    // Clean up any UI artifacts that might be causing the grey screen
-    try {
-      // Remove any overlay elements that might be causing the grey box
-      const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
-      overlays.forEach(overlay => {
-        if (document.body.contains(overlay)) {
-          document.body.removeChild(overlay);
-        }
-      });
-      
-      // Reset backdrop filters that might be causing the grey screen
-      const blurElements = document.querySelectorAll('.backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm');
-      blurElements.forEach(el => {
-        (el as HTMLElement).style.backdropFilter = 'none';
-        // Use setAttribute for vendor prefixed properties to avoid TypeScript errors
-        (el as HTMLElement).setAttribute('style', '-webkit-backdrop-filter: none');
-      });
-    } catch (e) {
-      console.error('Error cleaning up UI:', e);
-    }
-    
-    // Set flag to false BEFORE state changes for immediate effect
-    setIsViewingDetail(false);
-    if (setIsNoteDetailView) { // Check if prop exists
-      setIsNoteDetailView(false);
-    }
-    
-    // For hello world note, go to home with buttery-smooth animation ONLY on first leave
-    if (isHelloWorldNote && typeof window !== 'undefined') {
-      const hasLeftHelloWorldNote = localStorage.getItem('hasLeftHelloWorldNote') === 'true';
-      if (!hasLeftHelloWorldNote) {
-        localStorage.setItem('hasLeftHelloWorldNote', 'true');
-        // Small delay to ensure the note closing animation starts
-        setTimeout(() => {
-          setSelectedNote(null);
-          // Enhanced timing for smoother transition
-          setTimeout(() => {
-            // This will close the notes app and go to home
-            if (window.handleAppClick) {
-              window.handleAppClick('home');
-            }
-          }, 200); // Increased for smoother transition
-        }, 80); // Slightly increased for better timing
-        return;
-      }
-      // If not first leave, just close the note as usual
-    }
-    
-    // For other notes, use enhanced buttery-smooth animation
-    setTimeout(() => {
-      // Special case: If we're viewing Kineship note (id: 2) that was opened from Hello World note (id: 1),
-      // then go back to Hello World note instead of closing
-      if (selectedNote?.id === 2 && openedFromHelloWorld) {
-        const helloWorldNote = notes.find(note => note.id === 1);
-        if (helloWorldNote) {
-          setSelectedNote(helloWorldNote);
-          // Reset the flag since we're no longer in Kineship opened from Hello World
-          setOpenedFromHelloWorld(false);
-          localStorage.removeItem('openedKineshipFromHelloWorld');
-        } else {
-          // Fallback if Hello World note not found
-          setSelectedNote(null);
-        }
-      } else {
-        // Normal behavior for other notes
-        setSelectedNote(null);
-      }
-      createTactileEffect();
-    }, 120); // Optimized timing for buttery-smooth transitions
-  };
-
-  // Enhanced animation variants for buttery-smooth transitions
-  const chevronVariants = {
-    initial: { x: 0 },
-    hover: { x: 3, transition: { repeat: 0, duration: 0.4, ease: [0.25, 0.8, 0.25, 1] } }
-  };
-
-  const handleInteraction = () => {
-    if (!hasInteracted) {
-      setHasInteracted(true);
-    }
-  };
-
-  // Helper function to determine if a note should have a pulsing dot
-  const shouldShowPulsingDot = (noteId: number) => {
-    // First, check if the note is locked - never show pulsing dot for locked notes
-    const noteItem = notes.find(note => note.id === noteId);
-    if (noteItem?.locked) {
-      return false;
-    }
-
-    // ONLY show pulsing dot if the note was accessed through the widget
-    // and hide it only while actually viewing the note
-    if (widgetNoteId !== null && widgetNoteId === noteId) {
-      // Only hide the dot if this note is currently being viewed
-      // This ensures the dot appears again after going back to home screen
-      // and clicking on the same note from the widget
-      if (selectedNote && selectedNote.id === noteId) {
-        return false;
-      }
-      return true;
-    }
-    
-    // For all other cases, don't show pulsing dot
-    return false;
-  };
-
-  // Add function to mark note as viewed
-  const markNoteAsViewed = (noteId: number) => {
-    const viewedNotes = JSON.parse(localStorage.getItem('viewedNotes') || '[]');
-    if (!viewedNotes.includes(noteId)) {
-      viewedNotes.push(noteId);
-      localStorage.setItem('viewedNotes', JSON.stringify(viewedNotes));
-    }
-  };
-
-  // Animation variants for beautiful entrance with minimal delay
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.05, // Small delay to ensure container is visible first
-        duration: 0.1 // Very quick container fade-in
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0 }, // Only fade out
-    show: { 
-      opacity: 1, 
-      transition: {
-        type: "spring",
-        stiffness: 300, 
-        damping: 30,
-        duration: 0.3
-      }
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        duration: 0.2, // Quick fade-out (adjust as needed)
-        ease: "easeInOut" // Smooth easing
-      }
-    }
-  };
-
   const handleNoteClick = (note: NoteItem) => {
     if (note.locked) return; // Prevent opening locked notes
     // Mark the note as viewed immediately
     markNoteAsViewed(note.id);
     
     // Preload the note content first
-    setPreloadedNote(note);
+    // setPreloadedNote(note);
     
     // Hide the note content initially until everything is ready
     setIsNoteReady(false);
@@ -636,11 +527,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     if (setIsNoteDetailView) { // Check if prop exists
       setIsNoteDetailView(true);
     }
-    
-    // Find the index of the note in the combined array
-    const allNotesArray = [...pinnedNotes, ...allNotes];
-    const noteIndex = allNotesArray.findIndex(n => n.id === note.id);
-    setCurrentNoteIndex(noteIndex);
     
     createTactileEffect();
     
@@ -669,14 +555,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   const closeVideoPlayer = () => {
     setVideoUrl(null);
   };
-
-  // Removed swipe-to-next-note functionality
-  
-  // Removed swipe-to-prev-note functionality
-
-  // Removed createTactileEffect function (no longer needed)
-
-  // Removed swipe handler function
 
   return (
     <div 
@@ -732,12 +610,11 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                 {/* Remove swipe hint animation */}
                 
                 <motion.div 
-                  className="flex flex-col"
+                  className="flex flex-col space-y-3"
                   variants={containerVariants}
                   initial="hidden"
                   animate={isNoteReady ? "show" : "hidden"}
                   exit="exit" 
-                  className="space-y-3"
                 >
                   <motion.div 
                     className="flex flex-col"
