@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en" style="background:#131518!important; color:white!important;">
+<html lang="en">
   <head>
     <!-- Critical dark mode styles to prevent flash - must be first in head -->
     <style>
-      html { background-color: #131518 !important; }
-      body { background-color: #131518 !important; }
+      html { background-color: #131518; }
+      body { background-color: #131518; }
     </style>
     
     <!-- Preload critical resources -->
@@ -20,7 +20,7 @@
     <!-- Comprehensive fixes to prevent white flash on mobile -->
     <style>
       html, body, #root {
-        background-color: #131518 !important;
+        background-color: #131518;
         color: white;
       }
       
@@ -32,17 +32,17 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: #131518 !important;
+        background-color: #131518;
         z-index: -1;
       }
       
       /* Prevent any white flash during transitions */
       *, *::before, *::after {
-        transition-property: none !important;
-        animation-duration: 0s !important;
-        animation-delay: 0s !important;
-        transition-duration: 0s !important;
-        transition-delay: 0s !important;
+        transition-property: none;
+        animation-duration: 0s;
+        animation-delay: 0s;
+        transition-duration: 0s;
+        transition-delay: 0s;
       }
     </style>
 
@@ -93,7 +93,7 @@
         -webkit-overflow-scrolling: touch;
         touch-action: manipulation;
         height: var(--app-height);
-        background-color: #131518 !important;
+        background-color: #131518;
         color: white;
         font-family: var(--font-sans);
       }
@@ -110,19 +110,6 @@
         width: 100%;
         overflow: hidden;
         font-family: var(--font-sans);
-      }
-      
-      /* Progressive image loading for background - immediate loading */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        background-color: #131518 !important; /* Match the dark theme color */
-        background-image: url('/images/background.webp');
-        background-size: cover;
-        background-position: center;
-        opacity: 1; /* Start with visible background */
       }
       
       /* Hide real content until fonts and background are loaded */
@@ -213,7 +200,7 @@
       }
 
       .bg-black\/20 {
-        background-color: rgba(0, 0, 0, 0.02) !important;
+        background-color: rgba(0, 0, 0, 0.02);
       }
 
       body.final-loaded .bg-black\/20 {

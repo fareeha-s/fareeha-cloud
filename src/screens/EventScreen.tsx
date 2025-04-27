@@ -6,12 +6,11 @@ import { PartifulEvent } from '../components/PartifulEvent';
 import { ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import { events, EventItem } from '../data/events';
 
-interface AppScreenProps {
-  setIsEventDetailView: (isEventDetailView: boolean) => void;
-  initialEventId?: number | null;
-}
-
-export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView, initialEventId }) => {
+export const EventScreen: React.FC<AppScreenProps> = ({ 
+  onClose, 
+  setIsEventDetailView, 
+  initialEventId 
+}) => {
   const prefersReducedMotion = useReducedMotion();
   const [showPartiful, setShowPartiful] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -199,15 +198,15 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView, in
 
   const handleEventPress = (event: EventItem) => {
     // Mark event as viewed for the pulsing dot
-    // Add function to mark event as viewed
-    const markEventAsViewed = (eventId: number) => {
-      const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '[]');
-      if (!viewedEvents.includes(eventId)) {
-        viewedEvents.push(eventId);
-        localStorage.setItem('viewedEvents', JSON.stringify(viewedEvents));
-      }
-    };
-    markEventAsViewed(event.id);
+    // TODO: Implement or import markEventAsViewed
+    // const markEventAsViewed = (eventId: number) => {
+    //   const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '[]');
+    //   if (!viewedEvents.includes(eventId)) {
+    //     viewedEvents.push(eventId);
+    //     localStorage.setItem('viewedEvents', JSON.stringify(viewedEvents));
+    //   }
+    // };
+    // markEventAsViewed(event.id);
     
     // Clear the widget highlight if this event was the one highlighted
     if (event.id === widgetEventId) {
@@ -267,7 +266,8 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView, in
       
       if (info.offset.x > dragThreshold) {
         // Swiped right - go to previous event
-        markEventAsViewed(prevEventId);
+        // TODO: Implement or import markEventAsViewed
+        // markEventAsViewed(prevEventId);
         setSelectedEventId(prevEventId);
         // Reset scroll state for the new event
         setHasScrolledToBottom(false);
@@ -278,7 +278,8 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView, in
         localStorage.setItem('hasUsedEventSwipe', 'true');
       } else if (info.offset.x < -dragThreshold) {
         // Swiped left - go to next event
-        markEventAsViewed(nextEventId);
+        // TODO: Implement or import markEventAsViewed
+        // markEventAsViewed(nextEventId);
         setSelectedEventId(nextEventId);
         // Reset scroll state for the new event
         setHasScrolledToBottom(false);
@@ -294,7 +295,7 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView, in
       <div className="h-full w-full overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div 
-            key={selectedEventId} // Important: This forces a re-render on event change
+            key={selectedEventId} //  This forces a re-render on event change
             className="h-full w-full"
             initial={{ opacity: 0, x: 0 }}
             animate={{ opacity: 1, x: 0 }}
