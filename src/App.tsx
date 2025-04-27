@@ -848,9 +848,10 @@ function App() {
       (window as any).widgetNoteId = 2;
       appId = 'notes';
     } else if (widgetType === 'notes') {
-      // Set widgetNoteId to the hello world note to make the pulsing orb appear
-      window.initialNoteId = 1; // ID of the hello world note
-      (window as any).widgetNoteId = 1;
+      // Set the initial note ID to the one currently displayed in the widget
+      window.initialNoteId = selectedNote.id;
+      // Set flag to open the note detail view directly
+      window.openNoteDirectly = true;
       appId = 'notes';
     } else if (widgetType === 'socials') {
       appId = 'socials';

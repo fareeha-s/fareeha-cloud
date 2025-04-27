@@ -155,21 +155,6 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView }) 
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15, scale: 0.95 },
-    show: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300, 
-        damping: 30,
-        duration: 0.3
-      }
-    }
-  };
-
   // Subtle chevron animation variants
   const chevronVariants = {
     initial: { x: 0 },
@@ -464,16 +449,14 @@ export const EventScreen: React.FC<AppScreenProps> = ({ setIsEventDetailView }) 
       >
         <div className="space-y-3 p-6">
           {/* Partiful Events Explanation */}
-          <motion.div 
+          {/* Change back to regular div for no animation */}
+          <div 
             className="mb-5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
           >
             <p className="text-white/60 text-[14px] px-2">
             Fun little gatherings I've enjoyed planning with friends. Hope this inspires!
             </p>
-          </motion.div>
+          </div>
           {/* Past Month section */}
           {pastMonthEvents.length > 0 && (
             <div>
