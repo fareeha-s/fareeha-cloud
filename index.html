@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en" style="background:#131518!important; color:white!important;">
+<html lang="en">
   <head>
     <!-- Critical dark mode styles to prevent flash - must be first in head -->
     <style>
-      html { background-color: #131518 !important; }
-      body { background-color: #131518 !important; }
+      html { background-color: #131518; }
+      body { background-color: #131518; }
     </style>
     
     <!-- Preload critical resources -->
@@ -15,12 +15,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
     <meta name="theme-color" content="#131518" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';">
-    <title>fareeha</title>
+    <title>Fareeha OS</title>
     
     <!-- Comprehensive fixes to prevent white flash on mobile -->
     <style>
       html, body, #root {
-        background-color: #131518 !important;
+        background-color: #131518;
         color: white;
       }
       
@@ -32,17 +32,17 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: #131518 !important;
+        background-color: #131518;
         z-index: -1;
       }
       
       /* Prevent any white flash during transitions */
       *, *::before, *::after {
-        transition-property: none !important;
-        animation-duration: 0s !important;
-        animation-delay: 0s !important;
-        transition-duration: 0s !important;
-        transition-delay: 0s !important;
+        transition-property: none;
+        animation-duration: 0s;
+        animation-delay: 0s;
+        transition-duration: 0s;
+        transition-delay: 0s;
       }
     </style>
 
@@ -79,7 +79,7 @@
       :root {
         --app-height: 100vh;
         --blur-animation-duration: 2.5s;
-        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+        --font-sans: 'SF Pro Text', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
       }
       html, body {
         overflow: hidden;
@@ -91,7 +91,7 @@
         -webkit-overflow-scrolling: touch;
         touch-action: manipulation;
         height: var(--app-height);
-        background-color: #131518 !important;
+        background-color: #131518;
         color: white;
         font-family: var(--font-sans);
       }
@@ -108,19 +108,6 @@
         width: 100%;
         overflow: hidden;
         font-family: var(--font-sans);
-      }
-      
-      /* Progressive image loading for background - immediate loading */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        background-color: #131518 !important; /* Match the dark theme color */
-        background-image: url('/images/background.webp');
-        background-size: cover;
-        background-position: center;
-        opacity: 1; /* Start with visible background */
       }
       
       /* Hide real content until fonts and background are loaded */
@@ -211,7 +198,7 @@
       }
 
       .bg-black\/20 {
-        background-color: rgba(0, 0, 0, 0.02) !important;
+        background-color: rgba(0, 0, 0, 0.02);
       }
 
       body.final-loaded .bg-black\/20 {
@@ -230,10 +217,10 @@
       window.initialNoteId = 1; // Hello world note ID
       window.openNoteDirectly = true;
     </script>
-    <script type="module" crossorigin src="/assets/index-DAM4o7-n.js"></script>
+    <script type="module" crossorigin src="/assets/index-DqHZ4Wuv.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/react-vendor-DcYyfGB6.js">
     <link rel="modulepreload" crossorigin href="/assets/motion-vendor-DXYzeKKA.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-cG4zLARk.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-DRPeQonY.css">
   </head>
   <body>
     <div id="root">
