@@ -229,20 +229,21 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     }
   };
 
-  // Only open hello world note on initial page load
+  // Handle initialNoteId and direct opening of Hello World note
   useEffect(() => {
     setIsInitializing(true);
     setIsNoteReady(false);
 
-    // Check if we should open the Hello World note directly on the very first load
-    if (typeof initialNoteId === 'number' && initialNoteId === 1 && window.openNoteDirectly === true) {
-      const noteToOpen = notes.find(note => note.id === 1);
-      if (noteToOpen && !noteToOpen.locked) {
-        console.log(`NotesScreen opening Hello World directly on first load.`);
-        setSelectedNote(noteToOpen);
+    // Check if window.openNoteDirectly is true - this means we should open Hello World
+    if (window.openNoteDirectly === true) {
+      // Always open Hello World note (ID 1) when openNoteDirectly is true
+      const helloWorldNote = notes.find(note => note.id === 1);
+      if (helloWorldNote && !helloWorldNote.locked) {
+        console.log(`NotesScreen opening Hello World directly.`);
+        setSelectedNote(helloWorldNote);
         setIsViewingDetail(true); 
         markNoteAsViewed(1);
-        window.openNoteDirectly = false; // Reset the flag so it only happens once
+        window.openNoteDirectly = false; // Reset the flag after using it
 
         setTimeout(() => {
           if (noteContentRef.current) {
@@ -259,10 +260,10 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
         window.openNoteDirectly = false; // Still reset the flag
       }
     } else if (typeof initialNoteId === 'number') {
-      // Handle opening a note passed via prop (e.g., from widget click) AFTER the first load
+      // Handle opening a note passed via prop (e.g., from widget click)
       const noteToOpen = notes.find(note => note.id === initialNoteId);
       if (noteToOpen && !noteToOpen.locked) {
-        console.log(`NotesScreen opening note via prop (not first load direct): ${initialNoteId}`);
+        console.log(`NotesScreen opening note via prop: ${initialNoteId}`);
         setSelectedNote(noteToOpen);
         setIsViewingDetail(true); 
         markNoteAsViewed(initialNoteId);
