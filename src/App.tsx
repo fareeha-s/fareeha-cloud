@@ -4,6 +4,7 @@ import { AppIcon } from './components/AppIcon';
 import { NotesScreen } from './screens/NotesScreen';
 import { SocialsScreen } from './screens/SocialsScreen';
 import { EventScreen } from './screens/EventScreen';
+import { PartifulWidget } from './components/PartifulWidget';
 import type { AppIcon as AppIconType } from './types';
 import { ChevronLeft, StickyNote } from 'lucide-react';
 // Removed unused imports
@@ -176,24 +177,6 @@ function App() {
   const appsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const [contentReady, setContentReady] = useState(false);
   
-  // Only open hello world note on initial page load, not when clicking on notes
-  useEffect(() => {
-    // Check if this is the initial page load
-    const isInitialPageLoad = !localStorage.getItem('hasVisitedSite');
-    
-    if (isInitialPageLoad && activeApp === 'notes') {
-      // This is the initial page load, so open hello world note
-      const helloWorldNote = notes.find(note => note.title.includes("hello world"));
-      if (helloWorldNote) {
-        console.log('Initial page load: Setting hello world note to open directly');
-        window.initialNoteId = helloWorldNote.id;
-        window.openNoteDirectly = true;
-      }
-      
-      // Mark that the user has visited the site
-      localStorage.setItem('hasVisitedSite', 'true');
-    }
-  }, [activeApp]); // Only run when activeApp changes
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [appPosition, setAppPosition] = useState<AnimationPosition | null>(null);
@@ -207,6 +190,7 @@ function App() {
   const [isEventDetailView, setIsEventDetailView] = useState(false); // Add state for event detail view
   const [initialEventIdForScreen, setInitialEventIdForScreen] = useState<number | null>(null); // State for event ID
   const [initialNoteIdForScreen, setInitialNoteIdForScreen] = useState<number | null>(null); // State for direct note ID
+  const [widgetNote, setWidgetNote] = useState(notes[0]); // State for direct note ID
   
   // Add an effect to preload all content and prevent flashes
   useEffect(() => {
@@ -295,21 +279,20 @@ function App() {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
   
-  // Check if this is the first visit
+  // Check if this is the first visit *within the current session*
   useEffect(() => {
-    // Check localStorage for previous visits
-    const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
-    if (hasVisitedBefore) {
+    // Check sessionStorage for this session
+    const hasVisitedThisSession = sessionStorage.getItem('hasSessionVisited');
+    if (hasVisitedThisSession) {
       setIsFirstVisit(false);
     } else {
-      // Mark as visited for future
-      localStorage.setItem('hasVisitedBefore', 'true');
+      // Mark as visited for *this session*
+      sessionStorage.setItem('hasSessionVisited', 'true');
       setIsFirstVisit(true);
     }
     
-    // Only for the very first visit, we'll open the hello world note
-    // to prevent white flash on initial page load
-    if (!hasVisitedBefore) {
+    // Only for the very first load *of this session*, open the hello world note
+    if (!hasVisitedThisSession) {
       setTimeout(() => {
         // Set up the necessary window properties for the notes app
         window.initialNoteId = 1; // ID of the hello world note
@@ -317,6 +300,8 @@ function App() {
         (window as any).widgetNoteId = 1;
         (window as any).isFirstTimeOpeningApp = true;
         
+        // Set the state that will be passed as a prop to NotesScreen
+        setInitialNoteIdForScreen(1);
         // Trigger the app click to open notes
         handleAppClick('notes');
       }, 10); // Minimal timeout to ensure component is ready
@@ -371,6 +356,35 @@ function App() {
     }
   }, [isFirstVisit]);
   
+  // Function to select a random note for the widget
+  const selectRandomNote = () => {
+    // Filter out locked notes
+    const availableNotes = notes.filter(note => !note.locked);
+    if (availableNotes.length === 0) return selectedNote;
+    
+    // Select a random note from available notes
+    const randomIndex = Math.floor(Math.random() * availableNotes.length);
+    return availableNotes[randomIndex];
+  };
+
+  // Update the widget note periodically
+  useEffect(() => {
+    // Select a random note initially
+    setWidgetNote(selectRandomNote());
+    
+    // Update the random note every 30 seconds
+    const interval = setInterval(() => {
+      setWidgetNote(selectRandomNote());
+    }, 30000); // 30 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Update the selectedNote/Event based on the currentWidgetIndex
+  useEffect(() => {
+    // No action needed here, we're now using the widget array directly
+  }, [currentWidgetIndex]); // Use a variable for clarity
+
   // Use real notes data for the widgets
   const widgets: WidgetData[] = [
     {
@@ -394,13 +408,13 @@ function App() {
     },
     {
       type: 'notes',
-      title: selectedNote.title,
-      subtitle: '',
-      timestamp: getRelativeDate(selectedNote.date),
-      timestampLabel: 'Last edited',
+      title: widgetNote.title,
+      subtitle: '', // Keep subtitle empty for cleaner look
+      timestamp: getRelativeDate(widgetNote.date),
+      timestampLabel: 'notes',
       progress: 65,
       iconBgColor: 'bg-[#FF8A5B]/20',
-      noteId: selectedNote.id // Add the selected note's ID here
+      noteId: widgetNote.id // Use the randomly selected note's ID
     },
     {
       type: 'partiful',
@@ -412,7 +426,6 @@ function App() {
           const [day, month, year] = selectedEvent.date.split('/').map(Number);
           // Assuming YY format, adjust for the correct century (e.g., 20xx)
           const eventDate = new Date(2000 + year, month - 1, day);
-          eventDate.setHours(23, 59, 59, 999); // Set to end of the event day for comparison
           
           const today = new Date();
           today.setHours(0, 0, 0, 0); // Set to start of today
@@ -935,77 +948,86 @@ function App() {
               }}
             >
               <span className="flex items-center">
-                {isFirstVisit && <span style={{ fontSize: "0.65em", color: "rgba(255, 255, 255, 0.5)", marginRight: "4px", animation: "fadeOut 2.5s ease-in forwards 3s", display: "inline-block", transform: "translateY(2px)" }}>shipped by</span>}
                 Fareeha
-                <span className="relative" style={{ zIndex: 10 }}>
-                  <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer' }} className="github-link">
-                    <img 
-                      src="./icons/hosts/fareeha.jpg" 
-                      alt="Fareeha" 
-                      className="ml-1 rounded-full w-6 h-6 object-cover border border-white/20 transition-all duration-300" 
-                      style={{ 
-                        zIndex: 10002,
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset',
-                        backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
-                        transform: 'translateZ(0)',
-                        transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-                      }}
-                      onTouchStart={(e) => {
-                        e.currentTarget.style.transform = 'scale(0.97) translateZ(0)';
-                        e.currentTarget.style.boxShadow = '0 0px 1px rgba(0,0,0,0.1), 0 0 1px rgba(255,255,255,0.1) inset';
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-                      }}
-                      onTouchEnd={(e) => {
-                        e.currentTarget.style.transform = 'translateZ(0)';
-                        e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset';
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                      }}
-                    />
-                  </a>
-                  
-                  {/* External link indicator positioned in upper right */}
-                  <div 
-                    className="absolute flex items-center justify-center"
-                    style={{
-                      width: '14px',
-                      height: '14px',
-                      backgroundColor: 'rgba(0,0,0,0.45)',
-                      borderRadius: '7px',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15)',
-                      backdropFilter: 'blur(4px)',
-                      WebkitBackdropFilter: 'blur(4px)',
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                      zIndex: 10000,
-                      top: '-3px',
-                      right: '-3px'
-                    }}
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      window.open('https://github.com/fareeha-s', '_blank');
+                {/* Profile picture - always visible */}
+                <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer', marginLeft: '6px' }} className="github-link inline-block relative group">
+                  <img 
+                    src="./icons/hosts/fareeha.jpg" 
+                    alt="Fareeha" 
+                    className="rounded-full w-6 h-6 object-cover border border-white/20 transition-all duration-300 align-middle" 
+                    style={{ 
+                      zIndex: 10002,
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset',
+                      backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
+                      transform: 'translateZ(0)',
+                      transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
                     }}
                     onTouchStart={(e) => {
-                      e.currentTarget.style.transform = 'scale(0.9)';
-                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
+                      e.currentTarget.style.transform = 'scale(0.97) translateZ(0)';
+                      e.currentTarget.style.boxShadow = '0 0px 1px rgba(0,0,0,0.1), 0 0 1px rgba(255,255,255,0.1) inset';
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.5)';
                     }}
                     onTouchEnd={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                      e.currentTarget.style.transform = 'translateZ(0)';
+                      e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset';
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
                     }}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.1)';
-                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
+                      e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2), 0 0 1px rgba(255,255,255,0.3) inset';
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
                     }}
                     onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                      e.currentTarget.style.transform = 'translateZ(0)';
+                      e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset';
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
                     }}
-                  >
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: 'white', strokeWidth: 2.5 }}>
-                      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
-                    </svg>
-                  </div>
-                </span>
+                  />
+                  {/* Link indicator - only shown on first load */}
+                  {!hasShownFirstDisplay && (
+                    <div 
+                      className="absolute flex items-center justify-center"
+                      style={{
+                        width: '14px',
+                        height: '14px',
+                        backgroundColor: 'rgba(0,0,0,0.45)',
+                        borderRadius: '7px',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15)',
+                        backdropFilter: 'blur(4px)',
+                        WebkitBackdropFilter: 'blur(4px)',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                        zIndex: 10000,
+                        top: '-3px',
+                        right: '-3px'
+                      }}
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        window.open('https://github.com/fareeha-s', '_blank');
+                      }}
+                      onTouchStart={(e) => {
+                        e.currentTarget.style.transform = 'scale(0.9)';
+                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
+                      }}
+                      onTouchEnd={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                      }}
+                    >
+                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: 'white', strokeWidth: 2.5 }}>
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                      </svg>
+                    </div>
+                  )}
+                </a>
               </span>
             </motion.h2>
           )}
@@ -1201,6 +1223,11 @@ function App() {
                             // Set Kineship note ID (2) and then open the app
                             setInitialNoteIdForScreen(2);
                             handleAppClick('notes');
+                            localStorage.setItem('openedKineshipFromWidget', 'true');
+                            setTimeout(() => {
+                              // Use setTimeout to ensure the NotesScreen component is mounted
+                              // before we try to open a specific note
+                            }, 50); // Small delay
                           }
                         }
                       }

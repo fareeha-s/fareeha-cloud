@@ -177,6 +177,9 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
 
   // Helper function to determine if a note should have a pulsing dot
   const shouldShowPulsingDot = (noteId: number) => {
+    // Feature removed: Always return false
+    return false;
+    /* Original Logic:
     const noteItem = notes.find(note => note.id === noteId);
     if (noteItem?.locked) {
       return false;
@@ -188,6 +191,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       return true;
     }
     return false;
+    */
   };
 
   // Animation variants for beautiful entrance with minimal delay
@@ -227,74 +231,62 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
 
   // Only open hello world note on initial page load
   useEffect(() => {
-    // Start with initializing state to prevent flash of notes list
     setIsInitializing(true);
     setIsNoteReady(false);
-    
-    // Check if an initialNoteId was passed via props
-    if (typeof initialNoteId === 'number') {
+
+    // Check if we should open the Hello World note directly on the very first load
+    if (typeof initialNoteId === 'number' && initialNoteId === 1 && window.openNoteDirectly === true) {
+      const noteToOpen = notes.find(note => note.id === 1);
+      if (noteToOpen && !noteToOpen.locked) {
+        console.log(`NotesScreen opening Hello World directly on first load.`);
+        setSelectedNote(noteToOpen);
+        setIsViewingDetail(true); 
+        markNoteAsViewed(1);
+        window.openNoteDirectly = false; // Reset the flag so it only happens once
+
+        setTimeout(() => {
+          if (noteContentRef.current) {
+            noteContentRef.current.scrollTop = 0;
+          }
+          setIsNoteReady(true); 
+          setIsInitializing(false);
+        }, 50); 
+      } else {
+        // Handle case where Hello World note might be missing or locked
+        setSelectedNote(null);
+        setIsViewingDetail(false);
+        setIsInitializing(false); 
+        window.openNoteDirectly = false; // Still reset the flag
+      }
+    } else if (typeof initialNoteId === 'number') {
+      // Handle opening a note passed via prop (e.g., from widget click) AFTER the first load
       const noteToOpen = notes.find(note => note.id === initialNoteId);
       if (noteToOpen && !noteToOpen.locked) {
-        console.log(`NotesScreen opening note directly via prop: ${initialNoteId}`);
+        console.log(`NotesScreen opening note via prop (not first load direct): ${initialNoteId}`);
         setSelectedNote(noteToOpen);
         setIsViewingDetail(true); 
         markNoteAsViewed(initialNoteId);
-        // Scroll to top of note content when opening directly
         setTimeout(() => {
           if (noteContentRef.current) {
             noteContentRef.current.scrollTop = 0;
           }
-          setIsNoteReady(true); // Mark as ready *after* setting state and attempting scroll
+          setIsNoteReady(true); 
           setIsInitializing(false);
-        }, 50); // Small delay to allow rendering
+        }, 50); 
       } else {
-        // If ID invalid or note locked, default to list view
-        console.warn(`NotesScreen: Invalid or locked initialNoteId prop: ${initialNoteId}. Defaulting to list.`);
+        // Invalid ID or locked note from prop -> show list view
         setSelectedNote(null);
         setIsViewingDetail(false);
-        setIsNoteReady(true);
-        setIsInitializing(false);
+        setIsInitializing(false); 
       }
     } else {
-      // Default to Hello World note (ID: 1) on initial load if no specific ID passed
-      const helloWorldNote = notes.find(note => note.id === 1);
-      if (helloWorldNote) {
-        console.log('NotesScreen opening Hello World note (ID: 1) on initial load.');
-        setSelectedNote(helloWorldNote);
-        setIsViewingDetail(true); 
-        markNoteAsViewed(1); // Mark Hello World as viewed
-        // Scroll to top
-        setTimeout(() => {
-          if (noteContentRef.current) {
-            noteContentRef.current.scrollTop = 0;
-          }
-          setIsNoteReady(true);
-          setIsInitializing(false);
-        }, 50); // Small delay
-      } else {
-        // Fallback to list view if Hello World note isn't found (shouldn't happen)
-        console.warn('NotesScreen: Hello World note (ID: 1) not found! Defaulting to list view.');
-        setSelectedNote(null);
-        setIsViewingDetail(false);
-        setIsNoteReady(true);
-        setIsInitializing(false);
-      }
+      // Default to list view if no initialNoteId is provided
+      setSelectedNote(null);
+      setIsViewingDetail(false);
+      setIsInitializing(false);
     }
-
-    // Clean up any UI artifacts that might be causing issues
-    try {
-      // Remove any overlay elements that might be causing the grey box
-      const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
-      overlays.forEach(overlay => {
-        if (document.body.contains(overlay)) {
-          document.body.removeChild(overlay);
-        }
-      });
-    } catch (e) {
-      console.error('Error cleaning up UI:', e);
-    }
-  }, [initialNoteId]); // Rerun this effect if the initialNoteId prop changes
-
+  }, [initialNoteId]); // Depend only on initialNoteId
+  
   // Function to update the container state when viewing details
   const setIsViewingDetail = (value: boolean) => {
     isViewingDetailRef.current = value;
@@ -304,126 +296,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       setIsNoteDetailView(value);
     }
   };
-
-  // Run a subtle animation sequence on first render
-  useEffect(() => {
-    if (!hasInteracted && !prefersReducedMotion) {
-      // Subtle chevron pulse animation for the first note
-      const pulseAnimation = async () => {
-        await chevronControls.start({
-          x: [0, 3, 0],
-          opacity: [0.5, 0.8, 0.5],
-          transition: { duration: 1.4, ease: "easeInOut", times: [0, 0.5, 1] }
-        });
-        
-        // Wait a bit then do it again, more subtly
-        setTimeout(async () => {
-          await chevronControls.start({
-            x: [0, 2, 0],
-            opacity: [0.5, 0.7, 0.5],
-            transition: { duration: 1, ease: "easeInOut", times: [0, 0.5, 1] }
-          });
-        }, 3000);
-      };
-      
-      pulseAnimation();
-    }
-  }, [chevronControls, prefersReducedMotion, hasInteracted]);
-
-  // Back handler with special case for Kineship to hello world navigation
-  useEffect(() => {
-    const handleAppBackClick = () => {
-      if (selectedNote) {
-        // --- Special First Load Hello World Close Logic --- 
-        const isFirstLoadComplete = localStorage.getItem('hasCompletedFirstLoad') === 'true';
-
-        if (selectedNote.id === 1 && !isFirstLoadComplete) {
-          localStorage.setItem('hasCompletedFirstLoad', 'true');
-
-          // Remove the direct call to onClose - let App.tsx handle the close
-          
-          // Signal that NotesScreen did NOT fully handle the back action,
-          // allowing App.tsx's handleClose to proceed with default close.
-          return false; // Return false to let the original handleClose call proceed
-        }
-        // --- End Special Logic ---
-
-        // Immediately clean up UI elements that might cause the grey box
-        try {
-          // Clean up any UI artifacts
-          const mainContainer = document.querySelector('.main-container');
-          if (mainContainer) {
-            // Keep portrait-container class since both views use it now
-            mainContainer.classList.remove('expanded');
-            mainContainer.classList.remove('collapsing');
-          }
-          
-          // Remove any overlay elements
-          const overlays = document.querySelectorAll('.tactile-effect, .swipe-effect');
-          overlays.forEach(overlay => {
-            if (document.body.contains(overlay)) {
-              document.body.removeChild(overlay);
-            }
-          });
-          
-          // Removed backdrop blur cleanup code as we no longer use blur effects
-        } catch (e) {
-          console.error('Error cleaning up UI:', e);
-        }
-        
-        // Set flag to false BEFORE state changes for immediate effect
-        setIsViewingDetail(false);
-        window.isViewingNoteDetail = false;
-        
-        // Special case: If we're viewing Kineship note (id: 2) and it was opened from Hello World
-        // Check if we opened Kineship from Hello World
-        const openedFromHelloWorldFlag = localStorage.getItem('openedKineshipFromHelloWorld') === 'true';
-        
-        if (selectedNote.id === 2 && openedFromHelloWorldFlag) {
-          // Go back to Hello World note instead of notes list
-          setTimeout(() => {
-            const helloWorldNote = notes.find(note => note.id === 1);
-            if (helloWorldNote) {
-              setSelectedNote(helloWorldNote);
-              setIsViewingDetail(true);
-              window.isViewingNoteDetail = true;
-              // Clear the flag
-              localStorage.removeItem('openedKineshipFromHelloWorld');
-            } else {
-              // Fallback if hello world note not found
-              setSelectedNote(null);
-            }
-            createTactileEffect();
-          }, 30);
-        } else {
-          // Normal case - go back to notes list
-          setTimeout(() => {
-            setSelectedNote(null);
-            createTactileEffect();
-          }, 30);
-        }
-        
-        return true; // Event was handled
-      }
-      return false; // Let App handle the default behavior
-    };
-    
-    // Add this handler to window to be accessible by the App component
-    window.noteScreenBackHandler = handleAppBackClick;
-    
-    // Clean up
-    return () => {
-      // @ts-ignore
-      delete window.noteScreenBackHandler;
-      // @ts-ignore
-      delete window.isViewingNoteDetail;
-    };
-  }, [selectedNote]); // Only depend on selectedNote
-
-  // Effect to clear the first load flag on component mount
-  useEffect(() => {
-    localStorage.removeItem('hasCompletedFirstLoad');
-  }, []); // Empty dependency array ensures this runs only once on mount
 
   // Add effect to ensure the portrait mode is properly maintained
   useEffect(() => {
@@ -589,6 +461,11 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   const closeVideoPlayer = () => {
     setVideoUrl(null);
   };
+
+  // Effect to clear the first load flag on component mount
+  useEffect(() => {
+    localStorage.removeItem('hasCompletedFirstLoad');
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   return (
     <div 
@@ -774,31 +651,11 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                             </h3>
                           </div>
                           <div className="flex-shrink-0 flex items-center">
-                            <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
-                              {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
+                            <span className={`text-[14px] text-white/50 whitespace-nowrap`}>
+                              {getRelativeDate(note.date)}
                             </span>
                           </div>
                         </div>
-                        {shouldShowPulsingDot(note.id) && (
-                          <div 
-                            className="absolute -right-1 top-1/3 -translate-y-1/2" 
-                          >
-                            <motion.div 
-                              className="w-2 h-2 rounded-full bg-white/70" 
-                              initial={{ opacity: 0.7 }}
-                              animate={{ 
-                                opacity: [0.5, 0.9, 0.5],
-                                scale: [1, 1.2, 1]
-                              }}
-                              transition={{ 
-                                repeat: Infinity, 
-                                repeatType: "reverse", 
-                                duration: 1.5,
-                                repeatDelay: 1
-                              }}
-                            />
-                          </div>
-                        )}
                       </motion.div>
                     ))}
                   </div>
@@ -848,26 +705,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                             </span>
                           </div>
                         </div>
-                        {shouldShowPulsingDot(note.id) && (
-                          <div 
-                            className="absolute -right-1 top-1/3 -translate-y-1/2" 
-                          >
-                            <motion.div 
-                              className="w-2 h-2 rounded-full bg-white/70" 
-                              initial={{ opacity: 0.7 }}
-                              animate={{ 
-                                opacity: [0.5, 0.9, 0.5],
-                                scale: [1, 1.2, 1]
-                              }}
-                              transition={{ 
-                                repeat: Infinity, 
-                                repeatType: "reverse", 
-                                duration: 1.5,
-                                repeatDelay: 1
-                              }}
-                            />
-                          </div>
-                        )}
                       </motion.div>
                     ))}
                   </div>
