@@ -101,7 +101,11 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
       >
         <button 
           className="absolute top-8 right-8 z-10 p-3 bg-black/70 hover:bg-black/90 rounded-full text-white/80 hover:text-white transition-colors"
-          onClick={onClose}
+          onClick={(e) => {
+            createTactileEffect();
+            e.stopPropagation();
+            onClose();
+          }}
         >
           <X size={28} />
         </button>
@@ -121,7 +125,9 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
 
 // Use the imported BaseAppScreenProps directly
 export const NotesScreen: React.FC<BaseAppScreenProps> = ({ 
-  setIsNoteDetailView // Destructure from BaseAppScreenProps (optional)
+  setIsNoteDetailView, // Destructure from BaseAppScreenProps (optional)
+  initialNoteId, // Add the new prop here
+  onClose // Destructure onClose prop
 }) => {
   const prefersReducedMotion = useReducedMotion();
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -225,41 +231,55 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     setIsInitializing(true);
     setIsNoteReady(false);
     
-    // Only auto-open a note detail when explicitly signaled
-    if (typeof window !== 'undefined' && window.openNoteDirectly && window.initialNoteId) {
-      // Find the note with the specified ID
-      const noteToOpen = notes.find(note => note.id === window.initialNoteId);
-      if (noteToOpen) {
-        // Preload the note content first
-        // setPreloadedNote(noteToOpen);
-        
-        // Open the note directly in detail view
-        console.log('Opening note directly in detail view:', noteToOpen.id);
+    // Check if an initialNoteId was passed via props
+    if (typeof initialNoteId === 'number') {
+      const noteToOpen = notes.find(note => note.id === initialNoteId);
+      if (noteToOpen && !noteToOpen.locked) {
+        console.log(`NotesScreen opening note directly via prop: ${initialNoteId}`);
         setSelectedNote(noteToOpen);
-        setIsViewingDetail(true);
-        
-        // Mark the hello world note as viewed since users always see it first
-        if (noteToOpen.id === 1) { // Hello world note ID is 1
-          markNoteAsViewed(1);
-        }
-        
-        // Reset the openNoteDirectly flag to avoid reopening on component re-renders
-        window.openNoteDirectly = false;
-        
-        // Use a longer delay to ensure everything is fully rendered
+        setIsViewingDetail(true); 
+        markNoteAsViewed(initialNoteId);
+        // Scroll to top of note content when opening directly
         setTimeout(() => {
-          setIsNoteReady(true);
+          if (noteContentRef.current) {
+            noteContentRef.current.scrollTop = 0;
+          }
+          setIsNoteReady(true); // Mark as ready *after* setting state and attempting scroll
           setIsInitializing(false);
-        }, 150);
+        }, 50); // Small delay to allow rendering
+      } else {
+        // If ID invalid or note locked, default to list view
+        console.warn(`NotesScreen: Invalid or locked initialNoteId prop: ${initialNoteId}. Defaulting to list.`);
+        setSelectedNote(null);
+        setIsViewingDetail(false);
+        setIsNoteReady(true);
+        setIsInitializing(false);
       }
     } else {
-      // Default to listing all notes
-      setIsNoteReady(true);
-      setIsInitializing(false);
+      // Default to Hello World note (ID: 1) on initial load if no specific ID passed
+      const helloWorldNote = notes.find(note => note.id === 1);
+      if (helloWorldNote) {
+        console.log('NotesScreen opening Hello World note (ID: 1) on initial load.');
+        setSelectedNote(helloWorldNote);
+        setIsViewingDetail(true); 
+        markNoteAsViewed(1); // Mark Hello World as viewed
+        // Scroll to top
+        setTimeout(() => {
+          if (noteContentRef.current) {
+            noteContentRef.current.scrollTop = 0;
+          }
+          setIsNoteReady(true);
+          setIsInitializing(false);
+        }, 50); // Small delay
+      } else {
+        // Fallback to list view if Hello World note isn't found (shouldn't happen)
+        console.warn('NotesScreen: Hello World note (ID: 1) not found! Defaulting to list view.');
+        setSelectedNote(null);
+        setIsViewingDetail(false);
+        setIsNoteReady(true);
+        setIsInitializing(false);
+      }
     }
-    // Clear any pending open flags
-    window.initialNoteId = undefined;
-    window.openNoteDirectly = false;
 
     // Clean up any UI artifacts that might be causing issues
     try {
@@ -273,18 +293,17 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     } catch (e) {
       console.error('Error cleaning up UI:', e);
     }
-  }, []);
-  
-    // Function to update the container state when viewing details
-    const setIsViewingDetail = (value: boolean) => {
-      isViewingDetailRef.current = value;
-      window.isViewingNoteDetail = value;
-      console.log('Setting isViewingNoteDetail via function:', value);
-      
-      if (setIsNoteDetailView) { // Check if prop exists
-        setIsNoteDetailView(value);
-      }
-    };
+  }, [initialNoteId]); // Rerun this effect if the initialNoteId prop changes
+
+  // Function to update the container state when viewing details
+  const setIsViewingDetail = (value: boolean) => {
+    isViewingDetailRef.current = value;
+    window.isViewingNoteDetail = value;
+    
+    if (setIsNoteDetailView) { // Check if prop exists
+      setIsNoteDetailView(value);
+    }
+  };
 
   // Run a subtle animation sequence on first render
   useEffect(() => {
@@ -315,6 +334,20 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   useEffect(() => {
     const handleAppBackClick = () => {
       if (selectedNote) {
+        // --- Special First Load Hello World Close Logic --- 
+        const isFirstLoadComplete = localStorage.getItem('hasCompletedFirstLoad') === 'true';
+
+        if (selectedNote.id === 1 && !isFirstLoadComplete) {
+          localStorage.setItem('hasCompletedFirstLoad', 'true');
+
+          // Remove the direct call to onClose - let App.tsx handle the close
+          
+          // Signal that NotesScreen did NOT fully handle the back action,
+          // allowing App.tsx's handleClose to proceed with default close.
+          return false; // Return false to let the original handleClose call proceed
+        }
+        // --- End Special Logic ---
+
         // Immediately clean up UI elements that might cause the grey box
         try {
           // Clean up any UI artifacts
@@ -348,7 +381,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
         
         if (selectedNote.id === 2 && openedFromHelloWorldFlag) {
           // Go back to Hello World note instead of notes list
-          console.log('Going back to Hello World note from Kineship');
           setTimeout(() => {
             const helloWorldNote = notes.find(note => note.id === 1);
             if (helloWorldNote) {
@@ -386,13 +418,17 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       // @ts-ignore
       delete window.isViewingNoteDetail;
     };
-  }, [selectedNote]);
+  }, [selectedNote]); // Only depend on selectedNote
+
+  // Effect to clear the first load flag on component mount
+  useEffect(() => {
+    localStorage.removeItem('hasCompletedFirstLoad');
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   // Add effect to ensure the portrait mode is properly maintained
   useEffect(() => {
     // Set the flag to control the container shape
     setIsViewingDetail(selectedNote !== null);
-    console.log('Setting isViewingNoteDetail:', selectedNote !== null);
     
     // If a note is selected, ensure the content is scrolled to the top
     if (selectedNote !== null && noteContentRef.current) {
@@ -410,18 +446,17 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     return () => {
       // Clean up when component unmounts
       setIsViewingDetail(false);
-      console.log('Cleanup: Setting isViewingNoteDetail to false');
     };
   }, [selectedNote]);
 
   // Add effect to check for initialNoteId and also check if we're coming from Hello World
   useEffect(() => {
     // Check if we have an initial note ID to highlight from the widget
-    if (window.initialNoteId) {
-      setWidgetNoteId(window.initialNoteId);
+    if (initialNoteId) {
+      setWidgetNoteId(initialNoteId);
       
       // Check if this is the hello world note (id: 1) and it's being opened directly
-      if (window.initialNoteId === 1 && window.openNoteDirectly) {
+      if (initialNoteId === 1) {
         // Check if we've seen the hello world note before
         const hasSeenHelloWorld = localStorage.getItem('hasSeenHelloWorld') === 'true';
         if (!hasSeenHelloWorld) {
@@ -433,24 +468,24 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       }
       
       // Clear the initialNoteId after using it
-      window.initialNoteId = undefined;
+      // window.initialNoteId = undefined;
     }
     
     // Set up the openNoteWithId function in the window object
-    window.openNoteWithId = (noteId: number) => {
-  const noteToOpen = notes.find(note => note.id === noteId);
-  if (noteToOpen) {
-    // Special case for Kineship from Hello World
-    if (noteId === 2 && selectedNote?.id === 1) {
-      localStorage.setItem('openedKineshipFromHelloWorld', 'true');
-    }
-    // Always set detail mode BEFORE setting selected note
-    setIsViewingDetail(true);
-    setSelectedNote(noteToOpen);
-    markNoteAsViewed(noteId);
-    createTactileEffect();
-  }
-};
+    // window.openNoteWithId = (noteId: number) => {
+    //   const noteToOpen = notes.find(note => note.id === noteId);
+    //   if (noteToOpen) {
+    //     // Special case for Kineship from Hello World
+    //     if (noteId === 2 && selectedNote?.id === 1) {
+    //       localStorage.setItem('openedKineshipFromHelloWorld', 'true');
+    //     }
+    //     // Always set detail mode BEFORE setting selected note
+    //     setIsViewingDetail(true);
+    //     setSelectedNote(noteToOpen);
+    //     markNoteAsViewed(noteId);
+    //     createTactileEffect();
+    //   }
+    // };
     
     // Set up the handleVideoLink function in the window object
     window.handleVideoLink = (url: string) => {
@@ -523,7 +558,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     
     // Set flag to true BEFORE state changes for immediate effect
     setIsViewingDetail(true);
-    console.log('Click handler: Setting isViewingNoteDetail to true');
     if (setIsNoteDetailView) { // Check if prop exists
       setIsNoteDetailView(true);
     }

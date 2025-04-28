@@ -11,13 +11,15 @@ import React, { SetStateAction, Dispatch } from 'react';
 // Common props for screens that are opened like apps
 export interface AppScreenProps {
   onClose?: () => void;
-  onNavigate?: (target: string, options?: { noteId?: number; eventId?: number }) => void;
-  initialNoteId?: number | null; // Optional: If opening directly to a specific note
-  initialEventId?: number | null; // Optional: If opening directly to a specific event
-  isNoteDetailView?: boolean; // Optional: Passed from App for NotesScreen
-  setIsNoteDetailView?: Dispatch<SetStateAction<boolean>>; // Optional: Passed from App for NotesScreen
-  isEventDetailView?: boolean; // Optional: Passed from App for EventScreen
-  setIsEventDetailView?: Dispatch<SetStateAction<boolean>>; // Optional: Passed from App for EventScreen
+  onNavigate?: (appId: string) => void;
+  // Add initialNoteId prop for direct note opening
+  initialNoteId?: number | null;
+  // Prop for passing the initial event ID to the EventScreen
+  initialEventId?: number | null;
+  isNoteDetailView?: boolean; 
+  setIsNoteDetailView?: Dispatch<SetStateAction<boolean>>; 
+  isEventDetailView?: boolean; 
+  setIsEventDetailView?: Dispatch<SetStateAction<boolean>>; 
   initialPosition?: { x: number; y: number; width: number; height: number };
 }
 

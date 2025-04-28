@@ -127,6 +127,7 @@ interface WidgetData {
   iconBgColor: string;
   eventId?: number;
   attendees?: number;
+  noteId?: number; // Add noteId here
 }
 
 // Simplified tactile effect for widget swipes
@@ -205,6 +206,7 @@ function App() {
   const [isNoteDetailView, setIsNoteDetailView] = useState(false);
   const [isEventDetailView, setIsEventDetailView] = useState(false); // Add state for event detail view
   const [initialEventIdForScreen, setInitialEventIdForScreen] = useState<number | null>(null); // State for event ID
+  const [initialNoteIdForScreen, setInitialNoteIdForScreen] = useState<number | null>(null); // State for direct note ID
   
   // Add an effect to preload all content and prevent flashes
   useEffect(() => {
@@ -397,7 +399,8 @@ function App() {
       timestamp: getRelativeDate(selectedNote.date),
       timestampLabel: 'Last edited',
       progress: 65,
-      iconBgColor: 'bg-[#FF8A5B]/20'
+      iconBgColor: 'bg-[#FF8A5B]/20',
+      noteId: selectedNote.id // Add the selected note's ID here
     },
     {
       type: 'partiful',
@@ -676,6 +679,7 @@ function App() {
         rect: null
       });
       setInitialEventIdForScreen(null); // Reset event ID state on close
+      setInitialNoteIdForScreen(null); // Reset note ID state on close
       
       // Reset animation state after animation completes with longer duration for smoother feel
       setTimeout(() => {
@@ -763,82 +767,6 @@ function App() {
   };
 
   // Handle navigation between apps
-  const handleWidgetClick = (widgetType: string) => {
-    // Don't allow widget clicks during animations
-    if (isAnimating) return;
-    
-    // Create tactile feedback for the widget interaction
-    createWidgetSwipeFeedback();
-    
-    // Map widget types to app IDs
-    let appId: string | null = null;
-    
-    // Determine which app to open based on widget type
-    if (widgetType === 'workout') {
-      // Special case for workout widget to navigate directly to the kineship note detail view
-      window.initialNoteId = 2; // ID of the kineship note
-      window.openNoteDirectly = true; // Signal to open this note directly in detail view
-      // Set widgetNoteId to make the pulsing dots appear
-      (window as any).widgetNoteId = 2;
-      appId = 'notes';
-    } else if (widgetType === 'notes') {
-      // Set the initial note ID to the one currently displayed in the widget
-      window.initialNoteId = selectedNote.id;
-      // Set flag to open the note detail view directly
-      window.openNoteDirectly = true;
-      appId = 'notes';
-    } else if (widgetType === 'socials') {
-      appId = 'socials';
-    } else if (widgetType === 'partiful') {
-      appId = 'partiful';
-    }
-    
-    // If we have a valid app ID, open it with animation
-    if (appId) {
-      // Get the app element from the ref map
-      const appElement = appsRef.current.get(appId);
-      const containerElement = mainContainerRef.current;
-      
-      if (!appElement || !containerElement) return;
-      
-      setIsAnimating(true);
-      
-      // Get app's absolute position
-      const appRect = appElement.getBoundingClientRect();
-      const containerRect = containerElement.getBoundingClientRect();
-      
-      // Find the selected app
-      const selectedApp = apps.find(app => app.id === appId) || null;
-      
-      // Store the app's position relative to the container
-      setAppPosition({
-        x: appRect.left - containerRect.left + (appRect.width / 2),
-        y: appRect.top - containerRect.top + (appRect.height / 2),
-        width: appRect.width,
-        height: appRect.height
-      });
-      
-      // Store a clone of the app icon for animation
-      setClonedAppIcon({
-        app: selectedApp,
-        rect: appRect
-      });
-      
-      // Set the current app element for scale calculations
-      setCurrentAppElement(appElement);
-      
-      // Small delay to ensure animation settings are in place
-      setTimeout(() => {
-        setActiveApp(appId);
-      }, 10);
-      
-      // Reset animation flag after animation completes
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 400);
-    }
-  };
-  
   const handleNextWidget = () => {
     setCurrentWidgetIndex((prevIndex) => {
       return (prevIndex + 1) % widgets.length;
@@ -1175,7 +1103,33 @@ function App() {
                   }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                  onClick={() => handleWidgetClick(widgets[currentWidgetIndex].type)}
+                  onClick={() => {
+                    if (!widgets[currentWidgetIndex]) return;
+                    
+                    const currentWidget = widgets[currentWidgetIndex]; // Use a variable for clarity
+
+                    if (currentWidget.type === 'notes') {
+                      console.log('Notes widget clicked. Data:', currentWidget);
+                      // Set the ID and then open the app
+                      if (typeof currentWidget.noteId === 'number') {
+                        setInitialNoteIdForScreen(currentWidget.noteId);
+                      }
+                      handleAppClick('notes'); // Open the Notes app screen
+                    } else if (currentWidget.type === 'partiful') {
+                      handleAppClick('partiful');
+                      // Check if eventId is a valid number before calling
+                      if (typeof currentWidget.eventId === 'number') {
+                        const eventIdToOpen = currentWidget.eventId;
+                        setTimeout(() => {
+                          window.openEventWithId?.(eventIdToOpen);
+                        }, 50); // Small delay
+                      }
+                    } else if (currentWidget.type === 'workout') {
+                      // Set Kineship note ID (2) and then open the app
+                      setInitialNoteIdForScreen(2);
+                      handleAppClick('notes'); 
+                    }
+                  }}
                   onMouseEnter={() => setIsWidgetHovered(true)}
                   onMouseLeave={(e) => {
                     setIsWidgetHovered(false);
@@ -1186,59 +1140,97 @@ function App() {
                   // Implement a direct, simpler swipe detection system for mobile devices only
                   onTouchStart={(e) => {
                     if (isMobileDevice) {
-                    setSwipeStartX(e.touches[0].clientX);
-                    setSwipeDirection(null);
-                    setIsSwiping(true);
+                      setSwipeStartX(e.touches[0].clientX);
+                      setIsSwiping(true);
+                      setSwipeDirection(null);
+                      // Prevent default to avoid scrolling conflicts
+                      e.preventDefault();
                     }
                   }}
                   onTouchMove={(e) => {
                     if (isMobileDevice && swipeStartX !== null) {
-                    const currentX = e.touches[0].clientX;
-                    const diff = currentX - swipeStartX;
-                    
-                    // Set direction once we have a clear movement
-                    if (Math.abs(diff) > 10) {
-                      const newDirection = diff > 0 ? 'right' : 'left';
-                      if (swipeDirection !== newDirection) {
-                        setSwipeDirection(newDirection);
+                      const currentX = e.touches[0].clientX;
+                      const diff = currentX - swipeStartX;
+                      
+                      // Set direction once we have a clear movement
+                      if (Math.abs(diff) > 10) {
+                        const newDirection = diff > 0 ? 'right' : 'left';
+                        if (swipeDirection !== newDirection) {
+                          setSwipeDirection(newDirection);
+                          // Add haptic feedback when direction changes
+                          createSwipeHapticFeedback('light');
                         }
                       }
+                      
+                      // Prevent default to avoid scrolling conflicts
+                      e.preventDefault();
                     }
                   }}
                   onTouchEnd={(e) => {
-                    if (isMobileDevice && swipeStartX !== null && swipeDirection !== null) {
-                    const endX = e.changedTouches[0].clientX;
-                    const diff = endX - swipeStartX;
-                    
-                    if (Math.abs(diff) > 50) { // Minimum swipe distance
-                      if (swipeDirection === 'right') {
-                        handleWidgetNavigation('prev');
+                    if (isMobileDevice && swipeStartX !== null) {
+                      const endX = e.changedTouches[0].clientX;
+                      const diff = endX - swipeStartX;
+                      
+                      if (Math.abs(diff) > 50) { // Minimum swipe distance
+                        if (swipeDirection === 'right') {
+                          handleWidgetNavigation('prev');
+                          createSwipeHapticFeedback('medium');
+                        } else if (swipeDirection === 'left') {
+                          handleWidgetNavigation('next');
+                          createSwipeHapticFeedback('medium');
+                        }
+                        
+                        // Record the time of manual navigation for swipe
+                        setLastManualNavigation(Date.now());
                       } else {
-                        handleWidgetNavigation('next');
+                        // If it's a small swipe (more like a tap), handle as a click
+                        if (Math.abs(diff) < 10) {
+                          const currentWidget = widgets[currentWidgetIndex];
+                          
+                          if (currentWidget.type === 'notes') {
+                            console.log('Notes widget clicked. Data:', currentWidget);
+                            // Set the ID and then open the app
+                            if (typeof currentWidget.noteId === 'number') {
+                              setInitialNoteIdForScreen(currentWidget.noteId);
+                              handleAppClick('notes');
+                            }
+                          } else if (currentWidget.type === 'partiful' && currentWidget.eventId) {
+                            setInitialEventIdForScreen(currentWidget.eventId);
+                            handleAppClick('partiful');
+                          } else if (currentWidget.type === 'workout') {
+                            // Set Kineship note ID (2) and then open the app
+                            setInitialNoteIdForScreen(2);
+                            handleAppClick('notes');
+                          }
+                        }
                       }
-                    }
-                    
-                    setSwipeStartX(null);
-                    setSwipeDirection(null);
-                    setIsSwiping(false);
-                    
-                    // Record the time of manual navigation for swipe
-                    setLastManualNavigation(Date.now());
+                      
+                      setSwipeStartX(null);
+                      setSwipeDirection(null);
+                      setIsSwiping(false);
                     }
                   }}
-                  onTap={() => {
-                    createTactileEffect();
-                    const currentWidget = widgets[currentWidgetIndex];
-                    if (currentWidget.type === 'notes' && selectedNote) {
-                      // Store the ID in the window object before navigating
-                      (window as any).initialNoteId = selectedNote.id;
-                      handleAppClick('notes');
-                    } else if (currentWidget.type === 'partiful' && currentWidget.eventId) {
-                      setInitialEventIdForScreen(currentWidget.eventId);
-                      handleAppClick('partiful'); // Navigate to the EventScreen
-                    } else if (currentWidget.type === 'workout') {
-                      // Potentially handle workout click in the future
-                      // handleAppClick('workout'); 
+                  onClick={() => {
+                    // Only handle clicks on desktop, mobile uses touch events
+                    if (!isMobileDevice) {
+                      createTactileEffect();
+                      const currentWidget = widgets[currentWidgetIndex];
+                      
+                      if (currentWidget.type === 'notes') {
+                        console.log('Notes widget clicked. Data:', currentWidget);
+                        // Set the ID and then open the app
+                        if (typeof currentWidget.noteId === 'number') {
+                          setInitialNoteIdForScreen(currentWidget.noteId);
+                          handleAppClick('notes');
+                        }
+                      } else if (currentWidget.type === 'partiful' && currentWidget.eventId) {
+                        setInitialEventIdForScreen(currentWidget.eventId);
+                        handleAppClick('partiful');
+                      } else if (currentWidget.type === 'workout') {
+                        // Set Kineship note ID (2) and then open the app
+                        setInitialNoteIdForScreen(2);
+                        handleAppClick('notes');
+                      }
                     }
                   }}
                   // Remove mouse-based swipes for desktop completely
@@ -1253,9 +1245,11 @@ function App() {
                   padding: '14px',
                   transform: 'translateZ(0)',
                   WebkitTransform: 'translateZ(0)',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
-                    touchAction: 'pan-y', // Allow vertical scrolling but handle horizontal swipes
-                  cursor: 'pointer' // Always use pointer cursor for web users
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
+                  touchAction: 'none', // Disable browser touch actions to handle all touch events
+                  cursor: 'pointer', // Always use pointer cursor for web users
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
                 <div className="flex items-center mb-3">
@@ -1514,7 +1508,7 @@ function App() {
                     // Pass all possible props defined in the updated AppScreenProps
                     onClose={handleClose}
                     onNavigate={handleNavigate} // Use the new dedicated handler
-                    initialNoteId={activeApp === 'notes' && selectedNoteId ? parseInt(selectedNoteId, 10) : null}
+                    initialNoteId={initialNoteIdForScreen} // Pass state directly
                     initialEventId={initialEventIdForScreen} // Pass state directly
                     isNoteDetailView={isNoteDetailView} // NotesScreen will use this
                     setIsNoteDetailView={setIsNoteDetailView} // NotesScreen will use this
