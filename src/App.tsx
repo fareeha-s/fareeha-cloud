@@ -4,7 +4,6 @@ import { AppIcon } from './components/AppIcon';
 import { NotesScreen } from './screens/NotesScreen';
 import { SocialsScreen } from './screens/SocialsScreen';
 import { EventScreen } from './screens/EventScreen';
-import { PartifulWidget } from './components/PartifulWidget';
 import type { AppIcon as AppIconType } from './types';
 import { ChevronLeft, StickyNote } from 'lucide-react';
 // Removed unused imports
@@ -279,33 +278,44 @@ function App() {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
   
-  // Check if this is the first visit *within the current session*
+  // Check if this is the very first time ever visiting the site (for "shipped by" text and link icon)
   useEffect(() => {
-    // Check sessionStorage for this session
-    const hasVisitedThisSession = sessionStorage.getItem('hasSessionVisited');
-    if (hasVisitedThisSession) {
-      setIsFirstVisit(false);
-    } else {
-      // Mark as visited for *this session*
-      sessionStorage.setItem('hasSessionVisited', 'true');
-      setIsFirstVisit(true);
-    }
+    // Check localStorage for the absolute first visit ever
+    const hasCompletedFirstLoad = localStorage.getItem('hasCompletedFirstLoad');
     
-    // Only for the very first load *of this session*, open the hello world note
-    if (!hasVisitedThisSession) {
-      setTimeout(() => {
-        // Set up the necessary window properties for the notes app
-        window.initialNoteId = 1; // ID of the hello world note
-        window.openNoteDirectly = true; // Signal to open this note directly in detail view
-        (window as any).widgetNoteId = 1;
-        (window as any).isFirstTimeOpeningApp = true;
-        
-        // Set the state that will be passed as a prop to NotesScreen
-        setInitialNoteIdForScreen(1);
-        // Trigger the app click to open notes
-        handleAppClick('notes');
-      }, 10); // Minimal timeout to ensure component is ready
+    console.log('First load check:', hasCompletedFirstLoad ? 'Already visited before' : 'First time visit');
+    
+    if (!hasCompletedFirstLoad) {
+      // First time ever visiting - show the "shipped by" text and link icon
+      console.log('Setting hasShownFirstDisplay to FALSE to show elements');
+      setHasShownFirstDisplay(false);
+      // Mark that they've completed first load (for future visits)
+      localStorage.setItem('hasCompletedFirstLoad', 'true');
+    } else {
+      // Not first time - hide the "shipped by" text and link icon
+      console.log('Setting hasShownFirstDisplay to TRUE to hide elements');
+      setHasShownFirstDisplay(true);
     }
+  }, []);
+  
+  // Always open hello world note on page load
+  useEffect(() => {
+    // Always set first visit flag for styling purposes
+    setIsFirstVisit(true);
+    
+    // Always open the hello world note on every page load
+    setTimeout(() => {
+      // Set up the necessary window properties for the notes app
+      window.initialNoteId = 1; // ID of the hello world note
+      window.openNoteDirectly = true; // Signal to open this note directly in detail view
+      (window as any).widgetNoteId = 1;
+      (window as any).isFirstTimeOpeningApp = true;
+      
+      // Set the state that will be passed as a prop to NotesScreen
+      setInitialNoteIdForScreen(1);
+      // Trigger the app click to open notes
+      handleAppClick('notes');
+    }, 10); // Minimal timeout to ensure component is ready
   }, []);
   
   // Select a random unlocked note for the widget display
@@ -949,6 +959,13 @@ function App() {
             >
               <span className="flex items-center">
                 Fareeha
+                {!hasShownFirstDisplay && (
+                  <span 
+                    className="ml-1.5 text-[12px] font-light italic text-white/50"
+                  >
+                    shipped by
+                  </span>
+                )}
                 {/* Profile picture - always visible */}
                 <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer', marginLeft: '6px' }} className="github-link inline-block relative group">
                   <img 
