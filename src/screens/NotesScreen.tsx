@@ -362,13 +362,13 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
               setSelectedNote(null);
             }
             createTactileEffect();
-          }, 400);
+          }, 30);
         } else {
           // Normal case - go back to notes list
           setTimeout(() => {
             setSelectedNote(null);
             createTactileEffect();
-          }, 400);
+          }, 30);
         }
         
         return true; // Event was handled
@@ -697,7 +697,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
               key="note-list" 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }} 
               transition={{ duration: 0.15 }} 
               className="flex flex-col h-full w-full overflow-hidden"
             >
