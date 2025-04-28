@@ -414,7 +414,7 @@ function App() {
           const today = new Date();
           today.setHours(0, 0, 0, 0); // Set to start of today
 
-          return eventDate >= today ? 'upcoming' : 'recently';
+          return eventDate >= today ? 'upcoming' : 'recent';
         } catch (e) {
           console.error("Error parsing event date:", selectedEvent.date, e);
           return 'Event'; // Fallback label
@@ -656,26 +656,15 @@ function App() {
     }
     
     // Check if there's a specific screen back handler active
-    // This allows screens like NotesScreen to handle internal navigation
+    // This allows screens like NotesScreen or EventScreen to handle internal navigation
     if (activeApp === 'notes' && window.noteScreenBackHandler && window.noteScreenBackHandler()) {
-      // If this is the first time opening the app and we're viewing the hello world note,
-      // go to home screen instead of staying in notes app
-      if ((window as any).isFirstTimeOpeningApp) {
-        (window as any).isFirstTimeOpeningApp = false; // Reset the flag
-        
-        // Immediately go to home screen without animation
-        setActiveApp(null);
-        setAppPosition(null);
-        setClonedAppIcon({
-          app: null,
-          rect: null
-        });
-        setIsAnimating(false);
-        return;
-      }
-      return; // If the screen handler returns true, it handled the back action
+      // If the screen handler returns true, it handled the back action
+      return; 
     }
-    
+    else if (activeApp === 'partiful' && window.eventScreenBackHandler && window.eventScreenBackHandler()) {
+      // If the EventScreen handler returns true, it handled the back action (e.g., hiding Partiful detail)
+      return; 
+    }
     setIsAnimating(true);
     
     // Start closing animation with enhanced buttery-smooth transitions
@@ -692,7 +681,7 @@ function App() {
       setTimeout(() => {
         setIsAnimating(false);
       }, 350); // Increased for smoother transition
-    }, 60); // Slightly increased for better timing
+    }, 10); // Reduced delay from 60ms to 10ms
   };
 
   // True Apple-style app opening animation
@@ -759,7 +748,7 @@ function App() {
   // Get the display name for the active app, with a special case for partiful to show as parti-folio
   const activeAppName = activeApp ? 
     (activeApp === 'partiful' ? 'partifolio 🎉' : 
-     activeApp === 'notes' ? 'notes ✧' :
+     activeApp === 'notes' ? 'notes 🖇️' :
      activeApp === 'socials' ? 'socials ✨' :
      apps.find(app => app.id === activeApp)?.name) 
     : null;
@@ -876,15 +865,6 @@ function App() {
     <div 
       className="relative flex items-center justify-center min-h-screen"
       style={{ backgroundColor: '#131518' }} // Ensure dark background covers entire viewport
-      // ADD onClick handler to the root element
-      onClick={(e) => { 
-        console.log('Root backdrop clicked.'); // DEBUG
-        if (activeApp && !isAnimating) {
-          handleClose();
-        } else {
-          console.log(`Root handleClose not called. activeApp: ${activeApp}, isAnimating: ${isAnimating}`); // DEBUG
-        }
-      }}
     >
       {/* Background Wrapper - Simplified with single image and fallback */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
@@ -934,6 +914,27 @@ function App() {
         </div>
       </div>
 
+      <AnimatePresence>
+        {activeApp && (
+          <motion.div
+            key="backdrop"
+            className="absolute inset-0 bg-black/10 z-[5]" // Position behind content (z-10) but above background (z-0)
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.3 } }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            onClick={(e) => {
+              console.log('Backdrop clicked.'); // DEBUG
+              // Prevent click-through if already animating
+              if (isAnimating) {
+                e.stopPropagation();
+                return;
+              }
+              handleClose();
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <div 
         className="absolute flex flex-col items-center will-change-transform z-10"
         ref={mainContainerRef}
@@ -944,13 +945,13 @@ function App() {
           transform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
           WebkitTransform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
           transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
-          top: '45%',
+          top: '38%', // Moved up from 45% to 38% to shift the entire site upward
           left: '50%',
           marginLeft: '-145px', // Half of the container width (290px/2)
           marginTop: '-170px',
         }}
       >
-        {/* App name above the container - returning to original position */}
+        {/* App name above the container - restoring correct parent styles */}
         <div 
           className="absolute top-[-30px] w-full flex justify-center items-center"
           style={{
@@ -964,7 +965,7 @@ function App() {
         >
           {activeApp ? (
             <motion.h2 
-              className="text-[18px] font-normal text-right fixed"
+              className="text-[18px] font-semibold text-right fixed" // Keep this semi-bold
               initial={{ opacity: 0 }}
               animate={{ 
                 opacity: 1,
@@ -974,10 +975,11 @@ function App() {
                 }
               }}
               style={{ 
-                top: '8px',
-                right: '25px',
-                zIndex: 9999,
-                color: '#ffffff'
+                top: '10px', // Nudge up
+                right: '22px', // Nudge right
+                zIndex: 10001, // Keep increased zIndex
+                color: '#ffffff',
+                textShadow: '0px 1px 1px rgba(0, 0, 0, 0.3)' // Added subtle iOS-like text shadow
               }}
             >
               <span className="flex items-center">
@@ -987,7 +989,7 @@ function App() {
           ) : (
             /* Home screen title with enhanced styling */
             <motion.h2 
-              className="text-[18px] font-normal text-right fixed"
+              className="text-[18px] font-semibold text-right fixed" // Keep this semi-bold
               initial={{ opacity: 0 }}
               animate={{ 
                 opacity: 1,
@@ -997,23 +999,85 @@ function App() {
                 }
               }}
               style={{ 
-                top: '8px',
-                right: '25px',
-                zIndex: 9999,
-                color: '#ffffff'
+                top: '10px', // Nudge up
+                right: '22px', // Nudge right
+                zIndex: 10001, // Keep increased zIndex
+                color: '#ffffff',
+                textShadow: '0px 1px 1px rgba(0, 0, 0, 0.3)' // Added subtle iOS-like text shadow
               }}
             >
               <span className="flex items-center">
                 {isFirstVisit && <span style={{ fontSize: "0.65em", color: "rgba(255, 255, 255, 0.5)", marginRight: "4px", animation: "fadeOut 2.5s ease-in forwards 3s", display: "inline-block", transform: "translateY(2px)" }}>shipped by</span>}
-                fareeha
-                <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer' }} className="github-link">
-                  <img 
-                    src="./icons/hosts/fareeha.jpg" 
-                    alt="Fareeha" 
-                    className="ml-1 rounded-full w-6 h-6 object-cover border border-white/20 hover:border-white/50 transition-all duration-300" 
-                    style={{ zIndex: 9999 }}
-                  />
-                </a>
+                Fareeha
+                <span className="relative" style={{ zIndex: 10 }}>
+                  <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer' }} className="github-link">
+                    <img 
+                      src="./icons/hosts/fareeha.jpg" 
+                      alt="Fareeha" 
+                      className="ml-1 rounded-full w-6 h-6 object-cover border border-white/20 transition-all duration-300" 
+                      style={{ 
+                        zIndex: 10002,
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset',
+                        backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
+                        transform: 'translateZ(0)',
+                        transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                      }}
+                      onTouchStart={(e) => {
+                        e.currentTarget.style.transform = 'scale(0.97) translateZ(0)';
+                        e.currentTarget.style.boxShadow = '0 0px 1px rgba(0,0,0,0.1), 0 0 1px rgba(255,255,255,0.1) inset';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+                      }}
+                      onTouchEnd={(e) => {
+                        e.currentTarget.style.transform = 'translateZ(0)';
+                        e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      }}
+                    />
+                  </a>
+                  
+                  {/* External link indicator positioned in upper right */}
+                  <div 
+                    className="absolute flex items-center justify-center"
+                    style={{
+                      width: '14px',
+                      height: '14px',
+                      backgroundColor: 'rgba(0,0,0,0.45)',
+                      borderRadius: '7px',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15)',
+                      backdropFilter: 'blur(4px)',
+                      WebkitBackdropFilter: 'blur(4px)',
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      zIndex: 10000,
+                      top: '-3px',
+                      right: '-3px'
+                    }}
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      window.open('https://github.com/fareeha-s', '_blank');
+                    }}
+                    onTouchStart={(e) => {
+                      e.currentTarget.style.transform = 'scale(0.9)';
+                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
+                    }}
+                    onTouchEnd={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                    }}
+                  >
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: 'white', strokeWidth: 2.5 }}>
+                      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                    </svg>
+                  </div>
+                </span>
               </span>
             </motion.h2>
           )}

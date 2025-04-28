@@ -103,10 +103,11 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           className="text-[11px] text-white mt-[5px] text-center" 
           style={{
             fontFamily: "var(--font-sans)",
-            fontWeight: 500,
+            fontWeight: 400,
             letterSpacing: '0.01em',
             WebkitFontSmoothing: 'antialiased',
-            textRendering: 'optimizeLegibility'
+            textRendering: 'optimizeLegibility',
+            textShadow: '0px 1px 1px rgba(0, 0, 0, 0.3)'
           }}
         >
           {displayName}
