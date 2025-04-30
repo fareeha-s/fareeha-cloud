@@ -326,50 +326,6 @@ export const EventScreen: React.FC<AppScreenProps> = ({
               }}
               onScrollToBottom={() => setHasScrolledToBottom(true)}
             />
-            
-            {/* Swipe indicator overlay - Apple-style */}
-            <AnimatePresence>
-              {showSwipeIndicator && (
-                <motion.div 
-                  className="absolute bottom-8 left-0 right-0 pointer-events-none flex items-center justify-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <motion.div 
-                    className="flex items-center space-x-2"
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 10, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <motion.div 
-                      className="w-[6px] h-[6px] rounded-full bg-white opacity-40"
-                      animate={{ opacity: [0.4, 0.6, 0.4] }}
-                      transition={{ 
-                        repeat: Infinity,
-                        duration: 1.5,
-                        ease: "easeInOut" 
-                      }}
-                    />
-                    <motion.div 
-                      className="w-[6px] h-[6px] rounded-full bg-white" 
-                    />
-                    <motion.div 
-                      className="w-[6px] h-[6px] rounded-full bg-white opacity-40"
-                      animate={{ opacity: [0.4, 0.6, 0.4] }}
-                      transition={{ 
-                        repeat: Infinity,
-                        duration: 1.5,
-                        ease: "easeInOut",
-                        delay: 0.1
-                      }}
-                    />
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
         </AnimatePresence>
       </div>
