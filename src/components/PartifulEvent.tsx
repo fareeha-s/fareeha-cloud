@@ -746,6 +746,23 @@ limited capacity! tell us what you'd share 🫶🏼`;
           onClick={toggleExpanded}
         >
         </motion.div>
+        
+        {/* Pagination dots - always visible */}
+        <div className="flex items-center justify-center mt-2 mb-2 space-x-2">
+          <div 
+            className="w-[6px] h-[6px] rounded-full bg-white opacity-40"
+            style={{ 
+              animation: 'pulse 1.5s ease-in-out infinite'
+            }}
+          />
+          <div className="w-[6px] h-[6px] rounded-full bg-white" />
+          <div 
+            className="w-[6px] h-[6px] rounded-full bg-white opacity-40"
+            style={{ 
+              animation: 'pulse 1.5s ease-in-out 0.1s infinite'
+            }}
+          />
+        </div>
       </motion.div>
     </div>
   );

@@ -961,7 +961,7 @@ function App() {
               <span className="flex items-center">
                 <span
                   className="mr-1.5 text-[12px] font-light italic text-white/50"
-                  style={{ opacity: hasShownFirstDisplay ? 0 : 1, transition: 'opacity 1s ease-in-out' }}
+                  style={{ opacity: (hasSeenHomeSession && !hasShownFirstDisplay) ? 1 : 0, transition: 'opacity 2.5s linear' }}
                 >
                   shipped by
                 </span>
