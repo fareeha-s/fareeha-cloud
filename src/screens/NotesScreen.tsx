@@ -453,6 +453,21 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     }, 50); // Reduced delay, animation has its own delay
   };
 
+  // Function to close the note detail view
+  const closeNote = () => {
+    // Set selectedNote back to null to return to the list view
+    setSelectedNote(null);
+    
+    // Update the detail view flag (this is also handled by useEffect depending on selectedNote)
+    setIsViewingDetail(false); 
+    if (setIsNoteDetailView) {
+      setIsNoteDetailView(false);
+    }
+  
+    // Optional: Add tactile feedback if desired
+    // createTactileEffect(); 
+  };
+
   // Add function to handle video links
   const handleVideoLink = (url: string) => {
     setVideoUrl(url);
@@ -487,6 +502,20 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     // Ensure handleNoteClick is stable or included if it depends on changing state/props
   }, [handleNoteClick]); // Add handleNoteClick to dependency array
 
+  // Effect to set global back handler so App can delegate back action
+  useEffect(() => {
+    window.noteScreenBackHandler = () => {
+      if (selectedNote) {
+        closeNote();
+        return true; // Signal that we handled the back action
+      }
+      return false;
+    };
+    return () => {
+      delete window.noteScreenBackHandler;
+    };
+  }, [selectedNote]);
+
   return (
     <div 
       className="h-full w-full" 
@@ -495,10 +524,12 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
         position: "relative"
       }}
       onClick={(e) => {
-        e.stopPropagation();
+        e.stopPropagation(); // Stop propagation immediately
         if (selectedNote) {
-          // Don't close the note here automatically on background click
-          // closeNote(); 
+          // Delay the actual closing logic slightly
+          setTimeout(() => {
+            closeNote();
+          }, 0); // setTimeout with 0 delay defers execution until after the current call stack clears
         }
         handleInteraction();
       }}
