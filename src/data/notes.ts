@@ -70,7 +70,7 @@ Lately, I’ve been wondering if there might be a kind of closeness that fits in
 
 Like when you swap your usual 6pm class for the 5, because your friend’s going to that one. Or wandering to the farmers’ market the same time as your neighbours... your day suddenly feels a touch warmer.
 
-It might seem small, but I've learned that psychologists call it <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC5137339/' target='_blank' rel='noopener noreferrer' style='text-decoration: underline;'>intentional synchrony</a>- a natural human principle rooted in our nervous systems. These overlaps are tied to lower loneliness, better regulation, and long-term wellbeing - core to how we rebuild connection at scale.
+It might seem small, but I've learned that psychologists call it <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC5137339/' target='_blank' rel='noopener noreferrer' style='text-decoration: underline;'>intentional synchrony</a>, a natural human principle rooted in our nervous systems. These overlaps are tied to lower loneliness, better regulation, and long-term wellbeing - core to how we rebuild connection at scale.
 
 Surprisingly, almost none of the social platforms we use today are designed to support this. Instead, they often keep us observing each other’s lives from a distance.
 
