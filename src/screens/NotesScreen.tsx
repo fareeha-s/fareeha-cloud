@@ -140,8 +140,11 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   // Add state for video player
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   
-  // Track if this is the first time viewing hello world note directly - unused but kept for future use
-  const [, setIsFirstViewOfHelloWorld] = useState<boolean>(false);
+  // Track if this is the first time viewing the Hello World note
+  const [isFirstViewOfHelloWorld, setIsFirstViewOfHelloWorld] = useState<boolean>(false);
+  
+  // Track hyperlinked navigation from Hello World to Kineship note
+  const [isFromHelloWorldToKineship, setIsFromHelloWorldToKineship] = useState<boolean>(false);
   
   // Create a ref to use for directly setting the window property
   const isViewingDetailRef = useRef(false);
@@ -241,22 +244,23 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       if (helloWorldNote && !helloWorldNote.locked) {
         console.log(`NotesScreen opening Hello World directly.`);
         setSelectedNote(helloWorldNote);
-        setIsViewingDetail(true); 
+        setIsViewingDetail(true);
         markNoteAsViewed(1);
+        setIsFirstViewOfHelloWorld(true);
         window.openNoteDirectly = false; // Reset the flag after using it
 
         setTimeout(() => {
           if (noteContentRef.current) {
             noteContentRef.current.scrollTop = 0;
           }
-          setIsNoteReady(true); 
+          setIsNoteReady(true);
           setIsInitializing(false);
-        }, 50); 
+        }, 50);
       } else {
         // Handle case where Hello World note might be missing or locked
         setSelectedNote(null);
         setIsViewingDetail(false);
-        setIsInitializing(false); 
+        setIsInitializing(false);
         window.openNoteDirectly = false; // Still reset the flag
       }
     } else if (typeof initialNoteId === 'number') {
@@ -265,20 +269,20 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       if (noteToOpen && !noteToOpen.locked) {
         console.log(`NotesScreen opening note via prop: ${initialNoteId}`);
         setSelectedNote(noteToOpen);
-        setIsViewingDetail(true); 
+        setIsViewingDetail(true);
         markNoteAsViewed(initialNoteId);
         setTimeout(() => {
           if (noteContentRef.current) {
             noteContentRef.current.scrollTop = 0;
           }
-          setIsNoteReady(true); 
+          setIsNoteReady(true);
           setIsInitializing(false);
-        }, 50); 
+        }, 50);
       } else {
         // Invalid ID or locked note from prop -> show list view
         setSelectedNote(null);
         setIsViewingDetail(false);
-        setIsInitializing(false); 
+        setIsInitializing(false);
       }
     } else {
       // Default to list view if no initialNoteId is provided
@@ -327,55 +331,21 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     // Check if we have an initial note ID to highlight from the widget
     if (initialNoteId) {
       setWidgetNoteId(initialNoteId);
-      
-      // Check if this is the hello world note (id: 1) and it's being opened directly
-      if (initialNoteId === 1) {
-        // Check if we've seen the hello world note before
-        const hasSeenHelloWorld = localStorage.getItem('hasSeenHelloWorld') === 'true';
-        if (!hasSeenHelloWorld) {
-          // Mark that this is the first view of hello world
-          setIsFirstViewOfHelloWorld(true);
-          // Store that we've seen hello world now
-          localStorage.setItem('hasSeenHelloWorld', 'true');
-        }
-      }
-      
-      // Clear the initialNoteId after using it
-      // window.initialNoteId = undefined;
     }
-    
-    // Set up the openNoteWithId function in the window object
-    // window.openNoteWithId = (noteId: number) => {
-    //   const noteToOpen = notes.find(note => note.id === noteId);
-    //   if (noteToOpen) {
-    //     // Special case for Kineship from Hello World
-    //     if (noteId === 2 && selectedNote?.id === 1) {
-    //       localStorage.setItem('openedKineshipFromHelloWorld', 'true');
-    //     }
-    //     // Always set detail mode BEFORE setting selected note
-    //     setIsViewingDetail(true);
-    //     setSelectedNote(noteToOpen);
-    //     markNoteAsViewed(noteId);
-    //     createTactileEffect();
-    //   }
-    // };
-    
-    // Set up the handleVideoLink function in the window object
-    window.handleVideoLink = (url: string) => {
-      handleVideoLink(url);
-    };
-    
-    // Clean up
-    return () => {
-      // @ts-ignore
-      delete window.openNoteWithId;
-      // @ts-ignore
-      delete window.handleVideoLink;
-    };
-  }, []);
+     // Set up the handleVideoLink function in the window object
+     window.handleVideoLink = (url: string) => {
+       handleVideoLink(url);
+     };
 
-  // Use the shared notes data instead of local state
-  
+     // Clean up
+     return () => {
+       // @ts-ignore
+       delete window.openNoteWithId;
+       // @ts-ignore
+       delete window.handleVideoLink;
+     };
+  }, [initialNoteId]);
+
   // Enhanced helper function for more natural date formatting
   const getRelativeDate = (dateStr: string) => {
     // Get current date
@@ -444,6 +414,11 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       setWidgetNoteId(null);
     }
     
+    // If hyperlink from Hello World (initialNoteId) to Kineship (note.id===2), mark for back navigation
+    if (initialNoteId === selectedNote?.id && note.id === 2) {
+      setIsFromHelloWorldToKineship(true);
+    }
+    
     // Set the selected note immediately
     setSelectedNote(note);
     
@@ -506,15 +481,31 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   useEffect(() => {
     window.noteScreenBackHandler = () => {
       if (selectedNote) {
+        // Back from Kineship hyperlink should return to Hello World once
+        if (selectedNote.id === 2 && isFromHelloWorldToKineship) {
+          setIsFromHelloWorldToKineship(false);
+          const hello = notes.find(n => n.id === initialNoteId);
+          if (hello) {
+            setSelectedNote(hello);
+            setIsViewingDetail(true);
+          }
+          return true;
+        }
+        // First-load Hello World back to home
+        if (initialNoteId != null && selectedNote.id === initialNoteId && isFirstViewOfHelloWorld) {
+          setIsFirstViewOfHelloWorld(false);
+          return false;
+        }
+        // Default: close note detail
         closeNote();
-        return true; // Signal that we handled the back action
+        return true;
       }
       return false;
     };
     return () => {
       delete window.noteScreenBackHandler;
     };
-  }, [selectedNote]);
+  }, [selectedNote, initialNoteId, isFirstViewOfHelloWorld, isFromHelloWorldToKineship]);
 
   return (
     <div 
