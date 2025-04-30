@@ -64,9 +64,9 @@ If this feels like your kind of world, I'd love to [hear from you.](app:socials)
   
   <span style="font-size: 12px; font-style: italic;">pre-launch</span>
 </div> 
-Much of how we connect today involves adding more: more invites, more plans, more coordination.
+It feels like much of how we connect today involves adding more: more invites, more plans, more coordination.
 
-Lately, I’ve been wondering if there might be a kind of closeness that fits into the day as it is.
+Lately, I’ve been wondering if there might be a kind of closeness that fits into our day as it is.
 
 Like when you swap your usual 6pm class for the 5, because your friend’s going to that one. Or wandering to the farmers’ market the same time as your neighbours... your day suddenly feels a touch warmer.
 
