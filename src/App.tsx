@@ -278,25 +278,14 @@ function App() {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
   
-  // Check if this is the very first time ever visiting the site (for "shipped by" text and link icon)
+  // Show "shipped by" UI on the first arrival to the home page in this session
   useEffect(() => {
-    // Check localStorage for the absolute first visit ever
-    const hasCompletedFirstLoad = localStorage.getItem('hasCompletedFirstLoad');
-    
-    console.log('First load check:', hasCompletedFirstLoad ? 'Already visited before' : 'First time visit');
-    
-    if (!hasCompletedFirstLoad) {
-      // First time ever visiting - show the "shipped by" text and link icon
-      console.log('Setting hasShownFirstDisplay to FALSE to show elements');
-      setHasShownFirstDisplay(false);
-      // Mark that they've completed first load (for future visits)
-      localStorage.setItem('hasCompletedFirstLoad', 'true');
-    } else {
-      // Not first time - hide the "shipped by" text and link icon
-      console.log('Setting hasShownFirstDisplay to TRUE to hide elements');
-      setHasShownFirstDisplay(true);
+    if (activeApp === null && !hasShownFirstDisplay) {
+      // Keep it visible briefly, then hide
+      const timer = setTimeout(() => setHasShownFirstDisplay(true), 3000);
+      return () => clearTimeout(timer);
     }
-  }, []);
+  }, [activeApp, hasShownFirstDisplay]);
   
   // Always open hello world note on page load
   useEffect(() => {
@@ -971,7 +960,7 @@ function App() {
                   <img 
                     src="./icons/hosts/fareeha.jpg" 
                     alt="Fareeha" 
-                    className="rounded-full w-6 h-6 object-cover border border-white/20 transition-all duration-300 align-middle" 
+                    className="rounded-full w-6 h-6 object-cover border border-white/20" 
                     style={{ 
                       zIndex: 10002,
                       boxShadow: '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset',
