@@ -262,6 +262,9 @@ function App() {
   const [lastManualNavigation, setLastManualNavigation] = useState<number | null>(null);
   // Add state to detect if user is on a mobile device
   const [isMobileDevice, setIsMobileDevice] = useState(false);
+  // Track if home has been seen in this session
+  const [hasSeenHomeSession, setHasSeenHomeSession] = useState(false);
+  const [arrowDismissed, setArrowDismissed] = useState(false);
   
   // Detect if user is on a mobile device
   useEffect(() => {
@@ -278,14 +281,23 @@ function App() {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
   
-  // Show "shipped by" UI on the first arrival to the home page in this session
+  // Show "shipped by" UI the first time user lands on the home page
   useEffect(() => {
-    if (activeApp === null && !hasShownFirstDisplay) {
-      // Keep it visible briefly, then hide
+    if (activeApp === null && !hasSeenHomeSession) {
+      setHasSeenHomeSession(true);
+      setHasShownFirstDisplay(false);
+      // Hide after 3s
       const timer = setTimeout(() => setHasShownFirstDisplay(true), 3000);
       return () => clearTimeout(timer);
     }
-  }, [activeApp, hasShownFirstDisplay]);
+  }, [activeApp, hasSeenHomeSession]);
+  
+  // Dismiss arrow badge once user leaves home (after first home visit)
+  useEffect(() => {
+    if (hasSeenHomeSession && activeApp !== null && !arrowDismissed) {
+      setArrowDismissed(true);
+    }
+  }, [activeApp, hasSeenHomeSession, arrowDismissed]);
   
   // Always open hello world note on page load
   useEffect(() => {
@@ -947,14 +959,13 @@ function App() {
               }}
             >
               <span className="flex items-center">
-                Fareeha
-                {!hasShownFirstDisplay && (
-                  <span 
-                    className="ml-1.5 text-[12px] font-light italic text-white/50"
-                  >
-                    shipped by
-                  </span>
-                )}
+                <span
+                  className="mr-1.5 text-[12px] font-light italic text-white/50"
+                  style={{ opacity: hasShownFirstDisplay ? 0 : 1, transition: 'opacity 1s ease-in-out' }}
+                >
+                  shipped by
+                </span>
+                <span>Fareeha</span>
                 {/* Profile picture - always visible */}
                 <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer', marginLeft: '6px' }} className="github-link inline-block relative group">
                   <img 
@@ -989,50 +1000,49 @@ function App() {
                       e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
                     }}
                   />
-                  {/* Link indicator - only shown on first load */}
-                  {!hasShownFirstDisplay && (
-                    <div 
-                      className="absolute flex items-center justify-center"
-                      style={{
-                        width: '14px',
-                        height: '14px',
-                        backgroundColor: 'rgba(0,0,0,0.45)',
-                        borderRadius: '7px',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15)',
-                        backdropFilter: 'blur(4px)',
-                        WebkitBackdropFilter: 'blur(4px)',
-                        cursor: 'pointer',
-                        transition: 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                        zIndex: 10000,
-                        top: '-3px',
-                        right: '-3px'
-                      }}
-                      onClick={(e) => { 
-                        e.stopPropagation(); 
-                        window.open('https://github.com/fareeha-s', '_blank');
-                      }}
-                      onTouchStart={(e) => {
-                        e.currentTarget.style.transform = 'scale(0.9)';
-                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
-                      }}
-                      onTouchEnd={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.transform = 'scale(1.1)';
-                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
-                      }}
-                    >
-                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: 'white', strokeWidth: 2.5 }}>
-                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
-                      </svg>
-                    </div>
-                  )}
+                  {/* Link indicator - always render */}
+                  <div
+                    className="absolute flex items-center justify-center"
+                    style={{
+                      width: '14px',
+                      height: '14px',
+                      backgroundColor: 'rgba(0,0,0,0.45)',
+                      borderRadius: '7px',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15)',
+                      backdropFilter: 'blur(4px)',
+                      WebkitBackdropFilter: 'blur(4px)',
+                      cursor: 'pointer',
+                      zIndex: 10000,
+                      top: '-3px',
+                      right: '-3px',
+                      opacity: hasSeenHomeSession && activeApp === null && !arrowDismissed ? 1 : 0,
+                      transition: 'opacity 1s ease-in-out',
+                    }}
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      window.open('https://github.com/fareeha-s', '_blank');
+                    }}
+                    onTouchStart={(e) => {
+                      e.currentTarget.style.transform = 'scale(0.9)';
+                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
+                    }}
+                    onTouchEnd={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                    }}
+                  >
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: 'white', strokeWidth: 2.5 }}>
+                      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                    </svg>
+                  </div>
                 </a>
               </span>
             </motion.h2>
