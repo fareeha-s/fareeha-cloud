@@ -468,6 +468,25 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     localStorage.removeItem('hasCompletedFirstLoad');
   }, []); // Empty dependency array ensures this runs only once on mount
 
+  // Effect to expose openNoteWithId globally
+  useEffect(() => {
+    window.openNoteWithId = (noteId: number) => {
+      const noteToOpen = notes.find(note => note.id === noteId);
+      if (noteToOpen) {
+        // Directly call handleNoteClick instead of setSelectedNote
+        handleNoteClick(noteToOpen);
+      } else {
+        console.warn(`Note with ID ${noteId} not found.`);
+      }
+    };
+
+    // Cleanup function to remove the global handler when the component unmounts
+    return () => {
+      delete window.openNoteWithId;
+    };
+    // Ensure handleNoteClick is stable or included if it depends on changing state/props
+  }, [handleNoteClick]); // Add handleNoteClick to dependency array
+
   return (
     <div 
       className="h-full w-full" 
