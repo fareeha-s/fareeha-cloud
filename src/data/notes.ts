@@ -24,7 +24,7 @@ I'm building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); fo
 
 <span style="font-weight: bold;">in line with that:</span>
 ▹ early experience designer at <span style="color: rgba(255, 255, 255, 0.65);">stealth</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com/" target="_blank" rel="noopener noreferrer" style="color: rgba(255, 255, 255, 0.65); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.65);">($1M pre-seed, HF0)</a></span>
-▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">([h&amp;s gala](video:https://youtu.be/VMxSzVREUgY), [dc fashion show](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni))</span>
+▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">([tessel](https://fareeha-s.github.io/Tessel/), [h&amp;s gala](video:https://youtu.be/VMxSzVREUgY), [dc fashion show](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni))</span>
 ▹ winning team, healthcare innovation [<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">(mit bc x harvard med)</span>](video:https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR)
 
 <span style="font-weight: bold;">things i love:</span>  
