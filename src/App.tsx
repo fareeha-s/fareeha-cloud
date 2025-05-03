@@ -302,7 +302,7 @@ function App() {
   // Always open hello world note on page load
   useEffect(() => {
     // Always set first visit flag for styling purposes
-    setIsFirstVisit(true);
+    // setIsFirstVisit(true); // We will set this conditionally now
     
     // Always open the hello world note on every page load
     setTimeout(() => {
@@ -316,6 +316,15 @@ function App() {
       setInitialNoteIdForScreen(1);
       // Trigger the app click to open notes
       handleAppClick('notes');
+
+      // Set isFirstVisit to true only during this initial setup
+      setIsFirstVisit(true);
+      // Immediately plan to set it to false after this initial setup completes
+      // Use another timeout to ensure it happens after the initial actions
+      setTimeout(() => {
+        setIsFirstVisit(false);
+      }, 0); 
+
     }, 10); // Minimal timeout to ensure component is ready
   }, []);
   
@@ -340,33 +349,9 @@ function App() {
   }, [isFirstVisit]);
   
   // Select events based on visit history
-  const selectedEvent = useMemo(() => {
-    // Sort all events by date (most recent first)
-    const sortedEvents = [...events].sort((a, b) => {
-      // Parse dates (assuming DD/MM/YY format)
-      const [dayA, monthA, yearA] = a.date.split('/').map(Number);
-      const [dayB, monthB, yearB] = b.date.split('/').map(Number);
-      
-      // Compare dates (most recent first)
-      if (yearB !== yearA) return yearB - yearA;
-      if (monthB !== monthA) return monthB - monthA;
-      return dayB - dayA;
-    });
-    
-    // Take only the 6 most recent events
-    const recentEvents = sortedEvents.slice(0, 6);
-    
-    if (isFirstVisit) {
-      // For first visit - show the most recent upcoming event
-      const upcomingEvents = recentEvents.filter(event => event.timeframe === 'upcoming');
-      return upcomingEvents[0] || recentEvents[0];
-    } else {
-      // For subsequent visits - show random events from the 6 most recent
-      const randomIndex = Math.floor(Math.random() * recentEvents.length);
-      return recentEvents[randomIndex];
-    }
-  }, [isFirstVisit]);
-  
+  // Removed useMemo for selectedEvent to allow refresh on home navigation
+  // const selectedEvent = useMemo(() => { ... }, [isFirstVisit]);
+
   // Function to select a random note for the widget
   const selectRandomNote = () => {
     // Filter out locked notes
@@ -395,6 +380,56 @@ function App() {
   useEffect(() => {
     // No action needed here, we're now using the widget array directly
   }, [currentWidgetIndex]); // Use a variable for clarity
+
+  // Add state for the event displayed in the widget
+  const [widgetEvent, setWidgetEvent] = useState(events[0]); // Initialize with default
+
+  // Function to select the event for the widget based on visit history
+  const selectEventForWidget = () => {
+    // Sort all events by date (most recent first)
+    const sortedEvents = [...events].sort((a, b) => {
+      // Parse dates (assuming DD/MM/YY format)
+      const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+      const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+      
+      // Compare dates (most recent first)
+      if (yearB !== yearA) return yearB - yearA;
+      if (monthB !== monthA) return monthB - monthA;
+      return dayB - dayA;
+    });
+    
+    // Take only the 6 most recent events
+    const recentEvents = sortedEvents.slice(0, 6);
+    
+    if (isFirstVisit) {
+      // For first visit - show the most recent upcoming event
+      const upcomingEvents = recentEvents.filter(event => event.timeframe === 'upcoming');
+      return upcomingEvents[0] || recentEvents[0];
+    } else {
+      // For subsequent visits - show random events from the 6 most recent
+      const randomIndex = Math.floor(Math.random() * recentEvents.length);
+      return recentEvents[randomIndex];
+    }
+  };
+
+  // Set initial widget event on mount
+  useEffect(() => {
+    setWidgetEvent(selectEventForWidget());
+  }, []); // Run once on mount
+
+  // Update widget event when returning to home screen
+  const prevActiveAppRef = useRef<string | null>();
+  useEffect(() => {
+    // Check if app was just closed (previous state wasn't null, current is null)
+    if (prevActiveAppRef.current !== null && activeApp === null) {
+      // Re-select event when returning home
+      setWidgetEvent(selectEventForWidget());
+      // Re-select note when returning home
+      setWidgetNote(selectRandomNote());
+    }
+    // Update the ref *after* the check
+    prevActiveAppRef.current = activeApp;
+  }, [activeApp, isFirstVisit]); // isFirstVisit needed as selectEventForWidget depends on it
 
   // Use real notes data for the widgets
   const widgets: WidgetData[] = [
@@ -429,12 +464,12 @@ function App() {
     },
     {
       type: 'partiful',
-      title: selectedEvent.title,
+      title: widgetEvent.title, // Use widgetEvent state
       subtitle: '', // Keep subtitle empty or define as needed
-      timestamp: getRelativeDate(selectedEvent.date), // Use relative date for consistency
+      timestamp: getRelativeDate(widgetEvent.date), // Use widgetEvent state
       timestampLabel: (() => {
         try {
-          const [day, month, year] = selectedEvent.date.split('/').map(Number);
+          const [day, month, year] = widgetEvent.date.split('/').map(Number); // Use widgetEvent state
           // Assuming YY format, adjust for the correct century (e.g., 20xx)
           const eventDate = new Date(2000 + year, month - 1, day);
           
@@ -443,14 +478,14 @@ function App() {
 
           return eventDate >= today ? 'upcoming' : 'recent';
         } catch (e) {
-          console.error("Error parsing event date:", selectedEvent.date, e);
+          console.error("Error parsing event date:", widgetEvent.date, e); // Use widgetEvent state
           return 'Event'; // Fallback label
         }
       })(), // Calculate based on date comparison
       progress: 0, // Set progress if applicable, otherwise 0
       iconBgColor: 'bg-[#FF4081]/20', // Partiful color
-      eventId: selectedEvent.id, // Store the event ID
-      attendees: selectedEvent.attendees // Store the attendee count
+      eventId: widgetEvent.id, // Use widgetEvent state
+      attendees: widgetEvent.attendees // Use widgetEvent state
     }
   ];
   
@@ -1154,14 +1189,12 @@ function App() {
                       }
                       handleAppClick('notes'); // Open the Notes app screen
                     } else if (currentWidget.type === 'partiful') {
-                      handleAppClick('partiful');
-                      // Check if eventId is a valid number before calling
+                      // Set the ID *before* opening the app
                       if (typeof currentWidget.eventId === 'number') {
-                        const eventIdToOpen = currentWidget.eventId;
-                        setTimeout(() => {
-                          window.openEventWithId?.(eventIdToOpen);
-                        }, 50); // Small delay
+                        setInitialEventIdForScreen(currentWidget.eventId);
                       }
+                      // Now open the app (EventScreen)
+                      handleAppClick('partiful');
                     } else if (currentWidget.type === 'workout') {
                       // Set Kineship note ID (2) and then open the app
                       setInitialNoteIdForScreen(2);
@@ -1251,29 +1284,6 @@ function App() {
                       setSwipeStartX(null);
                       setSwipeDirection(null);
                       setIsSwiping(false);
-                    }
-                  }}
-                  onClick={() => {
-                    // Only handle clicks on desktop, mobile uses touch events
-                    if (!isMobileDevice) {
-                      createTactileEffect();
-                      const currentWidget = widgets[currentWidgetIndex];
-                      
-                      if (currentWidget.type === 'notes') {
-                        console.log('Notes widget clicked. Data:', currentWidget);
-                        // Set the ID and then open the app
-                        if (typeof currentWidget.noteId === 'number') {
-                          setInitialNoteIdForScreen(currentWidget.noteId);
-                          handleAppClick('notes');
-                        }
-                      } else if (currentWidget.type === 'partiful' && currentWidget.eventId) {
-                        setInitialEventIdForScreen(currentWidget.eventId);
-                        handleAppClick('partiful');
-                      } else if (currentWidget.type === 'workout') {
-                        // Set Kineship note ID (2) and then open the app
-                        setInitialNoteIdForScreen(2);
-                        handleAppClick('notes');
-                      }
                     }
                   }}
                   // Remove mouse-based swipes for desktop completely
@@ -1422,14 +1432,14 @@ function App() {
                         maxWidth: '100%',
                         fontSize: '12px'
                       }}>
-                        {widgets[currentWidgetIndex].type === 'notes' 
-                          ? (selectedNote.title.includes("hello world") 
+                        {widgets[currentWidgetIndex].type === 'notes'
+                          ? (widgetNote.title.includes("hello world")
                               ? "my north star: designing tech that centres human longevity..."
-                              : selectedNote.title.includes("kineship") 
+                              : widgetNote.title.includes("kineship")
                                 ? "the kineship app shares your workout calendar with your circles..."
-                                : (selectedNote.content && selectedNote.content.endsWith('...') 
-                                    ? selectedNote.content 
-                                    : (selectedNote.content || '') + '...'))
+                                : (widgetNote.content && widgetNote.content.endsWith('...')
+                                    ? widgetNote.content
+                                    : (widgetNote.content || '') + '...'))
                           : widgets[currentWidgetIndex].type === 'partiful'
                             ? '' // Empty content for partiful as requested
                             : '' // Empty content for workout
