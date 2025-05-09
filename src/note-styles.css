@@ -1,1 +1,24 @@
 /* Custom desktop note styles */ @media (min-width: 1024px) { .note-detail-container { width: 85%\!important; max-width: 1200px\!important; margin: 0 auto\!important; } }
+
+.refined-sf-pro-note-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.47; /* Approximately 25px for a 17px font */
+  letter-spacing: -0.011em;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: white !important;
+}
+
+/* iOS devices - use system font */
+@supports (-webkit-touch-callout: none) {
+  .refined-sf-pro-note-text {
+    font-family: "New York", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  }
+}
+
+.refined-sf-pro-note-text span[style*="font-size: 0.85em"] {
+  font-size: 0.9em !important; /* Ensure this overrides inline style */
+}

@@ -584,9 +584,10 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                     
                     {/* Show full content without preview/expand */}
                     <motion.div 
-                      className="text-white/90 text-base leading-relaxed whitespace-pre-line"
+                      className="text-sm leading-relaxed text-white/80 overflow-y-auto scrollbar-subtle pr-1 note-content-area lora-note-content"
                       variants={itemVariants}
                       style={{ 
+                        WebkitOverflowScrolling: 'touch',
                         whiteSpace: 'pre-line'
                       }}
                       dangerouslySetInnerHTML={{
@@ -675,85 +676,85 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                           whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.2 }}
-                      >
-                        <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
-                          <motion.div
-                            variants={chevronVariants}
-                            initial="initial"
-                            whileHover="hover"
-                            animate={index === 0 && note.title.includes("hello world") && !hasInteracted ? chevronControls : undefined}
-                          >
-                            <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
-                          </motion.div>
-                        </div>
-                        <div className="ml-1 flex-1 flex justify-between items-center">
-                          <div className="flex-1 pr-3">
-                            <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
-                              {note.title}
-                            </h3>
+                        >
+                          <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
+                            <motion.div
+                              variants={chevronVariants}
+                              initial="initial"
+                              whileHover="hover"
+                              animate={index === 0 && note.title.includes("hello world") && !hasInteracted ? chevronControls : undefined}
+                            >
+                              <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                            </motion.div>
                           </div>
-                          <div className="flex-shrink-0 flex items-center">
-                            <span className={`text-[14px] text-white/50 whitespace-nowrap`}>
-                              {getRelativeDate(note.date)}
-                            </span>
+                          <div className="ml-1 flex-1 flex justify-between items-center">
+                            <div className="flex-1 pr-3">
+                              <h3 className="text-white/90 break-words group-hover:text-white transition-colors duration-200 distinct-note-font">
+                                {note.title}
+                              </h3>
+                            </div>
+                            <div className="flex-shrink-0 flex items-center">
+                              <span className={`text-[14px] text-white/50 whitespace-nowrap`}>
+                                {getRelativeDate(note.date)}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* All notes section */}
-              {allNotes.length > 0 && (
-                <div>
-                  {/* Remove px-2 from header */}
-                  <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2">
-                    All
-                  </h2>
-                  <div className="space-y-0.5">
-                    {allNotes.map((note) => (
-                      <motion.div 
-                        key={`all-${note.id}`}
-                        className="flex group px-1 py-0.5 rounded-md relative"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!note.locked) {
-                            handleNoteClick(note);
-                          }
-                        }}
-                        whileHover={{ scale: note.locked ? 1 : 1.01 }}
-                        whileTap={{ scale: note.locked ? 1 : 0.98 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
-                          <motion.div
-                            variants={chevronVariants}
-                            initial="initial"
-                            whileHover="hover"
-                          >
-                            <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
-                          </motion.div>
-                        </div>
-                        <div className="ml-1 flex-1 flex justify-between items-center">
-                          <div className="flex-1 pr-3">
-                            <h3 className={`text-base font-normal ${note.locked ? 'text-white/60' : 'text-white/90'} break-words transition-colors duration-200`}>
-                              {note.title}
-                            </h3>
+                {/* All notes section */}
+                {allNotes.length > 0 && (
+                  <div>
+                    {/* Remove px-2 from header */}
+                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2">
+                      All
+                    </h2>
+                    <div className="space-y-0.5">
+                      {allNotes.map((note) => (
+                        <motion.div 
+                          key={`all-${note.id}`}
+                          className="flex group px-1 py-0.5 rounded-md relative"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!note.locked) {
+                              handleNoteClick(note);
+                            }
+                          }}
+                          whileHover={{ scale: note.locked ? 1 : 1.01 }}
+                          whileTap={{ scale: note.locked ? 1 : 0.98 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
+                            <motion.div
+                              variants={chevronVariants}
+                              initial="initial"
+                              whileHover="hover"
+                            >
+                              <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                            </motion.div>
                           </div>
-                          <div className="flex-shrink-0 flex items-center">
-                            <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
-                              {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
-                            </span>
+                          <div className="ml-1 flex-1 flex justify-between items-center">
+                            <div className="flex-1 pr-3">
+                              <h3 className={`${note.locked ? 'text-white/60' : 'text-white/90'} break-words transition-colors duration-200 distinct-note-font`}>
+                                {note.title}
+                              </h3>
+                            </div>
+                            <div className="flex-shrink-0 flex items-center">
+                              <span className={`text-[14px] ${note.locked ? 'text-white/50' : 'text-white/50'} whitespace-nowrap`}>
+                                {note.locked ? <Lock size={16} className="text-white/50" /> : getRelativeDate(note.date)}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
+                )}
+              </div>
+            </motion.div>
           )
         )}
       </AnimatePresence>

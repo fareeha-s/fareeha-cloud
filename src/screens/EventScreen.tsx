@@ -430,7 +430,7 @@ export const EventScreen: React.FC<AppScreenProps> = ({
                     </div>
                     <div className="ml-1 flex-1 flex justify-between items-center">
                       <div className="flex-1 pr-3">
-                        <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
+                        <h3 className={`${event.clickable ? 'text-white/90 group-hover:text-white' : 'text-white/60'} break-words transition-colors duration-200 distinct-note-font`}>
                           {event.title}
                         </h3>
                       </div>
@@ -499,7 +499,7 @@ export const EventScreen: React.FC<AppScreenProps> = ({
                     </div>
                     <div className="ml-1 flex-1 flex justify-between items-center">
                       <div className="flex-1 pr-3">
-                        <h3 className="text-base font-normal text-white/90 break-words group-hover:text-white transition-colors duration-200">
+                        <h3 className={`${event.clickable ? 'text-white/90 group-hover:text-white' : 'text-white/60'} break-words transition-colors duration-200 distinct-note-font`}>
                           {event.title}
                         </h3>
                       </div>

@@ -487,3 +487,21 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 .mtk18 {
   font-size: 19px;
 }
+
+/* Custom class for distinct note font and color */
+.distinct-note-font {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'system-ui', sans-serif;
+  color: inherit;
+  font-size: 13pt;
+  font-weight: 400;
+}
+/* END - Custom class for distinct note font and color */
+
+/* Custom class for Lora font in note content */
+.lora-note-content {
+  font-family: 'Lora', serif;
+  font-size: 12pt;
+  font-weight: 400;
+  color: inherit;
+}
+/* END - Custom class for Lora font in note content */

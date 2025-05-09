@@ -15,7 +15,7 @@ export type NoteItem = {
 export const notes: NoteItem[] = [
   { 
     id: 1, 
-    title: "hello world 🧭", 
+    title: "hello world ˚", 
     content: `Hey, I'm Fareeha ✨
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
