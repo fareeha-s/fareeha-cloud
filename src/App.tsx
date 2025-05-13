@@ -12,6 +12,12 @@ import { ChevronLeft, StickyNote } from 'lucide-react';
 import { notes } from './data/notes';
 // Import shared events data
 import { events } from './data/events';
+// Import the NoteItem type
+import { NoteItem } from './data/notes';
+// Import the DesktopOverlay component
+import DesktopOverlay from './components/DesktopOverlay';
+// Import the AppBackground component
+import AppBackground from './components/AppBackground';
 
 // Global tactile effect function for better performance
 export const createTactileEffect = () => {
@@ -139,6 +145,11 @@ const createWidgetSwipeFeedback = () => {
 
 // Format date to relative terms with three-letter day abbreviations
 const getRelativeDate = (dateStr: string) => {
+  // Add check for empty date string
+  if (!dateStr) {
+    return ''; // Return empty string if date is missing
+  }
+
   // Get current date
   const now = new Date();
   const today = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getFullYear()).slice(-2)}`;
@@ -168,6 +179,9 @@ function App() {
   // Determine initial state based on window properties
   const shouldOpenNoteInitially = typeof window !== 'undefined' && !!window.initialNoteId;
   
+  // State for desktop overlay
+  const [isDesktop, setIsDesktop] = useState(false);
+
   // Set 'notes' as the default active app and set up to open hello world note
   const [activeApp, setActiveApp] = useState<string | null>('notes');
   const [isOpen, setIsOpen] = useState(false);
@@ -191,6 +205,19 @@ function App() {
   const [initialNoteIdForScreen, setInitialNoteIdForScreen] = useState<number | null>(null); // State for direct note ID
   const [widgetNote, setWidgetNote] = useState(notes[0]); // State for direct note ID
   
+  // Add useEffect for desktop detection
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024); // Example threshold for desktop
+    };
+
+    checkDesktop(); // Initial check
+    window.addEventListener('resize', checkDesktop); // Check on resize
+
+    // Cleanup listener on component unmount
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
   // Add an effect to preload all content and prevent flashes
   useEffect(() => {
     // Use Promise.all to track both image and font loading
@@ -847,59 +874,20 @@ function App() {
     }
   };
 
+  // Conditional rendering based on desktop view
+  if (isDesktop) { // Simplified condition
+    return (
+      <DesktopOverlay /> // Render without props
+    );
+  }
+
   return (
-    // Apply background color directly to the top-level container
     <div 
       className="relative flex items-center justify-center min-h-screen"
-      style={{ backgroundColor: '#131518' }} // Ensure dark background covers entire viewport
+      style={{ backgroundColor: '#131518' }} 
     >
-      {/* Background Wrapper - Simplified with single image and fallback */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
-        {/* Single beautiful background image with fallback */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-[#131518] to-[#1d1c21]"
-          style={{ 
-            opacity: 1,
-            backgroundColor: '#131518', /* Ensure dark background during load */
-          }}
-        >
-          {/* Subtle bokeh effect overlay */}
-        <div 
-            className="absolute inset-0 opacity-30"
-          style={{ 
-              backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.03) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.02) 0%, transparent 30%), radial-gradient(circle at 45% 80%, rgba(180,180,200,0.02) 0%, transparent 40%)',
-              mixBlendMode: 'screen'
-          }}
-        ></div>
-        
-          {/* Background image that loads on top of the gradient */}
-          <img 
-            src="./images/background.webp" 
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          style={{ 
-              opacity: isLoaded ? 0.9 : 0,
-              transition: 'opacity 1s ease',
-              backgroundColor: '#131518', /* Ensure dark background during image load */
-            }}
-            onError={(e) => {
-              // If webp fails, try jpg
-              const img = e.target as HTMLImageElement;
-              img.onerror = null; // Prevent infinite error loop
-              img.src = './background.jpg';
-            }}
-          />
-        
-          {/* Subtle overlay for better text contrast */}
-        <div 
-            className="absolute inset-0 bg-black/20"
-          style={{
-              opacity: isLoaded ? 0.5 : 0,
-              transition: 'opacity 1s ease',
-          }}
-        ></div>
-        </div>
-      </div>
+      {/* Use the AppBackground component here */}
+      <AppBackground isLoaded={isLoaded} />
 
       <AnimatePresence>
         {activeApp && (
@@ -1166,7 +1154,21 @@ function App() {
                   ref={widgetRef}
                   key={`widget-${currentWidgetIndex}`}
                   className={`w-full aspect-square mt-auto rounded-[16px] overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''}`}
-                  style={{ aspectRatio: '1/1' }}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    backdropFilter: 'none',
+                    WebkitBackdropFilter: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    padding: '14px',
+                    transform: 'translateZ(0)',
+                    WebkitTransform: 'translateZ(0)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
+                    touchAction: 'none', 
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    // aspectRatio: '1/1' // This is handled by the aspect-square Tailwind class
+                  }}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
@@ -1174,8 +1176,8 @@ function App() {
                     duration: 0.5, // Slightly longer for smoother feel
                     ease: [0.25, 0.8, 0.25, 1] // Enhanced cubic-bezier for buttery-smooth transitions
                   }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     if (!widgets[currentWidgetIndex]) return;
                     
@@ -1290,22 +1292,8 @@ function App() {
                   onMouseDown={undefined}
                   onMouseMove={undefined}
                   onMouseUp={undefined}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  backdropFilter: 'none',
-                  WebkitBackdropFilter: 'none',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  padding: '14px',
-                  transform: 'translateZ(0)',
-                  WebkitTransform: 'translateZ(0)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
-                  touchAction: 'none', // Disable browser touch actions to handle all touch events
-                  cursor: 'pointer', // Always use pointer cursor for web users
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-              >
-                <div className="flex items-center mb-3">
+                >
+                  <div className="flex items-center mb-3">
                     <div className={`w-10 h-10 rounded-md flex items-center justify-center mr-3 shadow-md ${widgets[currentWidgetIndex].iconBgColor} overflow-hidden border border-white/10`}>
                       {widgets[currentWidgetIndex].type === 'workout' && (
                         <img 
@@ -1339,7 +1327,7 @@ function App() {
                         {/* Show timestamp for all widgets, including notes */}
                         <p className="text-[14px] text-white/70 text-sharp ml-1 flex-shrink-0" style={{ WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale', fontWeight: 350 }}>
                           {widgets[currentWidgetIndex].type === 'notes' 
-                            ? getRelativeDate(selectedNote.date) // Show 3-letter day for notes in the top right
+                            ? getRelativeDate(widgetNote.date) // Consistently use widgetNote for date display
                             : widgets[currentWidgetIndex].timestamp}
                       </p>
                     </div>
