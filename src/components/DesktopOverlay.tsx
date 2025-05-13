@@ -14,9 +14,9 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = () => { // Remove note pro
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-I\'m building <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: #FFEAEB; font-weight: 600;" class="hover:underline decoration-white/75 hover:decoration-white/90 transition-all" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts. The north star is to design tech that <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full" target="_blank" rel="noopener noreferrer" style="color: #FFEAEB; font-weight: 600;" class="hover:underline decoration-white/75 hover:decoration-white/90 transition-all" onclick="event.stopPropagation()">centres human longevity</a>.
+I\'m building <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; font-weight: normal; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.1);" class="hover:decoration-[rgba(255,255,255,0.4)] transition-all" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts. The north star is to design tech that <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; font-weight: normal; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.1);" class="hover:decoration-[rgba(255,255,255,0.4)] transition-all" onclick="event.stopPropagation()">centres human longevity</a>.
 
-If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" style="color: #FFEAEB; font-weight: 600;" class="hover:underline decoration-white/75 hover:decoration-white/90 transition-all" onclick="event.stopPropagation()">hear from you.</a>
+If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" style="color: #FFE7EA; font-weight: normal; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.1);" class="hover:decoration-[rgba(255,255,255,0.4)] transition-all" onclick="event.stopPropagation()">hear from you.</a>
 `;
 
   const contentAfterLoveList = ``; // This is now empty
@@ -126,25 +126,31 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
             {/* Render content before list */}
             <div dangerouslySetInnerHTML={{ __html: contentBeforeLoveList }} />
 
-            {/* Updated 'fold this screen' text */}
-            <div style={{ marginTop: '1.5em' }}>
-              <span
-                style={{ fontWeight: 'bold' }} // Keep bold, remove cursor and onClick
-                className="flex items-center justify-center" // Remove hover effect classes, add justify-center
-              >
-                ‹ Discover another layer ›
-              </span>
-            </div>
-
             {/* Render content after list (now empty) */}
             {contentAfterLoveList && (
                  <div
-                    style={{ marginTop: '1.5em' }} // Add space only if list was visible
+                    style={{ marginTop: '1.5em' }}
                     dangerouslySetInnerHTML={{ __html: contentAfterLoveList }}
                 />
             )}
           </div>
         </motion.div>
+
+        {/* 'Fold this screen' text moved outside and below the main content container */}
+        <motion.div 
+          style={{ marginTop: '1.5em' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 3, duration: 1 }}
+        >
+          <span
+            style={{ opacity: 0.4, fontWeight: 'normal', fontSize: '0.8em' }} 
+            className="flex items-center justify-center"
+          >
+            Fold this site in horizontally to switch to app mode.
+          </span>
+        </motion.div>
+
       </div>
     </div>
   );
