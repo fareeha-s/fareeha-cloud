@@ -578,7 +578,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                         {selectedNote?.title}
                       </h2>
                       <span className="text-[14px] text-white/60 ml-2 mt-1">
-                        {getRelativeDate(selectedNote?.date || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }))}
+                        {getRelativeDate(selectedNote?.date)}
                       </span>
                     </div>
                     
@@ -592,45 +592,58 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                       }}
                       dangerouslySetInnerHTML={{
                         __html: selectedNote?.content
+                          // Rule for italics: *text* -> <em>text</em>
+                          .replace(/\*([^\*]+)\*/g, '<em>$1</em>')
+                          // Rule for links: [text](url)
                           .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
                             // Check if this is an internal note link
                             if (url.startsWith('note:')) {
                               const noteId = parseInt(url.substring(5));
-                              // Special case for Kineship note (id: 2) when opened from Hello World note (id: 1)
+                              let clickHandler = `(function(e) { 
+                                e.stopPropagation(); 
+                                if (${noteId} === 2 && selectedNote?.id === 1) {
+                                  localStorage.setItem(\'openedKineshipFromHelloWorld\', \'true\');
+                                }
+                                window.openNoteWithId(${noteId});
+                              })(event)`;
+                              // Special styling for Kineship link from Hello World
                               if (noteId === 2 && selectedNote?.id === 1) {
-                                return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
-                                  e.stopPropagation(); 
-                                  localStorage.setItem('openedKineshipFromHelloWorld', 'true');
-                                  window.openNoteWithId(${noteId});
-                                })(event)">${text}</a>`;
-                              } else {
-                                return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
-                                  e.stopPropagation(); 
-                                  window.openNoteWithId(${noteId});
-                                })(event)">${text}</a>`;
+                                return `<a href=\"javascript:void(0)\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.7);\" onclick=\"${clickHandler}\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.9)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\">${text}</a>`;
                               }
+                              // Standard styling for other note links
+                              return `<a href=\"javascript:void(0)\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"${clickHandler}\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
                             }
                             
                             // Check if this is a video link
                             if (url.startsWith('video:')) {
                               const videoUrl = url.substring(6);
-                              return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
+                              return `<a href=\"javascript:void(0)\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"(function(e) { 
                                 e.stopPropagation(); 
-                                window.handleVideoLink('${videoUrl}');
-                              })(event)">${text}</a>`;
+                                window.handleVideoLink(\'${videoUrl}\');
+                              })(event)\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
                             }
                             
                             // Check if this is an app link
                             if (url.startsWith('app:')) {
                               const appId = url.substring(4);
-                              return `<a href="javascript:void(0)" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="(function(e) { 
+                              return `<a href=\"javascript:void(0)\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"(function(e) { 
                                 e.stopPropagation(); 
-                                window.handleAppClick('${appId}');
-                              })(event)">${text}</a>`;
+                                window.handleAppClick(\'${appId}\');
+                              })(event)\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
                             }
                             
-                            // External link
-                            return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-white underline decoration-white/50 hover:decoration-white/90 transition-all" onclick="event.stopPropagation()">${text}</a>`;
+                            // Explicitly handle mailto links
+                            if (url.startsWith('mailto:')) {
+                              return `<a href=\"${url}\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
+                            }
+                            
+                            // External links (http, https, etc.) - ensure target_blank for these
+                            if (url.startsWith('http:') || url.startsWith('https:')) {
+                                return `<a href=\"${url}\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
+                            }
+                            
+                            // Fallback for any other link types (though ideally all are covered)
+                            return `<a href=\"${url}\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
                           })
                           .replace(/(__[^_]+__)/g, (_, part) => {
                             // Process underlined sections
