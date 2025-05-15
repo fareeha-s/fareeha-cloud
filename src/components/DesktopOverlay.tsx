@@ -1,29 +1,131 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AppBackground from './AppBackground';
+import ReactDOM from 'react-dom';
+import { X } from 'lucide-react';
 
-// Remove NoteItem import and note prop from interface
-interface DesktopOverlayProps {}
+// Add VideoPlayerOverlay component for in-screen video playback
+const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: () => void }) => {
+  // Extract YouTube video ID from URL
+  const getYouTubeVideoId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
 
-const DesktopOverlay: React.FC<DesktopOverlayProps> = () => { // Remove note prop from signature
+  const videoId = getYouTubeVideoId(videoUrl);
+
+  if (!videoId) return null;
+
+  // Calculate embedUrl
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&controls=1&showinfo=1&playsinline=1`;
+
+  // Create a portal to render directly to body
+  return ReactDOM.createPortal(
+    <motion.div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh'
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div 
+        className="w-full h-full flex items-center justify-center"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button 
+          className="absolute top-8 right-8 z-10 p-3 bg-black/70 hover:bg-black/90 rounded-full text-white/80 hover:text-white transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+        >
+          <X size={28} />
+        </button>
+        <iframe
+          className="w-full h-full max-h-screen"
+          src={embedUrl}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </motion.div>
+    </motion.div>,
+    document.body
+  );
+};
+
+interface DesktopOverlayProps {
+  onClose: () => void;
+}
+
+const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
   const isLoaded = true;
+  // Add state for video URL
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
-  // Updated links: softer blush color (#FFF0F0), no semibold, font-medium weight
+  // Add function to handle video links
+  const handleVideoLink = (url: string) => {
+    setVideoUrl(url);
+  };
+
+  // Function to close video player
+  const closeVideoPlayer = () => {
+    setVideoUrl(null);
+  };
+
   const contentBeforeLoveList = `\
 <span style="font-size: 24px; font-weight: 500; line-height: 1.3;">Hey, I\'m Fareeha ✨</span>
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-I\'m building <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; font-weight: normal; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.1);" class="hover:decoration-[rgba(255,255,255,0.4)] transition-all" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts. The north star is to design tech that <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; font-weight: normal; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.1);" class="hover:decoration-[rgba(255,255,255,0.4)] transition-all" onclick="event.stopPropagation()">centres human longevity</a>.
+I\'m building <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">Kineship</a>, a social layer for workouts. The north star is to design tech that <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">centres human longevity</a>.
 
-If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" style="color: #FFE7EA; font-weight: normal; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.1);" class="hover:decoration-[rgba(255,255,255,0.4)] transition-all" onclick="event.stopPropagation()">hear from you.</a>
+<span style="font-weight: bold;">in line with that:</span>
+▹ early experience designer at <span style="color: rgba(255, 255, 255, 0.65);">[stealth]</span> <a href="https://www.hf0.com/" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">($1M pre-seed, HF0)</a>
+▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65);">(</span><a href="https://fareeha-s.github.io/Tessel/" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">tessel</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/VMxSzVREUgY');" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">h&s gala</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a');" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">dc fashion show</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">vfc</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
+▹ winning team, healthcare innovation <span style="color: rgba(255, 255, 255, 0.65);">(</span><a href="javascript:void(0)" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR');" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">mit bc x harvard med</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
+
+If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">hear from you.</a>
 `;
 
-  const contentAfterLoveList = ``; // This is now empty
+  const contentAfterLoveList = ``;
+
+  // Make handleVideoLink available globally within the component's lifecycle
+  React.useEffect(() => {
+    // Expose the handleVideoLink function globally
+    window.desktopHandleVideoLink = handleVideoLink;
+    
+    // Clean up when component unmounts
+    return () => {
+      delete window.desktopHandleVideoLink;
+    };
+  }, []);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-8">
+    <motion.div
+      className="fixed inset-0 flex items-center justify-center p-8 z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <AppBackground isLoaded={isLoaded} />
+      
       <div className="relative w-full max-w-3xl mx-auto" style={{ marginTop: '-10rem' }}>
         <motion.h2 
           className="absolute top-[-18px] right-5 text-[18px] font-semibold text-white z-20"
@@ -144,16 +246,47 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
           transition={{ delay: 3, duration: 1 }}
         >
           <span
-            style={{ opacity: 0.4, fontWeight: 'normal', fontSize: '0.8em' }} 
-            className="flex items-center justify-center"
+            onClick={onClose}
+            style={{ 
+              opacity: 0.4, 
+              fontWeight: 'normal', 
+              fontSize: '0.8em',
+              cursor: 'pointer',
+              transition: 'opacity 0.2s ease, transform 0.2s ease'
+            }}
+            className="flex items-center justify-center hover:opacity-70 active:opacity-90"
+            onMouseOver={(e) => {
+              e.currentTarget.style.opacity = '0.7';
+              e.currentTarget.style.transform = 'scale(1.02)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.opacity = '0.4';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
           >
-            Fold this site in horizontally to switch to app mode.
+            fold this page in horizontally to view more content.
           </span>
         </motion.div>
-
       </div>
-    </div>
+
+      {/* Video player overlay */}
+      <AnimatePresence>
+        {videoUrl && (
+          <VideoPlayerOverlay 
+            videoUrl={videoUrl} 
+            onClose={closeVideoPlayer} 
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
+
+// Add type declaration for global window properties
+declare global {
+  interface Window {
+    desktopHandleVideoLink?: (url: string) => void;
+  }
+}
 
 export default DesktopOverlay; 

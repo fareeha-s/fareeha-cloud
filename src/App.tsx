@@ -181,6 +181,7 @@ function App() {
   
   // State for desktop overlay
   const [isDesktop, setIsDesktop] = useState(false);
+  const [showDesktopOverlay, setShowDesktopOverlay] = useState(true); // New state for controlling overlay visibility
 
   // Set 'notes' as the default active app and set up to open hello world note
   const [activeApp, setActiveApp] = useState<string | null>('notes');
@@ -874,10 +875,21 @@ function App() {
     }
   };
 
+  // Sync the showDesktopOverlay when isDesktop changes
+  useEffect(() => {
+    if (isDesktop) {
+      setShowDesktopOverlay(true);
+    }
+  }, [isDesktop]);
+
   // Conditional rendering based on desktop view
-  if (isDesktop) { // Simplified condition
+  if (isDesktop && showDesktopOverlay) { // Show desktop overlay only if both conditions are true
     return (
-      <DesktopOverlay /> // Render without props
+      <AnimatePresence mode="wait">
+        <motion.div key="desktop-overlay">
+          <DesktopOverlay onClose={() => setShowDesktopOverlay(false)} /> {/* Pass onClose prop */}
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
