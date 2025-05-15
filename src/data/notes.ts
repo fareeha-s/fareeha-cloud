@@ -20,17 +20,12 @@ export const notes: NoteItem[] = [
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-I\'m building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> <a href="https://www.instagram.com/loiaccelerator/" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);" onmouseover="this.style.textDecorationColor=\'rgba(255, 255, 255, 0.7)\'" onmouseout="this.style.textDecorationColor=\'rgba(255, 255, 255, 0.3)\'">(loi labs)</a></span>, a social layer for workouts. The north star is to design tech that [centres human longevity](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full).
-
-<span style="font-weight: bold;">in line with that:</span>
-▹ early experience designer at <span style="color: rgba(255, 255, 255, 0.65);">[stealth]</span> <span style="font-size: 0.85em;"><a href="https://www.hf0.com/" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);" onmouseover="this.style.textDecorationColor=\'rgba(255, 255, 255, 0.7)\'" onmouseout="this.style.textDecorationColor=\'rgba(255, 255, 255, 0.3)\'">($1M pre-seed, HF0)</a></span>
-▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;">([tessel](https://fareeha-s.github.io/Tessel/), [h&amp;s gala](video:https://youtu.be/VMxSzVREUgY), [dc fashion show](video:https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni))</span>
-▹ winning team, healthcare innovation [<span style="font-size: 0.85em;">(mit bc x harvard med)</span>](video:https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR)
+I\'m building [Kineship](note:2)<span style="color: rgba(255, 255, 255, 0.65); font-size: 0.85em;"> <a href="https://www.instagram.com/loiaccelerator/" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';">(loi labs)</a></span>, a social layer for workouts. The north star is to design tech that [centres human longevity](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full).
 
 <span style="font-weight: bold;">things i love:</span>  
 ▹ taking forever to [set a table](app:partiful)
 ▹ giving people [apples](note:3) they didn\'t ask for 
-▹ keeping my Oura <a href="javascript:void(0)" style="color: #FFE7EA; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);" onclick="event.stopPropagation(); window.openNoteWithId(7);" onmouseover="this.style.textDecorationColor=\'rgba(255, 255, 255, 0.7)\'" onmouseout="this.style.textDecorationColor=\'rgba(255, 255, 255, 0.3)\'">happy</a> 🫶
+▹ keeping my Oura <a href="javascript:void(0)" style="color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;" onclick="event.stopPropagation(); window.openNoteWithId(7);" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';">happy</a> 🫶
 
 If this feels like your kind of world, I\'d love to [hear from you.](mailto:fareeha@kineship.com)`,
     date: "",
@@ -70,7 +65,7 @@ Lately, I\'ve been wondering if there might be a kind of closeness that fits int
 
 Like when you swap your usual 6pm class for the 5, because your friend\'s going to that one. Or wandering to the farmers\' market the same time as your neighbours... your day suddenly feels a touch warmer.
 
-It might seem small, but I\'ve learned that researchers have documented <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC5137339/' target='_blank' rel='noopener noreferrer' style='color: #FFE7EA; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);' onmouseover='this.style.textDecorationColor="rgba(255, 255, 255, 0.7)"' onmouseout='this.style.textDecorationColor="rgba(255, 255, 255, 0.3)"'>intentional synchrony</a> as a natural human principle rooted in our nervous systems. These overlaps are tied to lower loneliness, better regulation, and long-term wellbeing - all core to how we can rebuild connection at scale.
+It might seem small, but I\'ve learned that researchers have documented <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC5137339/' target='_blank' rel='noopener noreferrer' style='color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;' onmouseover='this.style.color="#fff1f4"; this.style.textShadow="0 0 1.2px rgba(255, 255, 255, 0.8)";' onmouseout='this.style.color="#FFE7EA"; this.style.textShadow="0 0 0.8px rgba(255, 255, 255, 0.6)";'>intentional synchrony</a> as a natural human principle rooted in our nervous systems. These overlaps are tied to lower loneliness, better regulation, and long-term wellbeing - all core to how we can rebuild connection at scale.
 
 Surprisingly, almost none of the social platforms we use today are designed to support this. Instead, they often keep us observing each other\'s lives from a distance.
 

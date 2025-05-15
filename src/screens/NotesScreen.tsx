@@ -608,42 +608,42 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                               })(event)`;
                               // Special styling for Kineship link from Hello World
                               if (noteId === 2 && selectedNote?.id === 1) {
-                                return `<a href=\"javascript:void(0)\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.7);\" onclick=\"${clickHandler}\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.9)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\">${text}</a>`;
+                                return `<a href=\"javascript:void(0)\" style=\"color: #FFE7EA; text-decoration: underline; text-decoration-style: dotted; text-decoration-color: rgba(255, 231, 234, 0.5); text-underline-offset: 2px; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;\" onclick=\"${clickHandler}\" onmouseover=\"this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';\" onmouseout=\"this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';\">${text}</a>`;
                               }
                               // Standard styling for other note links
-                              return `<a href=\"javascript:void(0)\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"${clickHandler}\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
+                              return `<a href=\"javascript:void(0)\" style=\"color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;\" onclick=\"${clickHandler}\" onmouseover=\"this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';\" onmouseout=\"this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';\">${text}</a>`;
                             }
                             
                             // Check if this is a video link
                             if (url.startsWith('video:')) {
                               const videoUrl = url.substring(6);
-                              return `<a href=\"javascript:void(0)\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"(function(e) { 
+                              return `<a href=\"javascript:void(0)\" style=\"color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;\" onclick=\"(function(e) { 
                                 e.stopPropagation(); 
                                 window.handleVideoLink(\'${videoUrl}\');
-                              })(event)\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
+                              })(event)\" onmouseover=\"this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';\" onmouseout=\"this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';\">${text}</a>`;
                             }
                             
                             // Check if this is an app link
                             if (url.startsWith('app:')) {
                               const appId = url.substring(4);
-                              return `<a href=\"javascript:void(0)\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"(function(e) { 
+                              return `<a href=\"javascript:void(0)\" style=\"color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;\" onclick=\"(function(e) { 
                                 e.stopPropagation(); 
                                 window.handleAppClick(\'${appId}\');
-                              })(event)\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
+                              })(event)\" onmouseover=\"this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';\" onmouseout=\"this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';\">${text}</a>`;
                             }
                             
                             // Explicitly handle mailto links
                             if (url.startsWith('mailto:')) {
-                              return `<a href=\"${url}\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
+                              return `<a href=\"${url}\" style=\"color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';\" onmouseout=\"this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';\">${text}</a>`;
                             }
                             
                             // External links (http, https, etc.) - ensure target_blank for these
                             if (url.startsWith('http:') || url.startsWith('https:')) {
-                                return `<a href=\"${url}\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
+                                return `<a href=\"${url}\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';\" onmouseout=\"this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';\">${text}</a>`;
                             }
                             
                             // Fallback for any other link types (though ideally all are covered)
-                            return `<a href=\"${url}\" style=\"color: #FFEAEB; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, 0.3);\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.7)'\" onmouseout=\"this.style.textDecorationColor='rgba(255, 255, 255, 0.3)'\">${text}</a>`;
+                            return `<a href=\"${url}\" style=\"color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer;\" onclick=\"event.stopPropagation()\" onmouseover=\"this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';\" onmouseout=\"this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';\">${text}</a>`;
                           })
                           .replace(/(__[^_]+__)/g, (_, part) => {
                             // Process underlined sections
