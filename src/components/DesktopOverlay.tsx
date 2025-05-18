@@ -224,9 +224,9 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
           <span
             onClick={onClose}
             style={{ 
-              opacity: 0.4, 
+              opacity: 0.7, 
               fontWeight: 'normal', 
-              fontSize: '0.8em',
+              fontSize: '0.9em',
               cursor: 'pointer',
               transition: 'opacity 0.2s ease, transform 0.2s ease'
             }}
@@ -236,11 +236,11 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
               e.currentTarget.style.transform = 'scale(1.02)';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.opacity = '0.4';
+              e.currentTarget.style.opacity = '0.5';
               e.currentTarget.style.transform = 'scale(1)';
             }}
           >
-            fold this page in horizontally to view more content.
+            Click here to turn this site into an app.
           </span>
         </motion.div>
       </div>
