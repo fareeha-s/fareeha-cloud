@@ -126,7 +126,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
     >
       <AppBackground isLoaded={isLoaded} />
       
-      <div className="relative w-full max-w-4xl mx-auto" style={{ marginTop: '-10rem' }}>
+      <div className="relative w-full max-w-4xl mx-auto" style={{ marginTop: '-6rem' }}>
         <motion.h2 
           className="absolute top-[-18px] right-5 text-[18px] font-semibold text-white z-20"
           initial={{ opacity: 0 }}
