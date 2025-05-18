@@ -505,3 +505,29 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   color: inherit;
 }
 /* END - Custom class for Lora font in note content */
+
+/* == Custom Link Styles == */
+.custom-pink-link {
+  color: #FFE7EA;
+  text-decoration: none;
+  text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out, transform 0.15s ease-in-out;
+  font-size: 1.05em; /* Make links slightly larger than their parent text */
+}
+
+.custom-pink-link:hover {
+  color: #fff1f4;
+  text-shadow: 0 0 1.2px rgba(255, 255, 255, 0.8);
+}
+
+.custom-pink-link--desktop-overlay {
+  display: inline-block; /* Needed for transform */
+}
+
+.custom-pink-link--desktop-overlay:hover {
+  transform: scale(1.02); /* Specific hover transform for DesktopOverlay links */
+}
+/* == End Custom Link Styles == */
+
+/* Fix iOS font issue in WebKit */

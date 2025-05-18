@@ -93,14 +93,14 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-I\'m building <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">Kineship</a>, a social layer for workouts. The north star is to design tech that <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">centres human longevity</a>.
+I\'m building <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts. The north star is to design tech that <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">centres human longevity</a>.
 
 <span style="font-weight: bold;">in line with that:</span>
-▹ early experience designer at <span style="color: rgba(255, 255, 255, 0.65);">[stealth]</span> <a href="https://www.hf0.com/" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">($1M pre-seed, HF0)</a>
-▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65);">(</span><a href="https://fareeha-s.github.io/Tessel/" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">tessel</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/VMxSzVREUgY');" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">h&s gala</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a');" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">dc fashion show</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni" target="_blank" rel="noopener noreferrer" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">vfc</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
-▹ winning team, healthcare innovation <span style="color: rgba(255, 255, 255, 0.65);">(</span><a href="javascript:void(0)" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR');" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">mit bc x harvard med</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
+▹ early experience designer at <span style="color: rgba(255, 255, 255, 0.65);">[stealth]</span> <a href="https://www.hf0.com/" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">($1M pre-seed, HF0)</a>
+▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="https://fareeha-s.github.io/Tessel/" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">tessel</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/VMxSzVREUgY');">h&s gala</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a');">dc fashion show</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">vfc</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
+▹ winning team, healthcare innovation <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/u6_jdJ7YRXM?si=svadyVmXGiPOjPVR');">mit bc x harvard med</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
 
-If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" style="color: #FFE7EA; text-decoration: none; transition: all 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; font-size: 1.05em;" onclick="event.stopPropagation()" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)'; this.style.transform='scale(1.02)'; this.style.display='inline-block';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)'; this.style.transform='scale(1)'; this.style.display='inline-block';">hear from you.</a>
+If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">hear from you.</a>
 `;
 
   const contentAfterLoveList = ``;
@@ -126,7 +126,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
     >
       <AppBackground isLoaded={isLoaded} />
       
-      <div className="relative w-full max-w-3xl mx-auto" style={{ marginTop: '-10rem' }}>
+      <div className="relative w-full max-w-4xl mx-auto" style={{ marginTop: '-10rem' }}>
         <motion.h2 
           className="absolute top-[-18px] right-5 text-[18px] font-semibold text-white z-20"
           initial={{ opacity: 0 }}
@@ -169,54 +169,30 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
                   e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
                 }}
               />
-              <div
-                className="absolute flex items-center justify-center"
+              <svg 
+                width="12" 
+                height="12" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg" 
                 style={{
-                  width: '16px',
-                  height: '16px',
-                  backgroundColor: 'rgba(0,0,0,0.45)',
-                  borderRadius: '8px',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15)',
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                  cursor: 'pointer',
-                  zIndex: 10000,
-                  top: ' -4px',
-                  right: ' -4px',
-                  opacity: 1,
-                  transition: 'none'
-                }}
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  window.open('https://github.com/fareeha-s', '_blank');
-                }}
-                onTouchStart={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.9)';
-                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
-                }}
-                onTouchEnd={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.1)';
-                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                  stroke: 'white', 
+                  strokeWidth: 2.5, 
+                  position: 'absolute',
+                  top: '-2px',
+                  right: '-2px',
+                  zIndex: 10003,
+                  pointerEvents: 'none' // Allow clicks to pass through to the <a> tag
                 }}
               >
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: 'white', strokeWidth: 2.5 }}>
                   <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
                 </svg>
-              </div>
             </a>
           </span>
         </motion.h2>
 
         <motion.div
-          className="relative w-full max-w-3xl mx-auto bg-white/5 border border-white/10 rounded-2xl shadow-lg p-12 overflow-y-auto max-h-[90vh] z-10"
+          className="relative w-full max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl shadow-lg p-12 overflow-y-auto max-h-[90vh] z-10"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}

@@ -1035,49 +1035,26 @@ function App() {
                       e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
                     }}
                   />
-                  {/* Link indicator - always render */}
-                  <div
-                    className="absolute flex items-center justify-center"
+                  <svg 
+                    width="10" 
+                    height="10" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg" 
                     style={{
-                      width: '14px',
-                      height: '14px',
-                      backgroundColor: 'rgba(0,0,0,0.45)',
-                      borderRadius: '7px',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15)',
-                      backdropFilter: 'blur(4px)',
-                      WebkitBackdropFilter: 'blur(4px)',
-                      cursor: 'pointer',
-                      zIndex: 10000,
-                      top: '-3px',
-                      right: '-3px',
+                      stroke: 'white', 
+                      strokeWidth: 2.5, 
+                      position: 'absolute',
+                      top: '-1px',
+                      right: '-1px',
+                      zIndex: 10003, // Ensure it's above the image but respects parent context
+                      pointerEvents: 'none', // Allow clicks to pass through to the <a> tag
                       opacity: hasSeenHomeSession && activeApp === null && !arrowDismissed ? 1 : 0,
-                      transition: 'opacity 1s ease-in-out',
-                    }}
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      window.open('https://github.com/fareeha-s', '_blank');
-                    }}
-                    onTouchStart={(e) => {
-                      e.currentTarget.style.transform = 'scale(0.9)';
-                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
-                    }}
-                    onTouchEnd={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.1)';
-                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.65)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.45)';
+                      transition: 'opacity 1s ease-in-out', // Keep original opacity transition
                     }}
                   >
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ stroke: 'white', strokeWidth: 2.5 }}>
                       <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
                     </svg>
-                  </div>
                 </a>
               </span>
             </motion.h2>
