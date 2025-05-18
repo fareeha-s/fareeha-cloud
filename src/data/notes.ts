@@ -25,7 +25,7 @@ I\'m building [Kineship](note:2), a social layer for workouts. The north star is
 <span style="font-weight: bold;">things i love:</span>  
 ▹ taking forever to [set a table](app:partiful)
 ▹ giving people [apples](note:3) they didn\'t ask for 
-▹ keeping my Oura <a href="javascript:void(0)" class="custom-pink-link" onclick="event.stopPropagation(); window.openNoteWithId(7);">happy</a> 🫶
+▹ keeping my Oura <a href="javascript:void(0)" class="custom-pink-link" onclick="event.stopPropagation(); window.openNoteWithId(7);">happy</a>
 
 If this feels like your kind of world, I\'d love to [hear from you.](mailto:fareeha@kineship.com)`,
     date: "",
@@ -89,8 +89,8 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
   },
   { 
     id: 7,
-    title: "oura",
-    content: "Checking in with my Oura ring.",
+    title: "oura stats",
+    content: "I was taking way too long deciding whether to get an Oura or a Whoop. My friends got fed up with this, so they decided for me on my birthday!\n\nMay Averages:\nHRV: 115 ms\nRHR: 46 bpm",
     date: '03/05/25',
     timeframe: 'recent',
     pinned: false
