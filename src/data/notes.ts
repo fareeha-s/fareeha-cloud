@@ -90,7 +90,7 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
   { 
     id: 7,
     title: "oura stats",
-    content: "I was taking way too long deciding whether to get an Oura or a Whoop. My friends got fed up with this, so they decided for me on my birthday!\n\nMay Averages:\nHRV: 115 ms\nRHR: 46 bpm",
+    content: "I was taking way too long deciding whether to get an Oura or a Whoop. My friends got fed up with this, so they decided for me on my birthday last year!  Here are this month's averages: <img src=\"/images/oura_may.jpeg\" alt=\"Oura Stats May\" style=\"max-width: 100%; border-radius: 8px; margin-top: 16px;\">",
     date: '03/05/25',
     timeframe: 'recent',
     pinned: false
