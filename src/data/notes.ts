@@ -18,11 +18,11 @@ export const notes: NoteItem[] = [
     title: "hello world ˚", 
     content: `Hey, I'm Fareeha ✨
 
-You might've found me through one of my Partifuls where I made you eat something. I love watching people light up around each other, and I tend to follow that instinct.
+I love watching people light up around each other - my compass seems to keep pointing that way.
 
-Beyond hosting, I'm on the launch team for [Symbolic Fusion](https://symbolicfusion.com), a new technology for agent builders. I also built [Kineship](note:2), a social layer for workouts.
+You might've found me through one of my Partifuls where I made you eat something. Beyond that, I'm on the launch team for [Symbolic Fusion](https://symbolicfusion.com), a new technology for agent builders. I also built [Kineship](note:2), a social layer for workouts.
 
-In Q1, I'm designing a fashion show. It's very specific. More to come.
+In Q1, I'm designing a fashion show. It's very specific. More to come 🩵
 
 <span style="font-weight: bold;">things I love:</span>  
 ▹ taking forever to [set a table](app:partiful)
