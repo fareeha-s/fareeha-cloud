@@ -16,18 +16,20 @@ export const notes: NoteItem[] = [
   { 
     id: 1, 
     title: "hello world ˚", 
-    content: `Hey, I\'m Fareeha ✨
+    content: `Hey, I'm Fareeha ✨
 
-I love watching people light up around each other - my compass seems to keep pointing that way.
+You might've found me through one of my Partifuls where I made you eat something. I love watching people light up around each other, and I tend to follow that instinct.
 
-I\'m building [Kineship](note:2), a social layer for workouts. The north star is to design tech that [centres human longevity](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full).
+Beyond hosting, I'm on the launch team for [Symbolic Fusion](https://symbolicfusion.com), a new technology for agent builders. I also built [Kineship](note:2), a social layer for workouts.
 
-<span style="font-weight: bold;">things i love:</span>  
+In Q1, I'm designing a fashion show. It's very specific. More to come.
+
+<span style="font-weight: bold;">things I love:</span>  
 ▹ taking forever to [set a table](app:partiful)
-▹ giving people [apples](note:3) they didn\'t ask for 
+▹ giving people [apples](note:3) they didn't ask for 
 ▹ keeping my Oura ring happy 🫶
 
-If this feels like your kind of world, I\'d love to [hear from you.](mailto:fareeha@kineship.com)`,
+If this feels like your kind of world, I'd love to [hear from you.](mailto:fareeha@kineship.com)`,
     date: "",
     timeframe: 'recent',
     pinned: true
