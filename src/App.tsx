@@ -209,7 +209,18 @@ function App() {
   // Add useEffect for desktop detection
   useEffect(() => {
     const checkDesktop = () => {
-      setIsDesktop(window.innerWidth >= 1024); // Example threshold for desktop
+      // Prefer capability-based detection (desktop-like input), with a width fallback.
+      // This avoids false negatives when the browser window is narrower than an arbitrary breakpoint.
+      const hasHoverFinePointer =
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      const isWideEnough = window.innerWidth >= 900;
+
+      // Treat as desktop if you have desktop input (mouse/trackpad), regardless of width.
+      // This ensures the overlay always shows on laptops, even when window is narrow.
+      setIsDesktop(hasHoverFinePointer);
     };
 
     checkDesktop(); // Initial check
@@ -327,12 +338,14 @@ function App() {
     }
   }, [activeApp, hasSeenHomeSession, arrowDismissed]);
   
-  // Always open hello world note on page load
+  // Open hello world note on page load (only on mobile, not when desktop overlay is shown)
   useEffect(() => {
-    // Always set first visit flag for styling purposes
-    // setIsFirstVisit(true); // We will set this conditionally now
+    // Skip auto-opening if we're showing the desktop overlay
+    if (isDesktop && showDesktopOverlay) {
+      return;
+    }
     
-    // Always open the hello world note on every page load
+    // Always open the hello world note on mobile page load
     setTimeout(() => {
       // Set up the necessary window properties for the notes app
       window.initialNoteId = 1; // ID of the hello world note
@@ -354,7 +367,7 @@ function App() {
       }, 0); 
 
     }, 10); // Minimal timeout to ensure component is ready
-  }, []);
+  }, [isDesktop, showDesktopOverlay]);
   
   // Select a random unlocked note for the widget display
   const selectedNote = useMemo(() => {
@@ -861,15 +874,30 @@ function App() {
     createWidgetSwipeFeedback();
   };
 
+  const viewportHeightPx =
+    typeof windowHeight === 'string' && windowHeight.endsWith('px')
+      ? parseInt(windowHeight, 10)
+      : typeof window !== 'undefined'
+        ? window.innerHeight
+        : 0;
+
+  const mobileOpenHeightPx = Math.max(450, Math.min(viewportHeightPx - 220, 620));
+
+  const desktopFrameSizePx = 340;
+  const desktopOpenHeightPx = Math.round(desktopFrameSizePx * (4 / 3));
+  const frameSizePx = isMobileDevice ? 290 : desktopFrameSizePx;
+
   // Framer Motion variants for the main container frame animation
   const frameVariants = {
     closed: { // Square state
-      height: '290px',
+      width: `${frameSizePx}px`,
+      height: `${frameSizePx}px`,
       aspectRatio: '1/1',
       transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
     },
     open: { // Rectangle state (Note Detail)
-      height: '390px',
+      width: `${frameSizePx}px`,
+      height: isMobileDevice ? `${mobileOpenHeightPx}px` : `${desktopOpenHeightPx}px`,
       aspectRatio: '3/4',
       transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
     }
@@ -934,8 +962,8 @@ function App() {
           transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
           top: '38%', // Moved up from 45% to 38% to shift the entire site upward
           left: '50%',
-          marginLeft: '-145px', // Half of the container width (290px/2)
-          marginTop: '-170px',
+          marginLeft: `-${Math.round(frameSizePx / 2)}px`,
+          marginTop: `-${Math.round(frameSizePx / 2 + 25)}px`,
         }}
       >
         {/* App name above the container - restoring correct parent styles */}
@@ -1063,13 +1091,13 @@ function App() {
         
         {/* Main container - with glass solid effect instead of blur */}
         <motion.div 
-          className={`w-[290px] overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container border border-white/10 ${ // Added border classes
+          className={`overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container border border-white/10 ${ // Added border classes
             // Restore shine effect
             activeApp ? 'glass-solid-shine' : ''
           } ${isNoteDetailView || isEventDetailView ? 'portrait-container expanded' : ''}`}
           variants={frameVariants}
           initial="closed"
-          animate={(isNoteDetailView && activeApp === 'notes') || (isEventDetailView && activeApp === 'partiful') ? 'open' : 'closed'} // Control animation state
+          animate={(isNoteDetailView && activeApp === 'notes') || (activeApp === 'partiful') ? 'open' : 'closed'} // Control animation state - partiful always uses open/tall frame
           style={{
             borderRadius: '24px',
             backgroundColor: 'transparent', // Revert back to transparent
@@ -1080,8 +1108,8 @@ function App() {
           <motion.div
             className="absolute flex items-center justify-center"
             initial={{
-              width: '290px',
-              height: '290px',
+              width: `${frameSizePx}px`,
+              height: `${frameSizePx}px`,
               x: '50%',
               y: '50%',
               opacity: 1,

@@ -77,6 +77,16 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
   const isLoaded = true;
   // Add state for video URL
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  // Add state for 'shipped by' intro animation
+  const [showShippedBy, setShowShippedBy] = useState(true);
+
+  // Hide 'shipped by' after 3 seconds on first visit
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowShippedBy(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Add function to handle video links
   const handleVideoLink = (url: string) => {
@@ -89,13 +99,15 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
   };
 
   const contentBeforeLoveList = `\
-<span style="font-size: 24px; font-weight: 500; line-height: 1.3;">Hey, I\'m Fareeha ✨</span>
+<span style="font-size: clamp(20px, 4vw, 24px); font-weight: 500; line-height: 1.3;">Hey, I\'m Fareeha ✨</span>
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-I\'m building <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts. The north star is to design tech that <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.717164/full" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">centres human longevity</a>.
+I\'m on the launch team for <a href="https://symbolicfusion.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Symbolic Fusion</a>, a new technology for agent builders. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
 
-<span style="font-weight: bold;">in line with that:</span>
+In Q1, I\'m designing a fashion show. It\'s very specific. More to come :)
+
+<span style="font-weight: bold;">previous projects:</span>
 ▹ systems design for boutique wellness spaces <a href="https://silicon-divan-443.notion.site/Retention-System-Design-for-Boutique-Fitness-1f7a4827ee3380599df9c1afc31689f1" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">(infra mapping, product integration)</a>
 ▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="https://tessel.club" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">tessel</a><span style="color: rgba(255, 255, 255, 0.65);">, <a href="https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">vfc</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/VMxSzVREUgY');">h&s gala</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a');">dc fashion show</a><span style="color: rgba(255, 255, 255, 0.65);"></span>)</span>
 ▹ winning team, healthcare innovation <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="https://silicon-divan-443.notion.site/MedBridge-235a4827ee33804b8a05c087946d7a80" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">mit bc x harvard med</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
@@ -118,7 +130,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center p-8 z-50"
+      className="fixed inset-0 flex items-center justify-center p-4 sm:p-8 z-50 overflow-y-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -126,9 +138,9 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
     >
       <AppBackground isLoaded={isLoaded} />
       
-      <div className="relative w-full max-w-4xl mx-auto" style={{ marginTop: '-6rem' }}>
+      <div className="relative w-full max-w-4xl mx-auto my-auto">
         <motion.h2 
-          className="absolute top-[-18px] right-5 text-[18px] font-semibold text-white z-20"
+          className="absolute top-[-12px] right-5 text-[18px] font-semibold text-white z-20"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { duration: 0.9, ease: [0.25, 0.8, 0.25, 1] } }}
           style={{ 
@@ -136,7 +148,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
           }}
         >
           <span className="flex items-center">
-            <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer', marginLeft: '6px' }} className="github-link inline-block relative group">
+            <a href="https://github.com/fareeha-s" target="_blank" rel="noopener noreferrer" onClick={(e) => { e.stopPropagation(); window.open('https://github.com/fareeha-s', '_blank'); }} style={{ cursor: 'pointer' }} className="github-link inline-block relative group">
               <img 
                 src="./icons/hosts/fareeha.jpg" 
                 alt="Fareeha" 
@@ -192,14 +204,14 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
         </motion.h2>
 
         <motion.div
-          className="relative w-full max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl shadow-lg p-12 overflow-y-auto max-h-[90vh] z-10"
+          className="relative w-full max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 overflow-y-auto max-h-[85vh] z-10"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
           <div
-            className="text-lg leading-relaxed text-white/90 prose prose-invert max-w-none lora-note-content font-medium"
-            style={{ whiteSpace: 'pre-line', fontSize: '1.15rem' }}
+            className="text-base sm:text-lg leading-relaxed text-white/90 prose prose-invert max-w-none lora-note-content font-medium"
+            style={{ whiteSpace: 'pre-line', fontSize: 'clamp(0.95rem, 2vw, 1.15rem)' }}
           >
             {/* Render content before list */}
             <div dangerouslySetInnerHTML={{ __html: contentBeforeLoveList }} />
@@ -216,7 +228,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
 
         {/* 'Fold this screen' text moved outside and below the main content container */}
         <motion.div 
-          style={{ marginTop: '1.5em' }}
+          style={{ marginTop: 'clamp(1em, 2vh, 1.5em)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 3, duration: 1 }}
@@ -226,7 +238,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
             style={{ 
               opacity: 0.7, 
               fontWeight: 'normal', 
-              fontSize: '0.9em',
+              fontSize: 'clamp(0.8em, 1.5vw, 0.9em)',
               cursor: 'pointer',
               transition: 'opacity 0.2s ease, transform 0.2s ease'
             }}

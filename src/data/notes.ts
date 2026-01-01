@@ -18,9 +18,9 @@ export const notes: NoteItem[] = [
     title: "hello world ˚", 
     content: `Hey, I'm Fareeha ✨
 
-I love watching people light up around each other - my compass seems to keep pointing that way.
+You might've found me through one of my Partifuls where I made you eat something. I love watching people light up around each other - my compass seems to keep pointing that way.
 
-You might've found me through one of my Partifuls where I made you eat something. Beyond that, I'm on the launch team for [Symbolic Fusion](https://symbolicfusion.com), a new technology for agent builders. I also built [Kineship](note:2), a social layer for workouts.
+Beyond hosting, I'm on the launch team for [Symbolic Fusion](https://symbolicfusion.com), a new technology for agent builders. I also built [Kineship](note:2), a social layer for workouts.
 
 In Q1, I'm designing a fashion show. It's very specific. More to come 🩵
 
@@ -86,6 +86,16 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     gravenstein
     calville blanc d'hiver`,
     date: '01/05/25',
+    timeframe: 'recent',
+    pinned: false
+  },
+  { 
+    id: 4,
+    title: 'projects',
+    content: `▹ systems design for boutique wellness spaces (infra mapping, product integration)
+▹ social design in health & community (tessel, vfc, h&s gala, dc fashion show)
+▹ winning team, healthcare innovation (mit bc x harvard med)`,
+    date: '29/12/24',
     timeframe: 'recent',
     pinned: false
   },
