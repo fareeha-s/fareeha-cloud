@@ -359,16 +359,13 @@ html, body, #root {
 
 /* Define base state and single transition on .main-container */
 .main-container {
-  width: 290px; /* Base width */
   aspect-ratio: 1/1; /* Base aspect ratio (square) */
-  height: 290px; /* Base height */
   /* REMOVE CSS Transition - Framer Motion handles it now */
 }
 
 /* Define expanded state styles and REMOVE transition */
 .main-container.expanded {
   aspect-ratio: 3/4; /* Target aspect ratio (rectangle) */
-  height: 390px; /* Target height */
 }
 
 /* Special handling for blood moon rising title - with extra specificity */

@@ -104,8 +104,8 @@ missing this will be cosmic treason; your absence will haunt you. 🌑`,
     title: "out of office",
     date: "05/03/25",
     attendees: 40,
-    clickable: true,
-    timeframe: 'upcoming',
+    clickable: false,
+    timeframe: 'past',
     time: "7:30pm",
     description: `light drinks & snacks
 cocktail party, russian hill, sunset views 🌉
