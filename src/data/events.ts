@@ -100,39 +100,6 @@ missing this will be cosmic treason; your absence will haunt you. 🌑`,
     ]
   },
   {
-    id: 4,
-    title: "out of office",
-    date: "05/03/25",
-    attendees: 40,
-    clickable: false,
-    timeframe: 'past',
-    time: "7:30pm",
-    description: `light drinks & snacks
-cocktail party, russian hill, sunset views 🌉
-
-we know so many interesting people who should know each other! time to make that happen 🩵
-
-agenda
-7:45 meet your future collaborators, conspirators, accomplices
-8:30 forced connection ritual 🫶🏼 
-9:30 disappear (it's a school night)
-
-dress code: casual, shoes off :)
-parking: street, can be limited in the evening
-
-xoxo`,
-    spotifyLink: "Russian Hill, San Francisco, CA",
-    spotifyLyrics: "light drinks & snacks",
-    image: {
-      webp: "./images/partiful/ooo.jpeg",
-      fallback: "./images/partiful/ooo.jpeg"
-    },
-    hosts: [
-      { id: 1, image: './icons/hosts/7-dd1a51c0.jpg' },
-      { id: 2, image: './icons/hosts/fareeha.jpg' }
-    ]
-  },
-  {
     id: 5,
     title: "threading in",
     date: "20/02/25",

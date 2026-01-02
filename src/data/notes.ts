@@ -16,13 +16,13 @@ export const notes: NoteItem[] = [
   { 
     id: 1, 
     title: "hello world ˚", 
-    content: `Hey, I'm Fareeha ✨
+    content: `Hey, I'm Fareeha ✨  
 
-You might've found me through one of my Partifuls where I made you eat something. I love watching people light up around each other - my compass seems to keep pointing that way.
+You might've found me through one of my Partifuls where I made you eat something. 
 
-Beyond hosting, I'm on the launch team for [Symbolic Fusion](https://symbolicfusion.com), a new technology for agent builders. I also built [Kineship](note:2), a social layer for workouts.
+Beyond hosting, I'm on the launch team for [Symbolic Fusion](https://symbolicfusion.com), a new technology for agent builders. I also built [Kineship](note:2), a social layer for workouts. 
 
-In Q1, I'm designing a fashion show. It's very specific. More to come 🩵
+In Spring 2026, I'll be directing a fashion show. It's very specific. More on this soon 🩵 
 
 <span style="font-weight: bold;">things I love:</span>  
 ▹ taking forever to [set a table](app:partiful)
@@ -45,11 +45,6 @@ If this feels like your kind of world, I'd love to [hear from you.](mailto:faree
     ontouchstart="this.style.transform='scale(0.97)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.15), 0 0 1px rgba(255, 255, 255, 0.3) inset'; this.style.background='linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%), linear-gradient(to bottom, #f0f0f0, #e0e0e0)';"
     ontouchend="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.2), 0 0 1px rgba(255, 255, 255, 0.5) inset'; this.style.background='linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(to bottom, #f8f9fa, #e2e6ea)';"
     onclick="window.open('https://kineship.com', '_blank')" />
-  
-  <div style="margin-left: 8px; line-height: 1;">
-    <span style="font-size: 12px; font-style: italic; display: block; line-height: 1; margin-bottom: 0; padding: 0;">pre-launch</span>
-    <a href="https://www.instagram.com/loiaccelerator/" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #FFE7EA; text-decoration: none; transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out; text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6); cursor: pointer; display: block; line-height: 1; margin-top: -2px; padding: 0;" onmouseover="this.style.color='#fff1f4'; this.style.textShadow='0 0 1.2px rgba(255, 255, 255, 0.8)';" onmouseout="this.style.color='#FFE7EA'; this.style.textShadow='0 0 0.8px rgba(255, 255, 255, 0.6)';">LOI Accelerator</a>
-  </div>
 </div> 
 It feels like much of how we connect today involves adding more: more invites, more plans, more coordination.
 
@@ -92,9 +87,10 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
   { 
     id: 4,
     title: 'projects',
-    content: `▹ systems design for boutique wellness spaces (infra mapping, product integration)
-▹ social design in health & community (tessel, vfc, h&s gala, dc fashion show)
-▹ winning team, healthcare innovation (mit bc x harvard med)`,
+    content: `▹ systems design for boutique wellness spaces [infra mapping, product integration](https://silicon-divan-443.notion.site/Retention-System-Design-for-Boutique-Fitness-1f7a4827ee3380599df9c1afc31689f1)
+▹ social design in health & community ([tessel](https://fareeha-s.github.io/Tessel/), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni), [h&s gala](https://youtu.be/VMxSzVREUgY), [dc fashion show](https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a))
+▹ winning team, healthcare innovation ([mit bc x harvard med](https://silicon-divan-443.notion.site/MedBridge-235a4827ee33804b8a05c087946d7a80))
+▹ ice/breakers ([#3 on ProductHunt](https://www.producthunt.com/products/icebreakers-2?launch=icebreakers-b45694ac-4bea-4ec9-870f-67a447107f26))`,
     date: '29/12/24',
     timeframe: 'recent',
     pinned: false
