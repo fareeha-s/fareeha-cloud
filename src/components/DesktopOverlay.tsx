@@ -111,6 +111,7 @@ In Spring 2026, I'll be directing a fashion show. It\'s ambitious. More news to 
 ▹ systems design for boutique wellness spaces <a href="https://silicon-divan-443.notion.site/Retention-System-Design-for-Boutique-Fitness-1f7a4827ee3380599df9c1afc31689f1" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">(infra mapping, product integration)</a>
 ▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="https://fareeha-s.github.io/Tessel/" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">tessel</a><span style="color: rgba(255, 255, 255, 0.65);">, <a href="https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">vfc</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/VMxSzVREUgY');">h&s gala</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a');">dc fashion show</a><span style="color: rgba(255, 255, 255, 0.65);"></span>)</span>
 ▹ winning team, healthcare innovation <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="https://silicon-divan-443.notion.site/MedBridge-235a4827ee33804b8a05c087946d7a80" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">mit bc x harvard med</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
+▹ policy work on the ethical implications of AI on youth <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://www.youtube.com/watch?v=6vqmUHDibTI&t=600s');">united nations x mbc</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
 ▹ ice/breakers (<a href="https://www.producthunt.com/products/icebreakers-2?launch=icebreakers-b45694ac-4bea-4ec9-870f-67a447107f26" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">#3 on ProductHunt</a>)
 
 If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">hear from you.</a>
@@ -141,7 +142,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
       
       <div className="relative w-full max-w-4xl mx-auto my-auto">
         <motion.h2 
-          className="absolute top-[-12px] right-5 text-[18px] font-semibold text-white z-20"
+          className="absolute top-[-24px] right-9 text-[18px] font-semibold text-white z-20"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { duration: 0.9, ease: [0.25, 0.8, 0.25, 1] } }}
           style={{ 
@@ -153,7 +154,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
               <img 
                 src="./icons/hosts/fareeha.jpg" 
                 alt="Fareeha" 
-                className="rounded-full w-8 h-8 object-cover border border-white/20" 
+                className="rounded-full w-12 h-12 object-cover border border-white/20" 
                 style={{ 
                   zIndex: 10002,
                   boxShadow: '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset',
@@ -194,7 +195,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
                   position: 'absolute',
                   top: '-2px',
                   right: '-2px',
-                  zIndex: 10003,
+                  zIndex: 99999,
                   pointerEvents: 'none' // Allow clicks to pass through to the <a> tag
                 }}
               >
@@ -205,10 +206,16 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
         </motion.h2>
 
         <motion.div
-          className="relative w-full max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 overflow-y-auto max-h-[85vh] z-10"
+          className="relative w-full max-w-4xl mx-auto bg-white/8 border border-white/20 rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 overflow-y-auto max-h-[85vh] z-10"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
+          style={{
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.15)',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)'
+          }}
         >
           <div
             className="text-base sm:text-lg leading-relaxed text-white/90 prose prose-invert max-w-none lora-note-content font-medium"

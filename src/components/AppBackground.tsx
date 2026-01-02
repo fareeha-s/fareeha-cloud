@@ -25,7 +25,7 @@ const AppBackground: React.FC<AppBackgroundProps> = ({ isLoaded }) => {
         className="absolute inset-0 bg-gradient-to-br from-[#131518] to-[#1d1c21]"
         style={{
           opacity: 1,
-          backgroundColor: '#131518', /* Ensure dark background during load */
+          backgroundColor: '#131518',
         }}
       >
         {/* Subtle bokeh effect overlay */}
@@ -43,18 +43,18 @@ const AppBackground: React.FC<AppBackgroundProps> = ({ isLoaded }) => {
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
           style={{
-            opacity: isLoaded ? 0.9 : 0,
+            opacity: isLoaded ? 0.7 : 0,
             transition: 'opacity 1s ease',
-            backgroundColor: '#131518', /* Ensure dark background during image load */
+            backgroundColor: '#131518',
           }}
           // No onError needed here as the effect handles the fallback
         />
 
         {/* Subtle overlay for better text contrast */}
         <div
-          className="absolute inset-0 bg-black/20"
+          className="absolute inset-0 bg-black"
           style={{
-            opacity: isLoaded ? 0.5 : 0,
+            opacity: isLoaded ? 0.35 : 0,
             transition: 'opacity 1s ease',
           }}
         ></div>

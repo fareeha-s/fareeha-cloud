@@ -88,8 +88,13 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     id: 4,
     title: 'projects',
     content: `▹ systems design for boutique wellness spaces [infra mapping, product integration](https://silicon-divan-443.notion.site/Retention-System-Design-for-Boutique-Fitness-1f7a4827ee3380599df9c1afc31689f1)
+
 ▹ social design in health & community ([tessel](https://fareeha-s.github.io/Tessel/), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni), [h&s gala](https://youtu.be/VMxSzVREUgY), [dc fashion show](https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a))
+
 ▹ winning team, healthcare innovation ([mit bc x harvard med](https://silicon-divan-443.notion.site/MedBridge-235a4827ee33804b8a05c087946d7a80))
+
+▹ policy work on the ethical implications of AI on youth ([united nations x mbc](https://www.youtube.com/watch?v=6vqmUHDibTI&t=600s))
+
 ▹ ice/breakers ([#3 on ProductHunt](https://www.producthunt.com/products/icebreakers-2?launch=icebreakers-b45694ac-4bea-4ec9-870f-67a447107f26))`,
     date: '29/12/24',
     timeframe: 'recent',
@@ -107,7 +112,7 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
   },
   { 
     id: 6, 
-    title: "layering a social stack...", 
+    title: "a blueprint for social longevity...", 
     content: "", 
     date: "", 
     timeframe: 'older',

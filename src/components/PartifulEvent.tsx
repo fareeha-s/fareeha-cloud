@@ -257,31 +257,43 @@ limited capacity! tell us what you'd share 🫶🏼`;
         touchAction: 'pan-y',
         backgroundColor: eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.5)' : 
                          eventTitle === "consumer social" ? 'rgba(10, 20, 40, 0.5)' : 
-                         eventTitle === "Watercolour" ? 'rgba(147, 112, 142, 0.7)' :
+                         eventTitle === "Watercolour" ? 'rgba(147, 112, 142, 0.4)' :
                          eventTitle === "threading in" ? 'rgba(35, 25, 15, 0.5)' :
                          eventTitle === "out of office" ? 'rgba(144, 190, 109, 0.5)' :
                          eventTitle === "blood moon rising." ? 'rgba(20, 20, 20, 0.5)' :
-                         eventTitle === "Scrumptious" ? 'rgba(77, 166, 255, 0.5)' :
+                         eventTitle === "Scrumptious" ? 'rgba(77, 166, 255, 0.35)' :
+                         eventTitle === "kiwi soirée" ? 'rgba(34, 85, 51, 0.5)' :
                          'rgba(14, 43, 23, 0.5)', // Default color for mental static
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
-        borderRadius: '8px',
+        borderRadius: '12px',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         overflow: 'hidden'
       }}
     >
+      {/* Apple-style bottom fade to indicate scrollable content */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-10"
+        style={{
+          background: 'linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 30%, rgba(0, 0, 0, 0.15) 60%, transparent 100%)',
+          borderBottomLeftRadius: '12px',
+          borderBottomRightRadius: '12px'
+        }}
+      />
+      
       {/* Main content container - no drag or swipe functionality */}
       <motion.div 
         ref={containerRef}
-        className="h-full w-full overflow-auto scrollbar-subtle relative"
+        className="h-full w-full overflow-auto scrollbar-subtle relative pb-20"
         style={{ 
           fontFamily: 'var(--font-sans)',
           overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
           maxHeight: '100%',  // Make sure content stays within the container height
           touchAction: 'pan-y', // Allow vertical scrolling only
           pointerEvents: 'auto', // Ensure the component captures all pointer events
-          padding: '24px'
+          padding: '24px',
+          paddingBottom: '80px'
         }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -315,15 +327,15 @@ limited capacity! tell us what you'd share 🫶🏼`;
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           style={{ 
             fontSize: '28px', 
-            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
+            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
             lineHeight: 1.1, 
             marginBottom: '12px', 
             color: 'white', 
             textAlign: 'center', 
-            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? 500 : 600,
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? '-0.03em' : '0.12em',
+            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? 500 : 600,
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? '-0.03em' : '0.12em',
             paddingTop: '0px',
-            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? 'none' : 'lowercase',
+            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? 'none' : 'lowercase',
             fontStretch: '150%',
             fontStyle: 'normal',
             whiteSpace: 'nowrap',
@@ -332,7 +344,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
         >
           <span className="summary" style={{ 
             fontStretch: 'expanded', 
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" ? '-0.04em' : '0.08em' 
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? '-0.04em' : '0.08em' 
           }}>
             {eventTitle === "strawberry hour" ? "Strawberry hour." : 
              eventTitle === "threading in" ? "threading in" : 
@@ -350,14 +362,14 @@ limited capacity! tell us what you'd share 🫶🏼`;
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="w-full overflow-hidden">
+          <div className="w-full overflow-hidden aspect-square" style={{ maxHeight: '280px' }}>
             <picture>
               <source srcSet={eventData?.image?.webp || "./images/partiful/ms-giphy.webp"} type="image/webp" />
               <img 
                 src={eventData?.image?.fallback || "./images/partiful/ms-fallback.jpg"} 
                 alt={`${eventTitle} Event`} 
-                className="w-full" 
-                style={{ objectFit: 'cover', maxHeight: '280px' }}
+                className="w-full h-full" 
+                style={{ objectFit: 'cover', objectPosition: 'center' }}
               />
             </picture>
           </div>
@@ -498,14 +510,15 @@ limited capacity! tell us what you'd share 🫶🏼`;
               color: 'rgb(255, 255, 255)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '16px',
+              gap: '4px',
               fontFamily: 'Lausanne, "Helvetica Neue", Helvetica, sans-serif',
+              fontWeight: 400,
               textRendering: 'optimizeSpeed',
               WebkitFontSmoothing: 'antialiased',
               isolation: 'isolate'
             }}>
               {descriptionText.split('\n').map((paragraph, index) => (
-                <p key={index} style={{ margin: 0, display: 'block', marginTop: index > 0 ? '-8px' : '0' }}>
+                <p key={index} style={{ margin: 0, display: 'block', marginTop: 0, lineHeight: '1.5' }}>
                   {renderIconWithText(paragraph)}
                 </p>
               ))}
@@ -746,6 +759,78 @@ limited capacity! tell us what you'd share 🫶🏼`;
           onClick={toggleExpanded}
         >
         </motion.div>
+        
+        {/* Meme dictionary comment - only for kiwi soirée */}
+        {eventTitle === "kiwi soirée" && (
+          <motion.div
+            className="mx-4 mt-3 mb-2 p-3 rounded-xl"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex items-start gap-3">
+              <img 
+                src="./icons/hosts/fareeha.jpg" 
+                alt="Fareeha" 
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span style={{ color: 'white', fontWeight: 600, fontSize: '14px' }}>Fareeha</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px' }}>sent a Text Blast 📣</span>
+                </div>
+                <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '14px', lineHeight: '1.4' }}>
+                  <a href="https://knowyourmeme.com/memes/events/sf-kiwi-party" target="_blank" rel="noopener noreferrer" style={{ color: '#90EE90', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>meme dictionary</a> page secured. This is what dedication looks like... it's what showing up looks like... it's what teamwork looks like... Proud of every single one of us
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span style={{ fontSize: '16px' }}>💬</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '13px' }}>Reply</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+        
+        {/* Text Blast comment - only for kiwi soirée */}
+        {eventTitle === "kiwi soirée" && (
+          <motion.div
+            className="mx-4 mt-2 mb-2 p-3 rounded-xl"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex items-start gap-3">
+              <img 
+                src="./icons/hosts/fareeha.jpg" 
+                alt="Fareeha" 
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span style={{ color: 'white', fontWeight: 600, fontSize: '14px' }}>Fareeha</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px' }}>sent a Text Blast 📣</span>
+                </div>
+                <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '14px', lineHeight: '1.4' }}>
+                  This is so crazy but I just heard through the kiwivine that if you don't show up in green and/or brown there might be consequences 😶
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span style={{ fontSize: '16px' }}>💬</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '13px' }}>Reply</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
         
         {/* Pagination dots - always visible */}
         <div className="flex items-center justify-center mt-2 mb-2 space-x-2">
