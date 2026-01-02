@@ -198,5 +198,40 @@ APARTMENT 206`,
       { id: 2, image: './icons/hosts/fareeha.jpg' },
       { id: 3, image: './icons/hosts/9-dd1a51c0.jpg' }
     ]
+  },
+  {
+    id: 10,
+    title: "kiwi soirée",
+    date: "17/09/25",
+    attendees: 189,
+    clickable: true,
+    timeframe: 'upcoming',
+    time: "6:30pm",
+    description: `👕 shades of kiwi (greens & browns) 🥝
+🎵 styles 💚
+
+🍽️ Literally just kiwis
+
+hello
+
+🥝 you have been cordially invited to kiwi soirée 🥝
+
+✨ we'll have piles of them ready for you
+✨ slice, scoop, or (if you dare) bite right in
+✨ facts: kiwis have more vitamin c than oranges! they're also linked to better sleep. so technically this is a wellness event 🫶🏼
+
+we're so back baby!!!
+🥝🥝🥝🥝🥝✨`,
+    spotifyLink: "https://open.spotify.com/track/33SNO8AaciGbNaQFkxvPrW?si=uxvU-h8oS2OyyTz3YKwCOA",
+    spotifyLyrics: "styles 💚",
+    image: {
+      webp: "./images/partiful/ks.webp",
+      fallback: "./images/partiful/ks.webp"
+    },
+    hosts: [
+      { id: 1, image: './icons/hosts/fareeha.jpg' },
+      { id: 2, image: './icons/hosts/10-dd1a51c0.jpg' },
+      { id: 3, image: './icons/hosts/8-dd1a51c0.jpg' }
+    ]
   }
 ]; 

@@ -54,7 +54,7 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
     },
     {
       name: "kineship",
-      icon: "./icons/apps/kineship.png",
+      icon: "./icons/apps/kineship-optimized.png",
       url: "https://kineship.com",
       position: 6,
       isCustomIcon: true
@@ -231,12 +231,44 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
                 </motion.div>
               ) : social.isCustomIcon ? (
                 <motion.div
-                  className={`w-[60px] h-[60px] rounded-[14px] overflow-hidden border border-white/20 ${iconShadowStyle} ${icon3DStyle}`}
+                  className={`w-[60px] h-[60px] rounded-[14px] overflow-hidden ${iconShadowStyle}`}
+                  style={{
+                    position: 'relative',
+                    border: '0.5px solid rgba(255, 255, 255, 0.15)',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.12), 0 0.5px 1px rgba(0, 0, 0, 0.08)'
+                  }}
                   whileHover={{ 
                     boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(255, 255, 255, 0.1) inset" 
                   }}
                   transition={springTransition}
                 >
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '50%',
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 100%)',
+                    pointerEvents: 'none',
+                    zIndex: 2
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    pointerEvents: 'none',
+                    zIndex: 1
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '20%',
+                    background: 'linear-gradient(0deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 100%)',
+                    pointerEvents: 'none',
+                    zIndex: 2
+                  }} />
                   <img 
                     src={social.icon as string} 
                     alt={social.name} 
@@ -245,13 +277,46 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
                 </motion.div>
               ) : (
                 <motion.div
-                  className={`w-[60px] h-[60px] rounded-[14px] bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center ${iconShadowStyle} ${icon3DStyle}`}
+                  className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center ${iconShadowStyle}`}
+                  style={{
+                    position: 'relative',
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.10) 100%)',
+                    border: '0.5px solid rgba(255, 255, 255, 0.15)',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.12), 0 0.5px 1px rgba(0, 0, 0, 0.08)',
+                    overflow: 'hidden'
+                  }}
                   whileHover={{ 
                     boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(255, 255, 255, 0.1) inset" 
                   }}
                   transition={springTransition}
                 >
-                  {social.icon}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '50%',
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 100%)',
+                    pointerEvents: 'none'
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    pointerEvents: 'none'
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '20%',
+                    background: 'linear-gradient(0deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 100%)',
+                    pointerEvents: 'none'
+                  }} />
+                  <div style={{ position: 'relative', zIndex: 10 }}>
+                    {social.icon}
+                  </div>
                 </motion.div>
               )}
             </motion.a>

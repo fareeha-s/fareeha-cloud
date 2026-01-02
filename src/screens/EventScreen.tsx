@@ -382,12 +382,12 @@ export const EventScreen: React.FC<AppScreenProps> = ({
       onTouchStart={handleInteraction}
     >
       <motion.div 
-        className="h-full overflow-y-auto scrollbar-subtle"
+        className="overflow-y-auto scrollbar-subtle h-full"
         variants={containerVariants}
         initial="hidden"
         animate="show"
       >
-        <div className="space-y-3 p-6">
+        <div className="space-y-3 p-6 pt-8 pb-4">
           {/* Partiful Events Explanation */}
           {/* Change back to regular div for no animation */}
           <div 
@@ -400,10 +400,10 @@ export const EventScreen: React.FC<AppScreenProps> = ({
           {/* Past Month section */}
           {pastMonthEvents.length > 0 && (
             <div>
-              <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2">
+              <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4 px-2">
                 Past Month
               </h2>
-              <div className="space-y-0.5">
+              <div className="space-y-2">
                 {pastMonthEvents.map((event, index) => (
                   <motion.div 
                     key={`past-month-${event.id}`}
@@ -469,10 +469,10 @@ export const EventScreen: React.FC<AppScreenProps> = ({
           {/* All events section */}
           {remainingEvents.length > 0 && (
             <div>
-              <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 px-2">
+              <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4 px-2">
                 All
               </h2>
-              <div className="space-y-0.5">
+              <div className="space-y-2">
                 {remainingEvents.map((event, index) => (
                   <motion.div 
                     key={`all-${event.id}`}

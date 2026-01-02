@@ -797,6 +797,12 @@ function App() {
     
     if (!appElement || !containerElement) return;
     
+    // Clear the openNoteDirectly flag when manually clicking notes icon on desktop
+    // This prevents auto-opening hello world when user just wants to see the notes list
+    if (appId === 'notes' && isDesktop) {
+      window.openNoteDirectly = false;
+    }
+    
     setIsAnimating(true);
     
     // Get app's absolute position
@@ -1021,7 +1027,7 @@ function App() {
                 }
               }}
               style={{ 
-                top: '10px', // Nudge up
+                top: '14px', // Moved down a few pixels
                 right: '22px', // Nudge right
                 zIndex: 10001, // Keep increased zIndex
                 color: '#ffffff',
@@ -1043,7 +1049,8 @@ function App() {
                     alt="Fareeha" 
                     className="rounded-full w-6 h-6 object-cover border border-white/20" 
                     style={{ 
-                      zIndex: 10002,
+                      zIndex: 99999,
+                      position: 'relative',
                       boxShadow: '0 1px 2px rgba(0,0,0,0.15), 0 0 1px rgba(255,255,255,0.2) inset',
                       backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
                       transform: 'translateZ(0)',
@@ -1151,9 +1158,9 @@ function App() {
               transition: 'opacity 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)',
             }}
           >
-            <div className="h-full flex flex-col pt-5 px-5 pb-5 will-change-transform" style={{ opacity: 1.1 }}>
+            <div className="h-full flex flex-col pt-6 px-6 pb-6 will-change-transform" style={{ opacity: 1.1 }}>
               {/* App icons */}
-              <div className="grid grid-cols-3 gap-y-5 gap-x-4 mb-6 mt-2">
+              <div className="grid grid-cols-3 gap-y-8 gap-x-6 mb-8 mt-4">
                 {apps.map((app) => (
                   <AppIcon
                     key={app.id}
@@ -1177,7 +1184,7 @@ function App() {
               <motion.div 
                   ref={widgetRef}
                   key={`widget-${currentWidgetIndex}`}
-                  className={`w-full aspect-square mt-auto rounded-[16px] overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''}`}
+                  className={`w-full aspect-square mt-auto rounded-2xl overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''} ${isDesktop ? 'flex flex-col justify-center' : ''}`}
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.04)',
                     backdropFilter: 'none',
@@ -1191,7 +1198,6 @@ function App() {
                     cursor: 'pointer',
                     position: 'relative',
                     overflow: 'hidden',
-                    // aspectRatio: '1/1' // This is handled by the aspect-square Tailwind class
                   }}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -1433,7 +1439,7 @@ function App() {
                         textShadow: 'none',
                         textOverflow: 'ellipsis',
                         display: '-webkit-box',
-                        WebkitLineClamp: '2',
+                        WebkitLineClamp: isDesktop && widgets[currentWidgetIndex].type === 'notes' ? '3' : '2',
                         WebkitBoxOrient: 'vertical',
                         lineHeight: '1.3',
                         letterSpacing: '0.01em',
@@ -1442,18 +1448,25 @@ function App() {
                         marginBottom: widgets[currentWidgetIndex].type === 'notes' ? '6px' : '6px',
                         paddingBottom: widgets[currentWidgetIndex].type === 'notes' ? '0px' : '0px',
                         maxWidth: '100%',
-                        fontSize: '12px'
+                        fontSize: isDesktop ? '14px' : '12px',
+                        textAlign: 'left'
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes'
                           ? (widgetNote.title.includes("hello world")
-                              ? "my north star: designing tech that centres human longevity..."
+                              ? "my north star: designing tech that centres human longevity. I'm on the launch team for Symbolic Fusion, a new technology for agent builders. I also built Kineship, a social layer for workouts. In Spring 2026, I'll be directing a fashion show..."
                               : widgetNote.title.includes("kineship")
-                                ? "the kineship app shares your workout calendar with your circles..."
-                                : (widgetNote.content && widgetNote.content.endsWith('...')
-                                    ? widgetNote.content
-                                    : (widgetNote.content || '') + '...'))
+                                ? "the kineship app shares your workout calendar with your circles. It feels like much of how we connect today involves adding more: more invites, more plans, more coordination. Kineship is about subtraction. Instead of scheduling, it shows you when your people are already working out..."
+                                : widgetNote.title.includes("projects")
+                                  ? "▹ systems design for boutique wellness spaces [infra mapping, product integration]\n\n▹ social design in health & community (tessel, vfc, h&s gala, dc fashion show)\n\n▹ winning team, healthcare innovation (mit bc x harvard med)"
+                                  : (widgetNote.content && widgetNote.content.length > 250
+                                      ? widgetNote.content.substring(0, 250) + '...'
+                                      : (widgetNote.content || '') + '...'))
                           : widgets[currentWidgetIndex].type === 'partiful'
-                            ? '' // Empty content for partiful as requested
+                            ? (isDesktop && widgetEvent.description && widgetEvent.description.length > 200
+                                ? widgetEvent.description.substring(0, 200) + '...'
+                                : isDesktop && widgetEvent.description
+                                  ? widgetEvent.description
+                                  : '')
                             : '' // Empty content for workout
                         }
                       </p>

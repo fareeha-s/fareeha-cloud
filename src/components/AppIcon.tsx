@@ -22,19 +22,84 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
 }, ref) => {
   const prefersReducedMotion = useReducedMotion();
   
-  // Create a mapping of icon strings to components with soft accent colors
-  const iconColors = {
-    'StickyNote': 'text-white',
-    'AtSign': 'text-white',
-    'PartyPopper': 'text-white',
-    'Partiful': 'text-white',
-  };
-
+  // iOS 2025 squircle icons with glassy depth (restrained)
   const iconMap: Record<string, React.ReactElement> = {
-    'StickyNote': <StickyNote className={`w-7 h-7 ${iconColors['StickyNote']}`} strokeWidth={1.5} />,
-    'AtSign': <AtSign className={`w-7 h-7 ${iconColors['AtSign']}`} strokeWidth={1.5} />,
-    'PartyPopper': <PartyPopper className={`w-7 h-7 ${iconColors['PartyPopper']}`} strokeWidth={1.5} />,
-    'Partiful': <img src="./icons/apps/partiful.png" alt="Partiful" className="w-7 h-7" />,
+    'StickyNote': (
+      <div className="w-full h-full flex items-center justify-center" style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        borderRadius: '13px',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+      }}>
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
+        }} />
+        <StickyNote className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+      </div>
+    ),
+    'AtSign': (
+      <div className="w-full h-full flex items-center justify-center" style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        borderRadius: '13px',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+      }}>
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
+        }} />
+        <AtSign className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+      </div>
+    ),
+    'PartyPopper': (
+      <div className="w-full h-full flex items-center justify-center" style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        borderRadius: '13px',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+      }}>
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
+        }} />
+        <PartyPopper className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+      </div>
+    ),
+    'Partiful': (
+      <div className="w-full h-full flex items-center justify-center" style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        borderRadius: '13px',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+      }}>
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
+        }} />
+        <img src="./icons/apps/partiful.png" alt="Partiful" className="w-7 h-7 relative z-10 opacity-90" />
+      </div>
+    ),
   };
 
   // Apple-like spring animation
@@ -75,39 +140,29 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
       }}
     >
       <motion.div 
-        className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center shadow-sm will-change-transform relative overflow-hidden`}
-        whileHover={{ boxShadow: "0 0 10px 0 rgba(255, 255, 255, 0.12)" }}
+        className={`w-[60px] h-[60px] rounded-[14px] flex items-center justify-center will-change-transform relative overflow-hidden`}
+        whileHover={{ scale: 1.05 }}
         transition={springTransition}
         style={{
-          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          borderTopColor: "rgba(255, 255, 255, 0.25)",
-          borderLeftColor: "rgba(255, 255, 255, 0.2)",
-          borderBottomColor: "rgba(255, 255, 255, 0.08)",
-          borderRightColor: "rgba(255, 255, 255, 0.08)",
-          boxShadow: "0 3px 10px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(255, 255, 255, 0.08) inset",
-          aspectRatio: "1/1" /* Ensure perfect square */
+          aspectRatio: "1/1"
         }}
       >
-        {/* Bottom highlight */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-[40%] pointer-events-none" 
-          style={{
-            background: "linear-gradient(to top, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 100%)"
-          }}
-        />
         {iconMap[icon] || <div className="w-7 h-7 text-white">?</div>}
       </motion.div>
       {showLabel && (
         <span 
-          className="text-[11px] text-white mt-[5px] text-center" 
+          className="text-[14px] mt-[6px] text-center max-w-[70px]" 
           style={{
-            fontFamily: "var(--font-sans)",
-            fontWeight: 400,
-            letterSpacing: '0.01em',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif',
+            fontWeight: 500,
+            letterSpacing: '0',
+            lineHeight: '1.1',
+            color: 'rgba(255, 255, 255, 0.95)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
             WebkitFontSmoothing: 'antialiased',
-            textRendering: 'optimizeLegibility',
-            textShadow: '0px 1px 1px rgba(0, 0, 0, 0.3)'
+            MozOsxFontSmoothing: 'grayscale'
           }}
         >
           {displayName}

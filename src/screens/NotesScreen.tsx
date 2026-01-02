@@ -255,7 +255,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
           }
           setIsNoteReady(true);
           setIsInitializing(false);
-        }, 50);
+        }, 150);
       } else {
         // Handle case where Hello World note might be missing or locked
         setSelectedNote(null);
@@ -277,7 +277,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
           }
           setIsNoteReady(true);
           setIsInitializing(false);
-        }, 50);
+        }, 150);
       } else {
         // Invalid ID or locked note from prop -> show list view
         setSelectedNote(null);
@@ -422,10 +422,10 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     // Set the selected note immediately
     setSelectedNote(note);
     
-    // Use a slightly longer delay to allow frame transition to start
+    // Delay to ensure backdrop blur is fully rendered before showing text
     setTimeout(() => {
       setIsNoteReady(true);
-    }, 50); // Reduced delay, animation has its own delay
+    }, 150); // Longer delay to ensure backdrop blur paints before text appears
   };
 
   // Function to close the note detail view
@@ -532,26 +532,32 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
             key="note-detail"
             className="flex flex-col h-full w-full overflow-hidden" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the note
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
           >
             <div 
-              className="h-full w-full rounded-lg relative"
+              className="h-full w-full rounded-xl relative"
               style={{ 
                 touchAction: 'pan-y',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
                 border: '1px solid rgba(255, 255, 255, 0.05)',
-                // Removed backdrop blur effects
                 overflow: 'hidden',
                 userSelect: 'text' // Explicitly allow text selection
               }}
             >
-              {/* Remove left and right edge indicators */}
+              {/* Apple-style bottom fade to indicate scrollable content */}
+              <div 
+                className={`absolute bottom-0 left-0 right-0 pointer-events-none z-10 ${selectedNote?.title === 'hello world' ? 'h-20' : 'h-16'}`}
+                style={{
+                  background: selectedNote?.title === 'hello world' 
+                    ? 'linear-gradient(to top, rgba(45, 35, 28, 0.98) 0%, rgba(45, 35, 28, 0.85) 30%, rgba(45, 35, 28, 0.4) 60%, transparent 100%)'
+                    : 'linear-gradient(to top, rgba(25, 25, 28, 0.98) 0%, rgba(25, 25, 28, 0.85) 30%, rgba(25, 25, 28, 0.4) 60%, transparent 100%)',
+                  borderBottomLeftRadius: '0.75rem',
+                  borderBottomRightRadius: '0.75rem'
+                }}
+              />
               
               <motion.div 
                 ref={noteContentRef}
-                className="h-full w-full overflow-auto scrollbar-subtle relative p-6"
+                className="h-full w-full overflow-auto scrollbar-subtle relative p-6 pb-28"
                 style={{ 
                   overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
                   maxHeight: '100%',  // Make sure content stays within the container height
@@ -665,15 +671,15 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                 {pinnedNotes.length > 0 && (
                   <div>
                     {/* Remove px-2 from header */}
-                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2 flex items-center">
+                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4 flex items-center">
                       <PinIcon />
                       Pinned
                     </h2>
-                    <div className="space-y-0.5">
+                    <div className="space-y-2">
                       {pinnedNotes.map((note, index) => (
                         <motion.div 
                           key={`pinned-${note.id}`}
-                          className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative"
+                          className="flex group px-2 py-2 rounded-md hover:bg-white/5 active:bg-white/10 relative"
                           onClick={(e) => {
                             e.stopPropagation();
                             createTactileEffect();
@@ -681,7 +687,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                           }}
                           whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.98 }}
-                          transition={{ duration: 0.2 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         >
                           <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
                             <motion.div
@@ -715,10 +721,10 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                 {allNotes.length > 0 && (
                   <div>
                     {/* Remove px-2 from header */}
-                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-2">
+                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4">
                       All
                     </h2>
-                    <div className="space-y-0.5">
+                    <div className="space-y-2">
                       {allNotes.map((note) => (
                         <motion.div 
                           key={`all-${note.id}`}
@@ -731,7 +737,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                           }}
                           whileHover={{ scale: note.locked ? 1 : 1.01 }}
                           whileTap={{ scale: note.locked ? 1 : 0.98 }}
-                          transition={{ duration: 0.2 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         >
                           <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
                             <motion.div
