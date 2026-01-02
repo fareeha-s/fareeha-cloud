@@ -338,10 +338,10 @@ function App() {
     }
   }, [activeApp, hasSeenHomeSession, arrowDismissed]);
   
-  // Open hello world note on page load (only on mobile, not when desktop overlay is shown)
+  // Open hello world note on page load (only on mobile, never on desktop)
   useEffect(() => {
-    // Skip auto-opening if we're showing the desktop overlay
-    if (isDesktop && showDesktopOverlay) {
+    // Skip auto-opening on desktop entirely
+    if (isDesktop) {
       return;
     }
     
@@ -910,12 +910,19 @@ function App() {
     }
   }, [isDesktop]);
 
+  // Close desktop overlay and return to home
+  const handleCloseDesktopOverlay = () => {
+    setShowDesktopOverlay(false);
+    setActiveApp(null); // ensure we land on home, not a note
+    setInitialNoteIdForScreen(null);
+  };
+
   // Conditional rendering based on desktop view
   if (isDesktop && showDesktopOverlay) { // Show desktop overlay only if both conditions are true
     return (
       <AnimatePresence mode="wait">
         <motion.div key="desktop-overlay">
-          <DesktopOverlay onClose={() => setShowDesktopOverlay(false)} /> {/* Pass onClose prop */}
+          <DesktopOverlay onClose={handleCloseDesktopOverlay} /> {/* Pass onClose prop */}
         </motion.div>
       </AnimatePresence>
     );
