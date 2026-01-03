@@ -970,13 +970,11 @@ function App() {
         onClick={(e) => e.stopPropagation()}
         style={{
           opacity: isLoaded ? 1 : 0,
-          transform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
-          WebkitTransform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
+          transform: `translate(-50%, -50%) translateY(${isLoaded ? '-8vh' : 'calc(-8vh + 10px)'}) translateZ(0)`,
+          WebkitTransform: `translate(-50%, -50%) translateY(${isLoaded ? '-8vh' : 'calc(-8vh + 10px)'}) translateZ(0)`,
           transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
-          top: '35%',
+          top: '50%',
           left: '50%',
-          marginLeft: `-${Math.round(frameSizePx / 2)}px`,
-          marginTop: `-${Math.round(frameSizePx / 2 + 25)}px`,
         }}
       >
         {/* App name above the container - restoring correct parent styles */}
