@@ -973,7 +973,7 @@ function App() {
           transform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
           WebkitTransform: `translateY(${isLoaded ? '0' : '10px'}) translateZ(0)`,
           transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
-          top: '42%',
+          top: '35%',
           left: '50%',
           marginLeft: `-${Math.round(frameSizePx / 2)}px`,
           marginTop: `-${Math.round(frameSizePx / 2 + 25)}px`,
