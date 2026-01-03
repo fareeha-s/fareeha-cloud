@@ -68,9 +68,9 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     id: 3,
     title: 'apples',
     content: `sugarbee - 10/10
+    lucy glo - 9.5/10
     pink lady - 9/10
     pinata - 9/10
-    lucy glo - 9.5/10
     ambrosia - 8.5/10
     fuji - 7.5/10
     honeycrisp - 7/10
