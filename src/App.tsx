@@ -970,9 +970,9 @@ function App() {
         onClick={(e) => e.stopPropagation()}
         style={{
           opacity: isLoaded ? 1 : 0,
-          transform: `translate(-50%, -50%) translateY(${isLoaded ? '-8vh' : 'calc(-8vh + 10px)'}) translateZ(0)`,
-          WebkitTransform: `translate(-50%, -50%) translateY(${isLoaded ? '-8vh' : 'calc(-8vh + 10px)'}) translateZ(0)`,
-          transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+          transform: 'translate(-50%, -50%) translateY(-8vh) translateZ(0)',
+          WebkitTransform: 'translate(-50%, -50%) translateY(-8vh) translateZ(0)',
+          transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
           top: '50%',
           left: '50%',
         }}
