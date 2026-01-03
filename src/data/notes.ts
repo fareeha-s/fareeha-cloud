@@ -70,6 +70,7 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     content: `sugarbee - 10/10
     pink lady - 9/10
     pinata - 9/10
+    lucy glo - 9.5/10
     ambrosia - 8.5/10
     fuji - 7.5/10
     honeycrisp - 7/10
@@ -80,7 +81,7 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     black diamond
     gravenstein
     calville blanc d'hiver`,
-    date: '01/05/25',
+    date: '15/12/24',
     timeframe: 'recent',
     pinned: false
   },
