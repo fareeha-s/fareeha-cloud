@@ -785,7 +785,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                   <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px' }}>sent a Text Blast 📣</span>
                 </div>
                 <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '14px', lineHeight: '1.4' }}>
-                  <a href="https://knowyourmeme.com/memes/events/sf-kiwi-party" target="_blank" rel="noopener noreferrer" style={{ color: '#90EE90', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>meme dictionary</a> page secured. This is what dedication looks like... it's what showing up looks like... it's what teamwork looks like... Proud of every single one of us
+                  <a href="https://knowyourmeme.com/memes/events/sf-kiwi-party" target="_blank" rel="noopener noreferrer" style={{ color: '#90EE90', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>meme dictionary</a> page secured, this is what dedication looks like...  what showing up looks like... what teamwork looks like... Proud of every single one of us
                 </p>
                 <div className="flex items-center gap-2 mt-2">
                   <span style={{ fontSize: '16px' }}>💬</span>
