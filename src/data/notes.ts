@@ -20,9 +20,9 @@ export const notes: NoteItem[] = [
 
 You might've found me through one of my Partifuls where I made you eat something. 
 
-Beyond hosting, I'm on the launch team for [Symbolic Fusion](https://symbolicfusion.com), a new technology for agent builders. I also built [Kineship](note:2), a social layer for workouts. 
+Beyond hosting, I'm with an AI lab exploring a new class of infrastructure for agent builders. I also built [Kineship](note:2), a social layer for workouts.
 
-In Spring 2026, I'll be directing a fashion show. It's very specific. More on this soon 🩵 
+In Autumn 2026, I'll be producing a fashion show. It's very specific. More on this soon 🩵 
 
 <span style="font-weight: bold;">things I love:</span>  
 ▹ taking forever to [set a table](app:partiful)
