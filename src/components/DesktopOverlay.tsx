@@ -103,9 +103,9 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-I\'m on the launch team for <a href="https://symbolicfusion.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Symbolic Fusion</a>, a new technology for agent builders. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
+I\'m with an AI lab exploring a new class of infrastructure for agent builders. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
 
-In Spring 2026, I'll be directing a fashion show. It\'s ambitious. More news to come.
+In Autumn 2026, I'll be producing a fashion show. It\'s ambitious. More news to come.
 
 <span style="font-weight: bold;">previous projects:</span>
 ▹ systems design for boutique wellness spaces <a href="https://silicon-divan-443.notion.site/Retention-System-Design-for-Boutique-Fitness-1f7a4827ee3380599df9c1afc31689f1" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">(infra mapping, product integration)</a>

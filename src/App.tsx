@@ -1451,7 +1451,7 @@ function App() {
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes'
                           ? (widgetNote.title.includes("hello world")
-                              ? "my north star: designing tech that centres human longevity. I'm on the launch team for Symbolic Fusion, a new technology for agent builders. I also built Kineship, a social layer for workouts. In Spring 2026, I'll be directing a fashion show..."
+                              ? "my north star: designing tech that centres human longevity. I'm with an AI lab exploring a new class of infrastructure for agent builders. I also built Kineship, a social layer for workouts. In Autumn 2026, I'll be producing a fashion show..."
                               : widgetNote.title.includes("kineship")
                                 ? "the kineship app shares your workout calendar with your circles. It feels like much of how we connect today involves adding more: more invites, more plans, more coordination. Kineship is about subtraction. Instead of scheduling, it shows you when your people are already working out..."
                                 : widgetNote.title.includes("projects")
