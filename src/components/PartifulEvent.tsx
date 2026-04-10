@@ -263,6 +263,10 @@ limited capacity! tell us what you'd share 🫶🏼`;
                          eventTitle === "blood moon rising." ? 'rgba(20, 20, 20, 0.5)' :
                          eventTitle === "Scrumptious" ? 'rgba(77, 166, 255, 0.35)' :
                          eventTitle === "kiwi soirée" ? 'rgba(34, 85, 51, 0.5)' :
+                         eventTitle === "pomegranate garden" ? 'rgba(160, 40, 70, 0.45)' :
+                         eventTitle === "citrus salon" ? 'rgba(200, 100, 15, 0.45)' :
+                         eventTitle === "Winter Editorial." ? 'rgba(60, 5, 5, 0.55)' :
+                         eventTitle === "for the culture" ? 'rgba(50, 25, 5, 0.55)' :
                          'rgba(14, 43, 23, 0.5)', // Default color for mental static
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
@@ -327,18 +331,18 @@ limited capacity! tell us what you'd share 🫶🏼`;
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           style={{ 
             fontSize: '28px', 
-            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
-            lineHeight: 1.1, 
-            marginBottom: '12px', 
-            color: 'white', 
-            textAlign: 'center', 
-            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? 500 : 600,
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? '-0.03em' : '0.12em',
+            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
+            lineHeight: 1.1,
+            marginBottom: '12px',
+            color: 'white',
+            textAlign: 'center',
+            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 500 : 600,
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? '-0.03em' : '0.12em',
             paddingTop: '0px',
-            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? 'none' : 'lowercase',
+            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'none' : 'lowercase',
             fontStretch: '150%',
-            fontStyle: 'normal',
-            whiteSpace: 'nowrap',
+            fontStyle: eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'italic' : 'normal',
+            whiteSpace: eventTitle === "pomegranate garden" || eventTitle === "citrus salon" ? 'normal' : 'nowrap',
             overflow: 'hidden'
           }}
         >
@@ -462,7 +466,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </div>
           
           {/* Music lyrics with Spotify link - smaller font */}
-          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious" && eventTitle !== "consumer social") && (
+          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious" && eventTitle !== "consumer social" && eventTitle !== "for the culture") && (
           <div className="ptf-l-V5l2c ptf-l-42Hmr" style={{ display: 'flex', alignItems: 'flex-start', marginTop: '8px', marginBottom: '14px' }}>
             <span className="ptf--7nAv ptf-l-02UEs ptf-l-Y-q9d" style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}>
               {eventTitle === "blood moon rising." ? (
@@ -832,6 +836,25 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </motion.div>
         )}
         
+        {/* Photo from the night - for the culture */}
+        {eventTitle === "for the culture" && (
+          <motion.div
+            className="mx-4 mt-3 mb-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="w-full overflow-hidden rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+              <img
+                src="./images/photoalbum/ftc-photo.jpeg"
+                alt="for the culture"
+                className="w-full"
+                style={{ objectFit: 'cover', display: 'block' }}
+              />
+            </div>
+          </motion.div>
+        )}
+
         {/* Pagination dots - always visible */}
         <div className="flex items-center justify-center mt-2 mb-2 space-x-2">
           <div 

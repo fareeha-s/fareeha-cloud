@@ -200,6 +200,124 @@ APARTMENT 206`,
     ]
   },
   {
+    id: 13,
+    title: "for the culture",
+    date: "05/04/26",
+    attendees: 53,
+    clickable: true,
+    timeframe: 'past',
+    time: "5:30pm",
+    description: `hosting a social for those that 'do it for the culture'
+
+inviting friends across fashion, film, philosophy, media, etc.
+
+drinks & light food @ penthouse lounge
+
+dress chic`,
+    image: {
+      webp: "./images/partiful/ftc.jpeg",
+      fallback: "./images/partiful/ftc.jpeg"
+    },
+    hosts: [
+      { id: 1, image: './icons/hosts/12-64896426.avif' },
+      { id: 2, image: './icons/hosts/13-64896426.avif' },
+      { id: 3, image: './icons/hosts/fareeha.jpg' }
+    ]
+  },
+  {
+    id: 12,
+    title: "Winter Editorial.",
+    date: "22/12/25",
+    attendees: 12,
+    clickable: true,
+    timeframe: 'past',
+    time: "2:15pm – 2:45pm",
+    description: `👔 Formal. Floor length gowns and suits only.
+
+Dear Family,
+
+As you know, per the family office's directive and in accordance with the trust documents we'll be gathering at the usual place for our annual holiday portrait which must be completed by end of Q4 for regulatory compliance.
+
+I expect everyone in formal attire, floor length gowns and suits only, as this goes to the shareholders by end of Q4. If you're bringing a plus-one they should be prepared to look like they've summered with us for years, we can't have another situation like Thanksgiving which is still being discussed at the club.
+
+I've also arranged for light refreshments though the family office has asked we keep it modest after last year's caviar bill nearly derailed the merger. Again formal attire is mandatory, our counsel has been very clear about maintaining brand consistency across all family assets.
+
+Looking forward to seeing everyone.
+
+- This portrait has been commissioned by the family office and will be displayed in the main residence, the summer house, and distributed to key stakeholders.`,
+    spotifyLink: "https://open.spotify.com/track/2gUPyc2cDGKurgULWB8Q2Q?si=Pme9ore3S1KgLXdTee2flQ",
+    spotifyLyrics: "Orchestra.",
+    image: {
+      webp: "./images/partiful/we.gif",
+      fallback: "./images/partiful/we.gif"
+    },
+    hosts: [
+      { id: 1, image: './icons/hosts/fareeha.jpg' },
+      { id: 2, image: './icons/hosts/4-64896426.jpg' }
+    ]
+  },
+  {
+    id: 11,
+    title: "citrus salon",
+    date: "22/03/26",
+    attendees: 374,
+    clickable: true,
+    timeframe: 'past',
+    time: "1:00pm – 5:00pm",
+    description: `👕 shades of citrus (orange, yellow, whites)
+
+We are hosting another daytime brunch. At some point during brunch, a small citruation will unfold. When it does, you will receive one kumquat. Elsewhere in the room, is a grapefruit.
+
+Your goal is simple. Leave with the grapefruit.
+
+trades are binding… alliances are unenforceable… there are no other rules… or maybe there are… you'll find out
+
+Entry requires citrus attire (orange, yellow, and/or white) 🍊💛
+
+🍋‍🟩🍊🍋`,
+    spotifyLink: "https://open.spotify.com/track/7r0EUONfPUZ8SD1vu4ro27?si=iwDbBttnTd6hfboxa4tNig",
+    spotifyLyrics: "🕵️",
+    image: {
+      webp: "./images/partiful/cs.jpeg",
+      fallback: "./images/partiful/cs.jpeg"
+    },
+    hosts: [
+      { id: 1, image: './icons/hosts/11-dd1a51c0.jpg' },
+      { id: 2, image: './icons/hosts/fareeha.jpg' },
+      { id: 3, image: './icons/hosts/10-dd1a51c0.jpg' }
+    ]
+  },
+  {
+    id: 4,
+    title: "pomegranate garden",
+    date: "24/01/26",
+    attendees: 279,
+    clickable: true,
+    timeframe: 'past',
+    time: "10:00am – 1:00pm",
+    description: `👕 shades of pomegranate (dark reds, pinks, white)
+
+We are hosting a daytime brunch. Pomegranates shall feature prominently, though we shan't disclose precisely how.
+
+Dress code: red (the arils), pink (the shell), and/or white (the pith). Fail to respect this code at your own risk 😊
+
+See you in the garden 🩷✨
+
+🥗🍹🌺
+♦️`,
+    image: {
+      webp: "./images/partiful/pg.gif",
+      fallback: "./images/partiful/pg.gif"
+    },
+    spotifyLink: "https://open.spotify.com/track/4wbPU5OlVziXuElgzFYHt6?si=sPIeOOgOSJSNbe1_FsVv2A",
+    spotifyLyrics: "♦️",
+    hosts: [
+      { id: 1, image: './icons/hosts/fareeha.jpg' },
+      { id: 2, image: './icons/hosts/10-dd1a51c0.jpg' },
+      { id: 3, image: './icons/hosts/11-dd1a51c0.jpg' }
+    ]
+  },
+  {
     id: 10,
     title: "kiwi soirée",
     date: "17/09/25",

@@ -103,7 +103,7 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-I\'m with an <a href="https://theagentic.ai" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">AI lab</a> exploring a new class of infrastructure for agent builders. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
+I\'m on the launch team for <a href="https://sanscritic.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Sanscritic</a>, a new technology for agent builders. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
 
 In Autumn 2026, I'll be producing a fashion show. It\'s ambitious. More news to come.
 
