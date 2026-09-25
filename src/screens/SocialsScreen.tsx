@@ -47,11 +47,10 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       isCustomIcon: true
     },
     {
-      name: "signal",
-      icon: "./icons/apps/signal.png",
-      url: "https://signal.me/#eu/g7Ye-3IizjGG9YWJOx4QtrjO6sqGM_0zZRS65l14vNogRiJjQA9AUoW1WEA5xcfL",
-      position: 5,
-      isCustomIcon: true
+      name: "empty2",
+      icon: null,
+      url: "#",
+      position: 5
     },
     {
       name: "kineship",
