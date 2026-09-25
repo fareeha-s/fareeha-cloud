@@ -71,6 +71,18 @@ const PhoneMockup: React.FC<{ src: string }> = ({ src }) => {
   const [frameSrc] = useState(() =>
     document.documentElement.classList.contains('theme-light') ? `${src}&theme=light` : src
   );
+  // Load the phone's copy of the site only after the page itself has finished,
+  // so the card and background get the network and CPU first
+  const [frameReady, setFrameReady] = useState(false);
+  useEffect(() => {
+    const start = () => setTimeout(() => setFrameReady(true), 150);
+    if (document.readyState === 'complete') {
+      const t = start();
+      return () => clearTimeout(t);
+    }
+    window.addEventListener('load', start, { once: true });
+    return () => window.removeEventListener('load', start);
+  }, []);
 
   useEffect(() => {
     const onResize = () => setScale(getScale());
@@ -119,7 +131,7 @@ const PhoneMockup: React.FC<{ src: string }> = ({ src }) => {
         <div className="w-full h-full bg-black" style={{ borderRadius: 61, padding: BEZEL }}>
           <div className="relative w-full h-full overflow-hidden bg-[#0b0b0c]" style={{ borderRadius: 54 }}>
             <iframe
-              src={frameSrc}
+              src={frameReady ? frameSrc : 'about:blank'}
               title="Fareeha OS on a phone"
               className="block"
               style={{ width: SCREEN_W, height: APP_H, border: 0 }}

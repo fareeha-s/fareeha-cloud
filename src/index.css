@@ -589,11 +589,9 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   -webkit-user-select: none;
 }
 
-/* Phone wallpaper: soft focus and a very slow drift */
+/* Phone wallpaper (pre-blurred image): just a tone adjustment per theme */
 .mobile-wallpaper {
-  filter: blur(2.5px) brightness(0.72) saturate(1.15);
-  animation: wallpaper-drift 40s ease-in-out infinite alternate;
-  transform-origin: 50% 40%;
+  filter: brightness(0.72) saturate(1.15);
 }
 
 /* With an app open the wallpaper stays put; the glass card itself frosts over
@@ -602,10 +600,6 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   backdrop-filter: blur(26px) saturate(140%);
   -webkit-backdrop-filter: blur(26px) saturate(140%);
   background-color: rgba(20, 20, 22, 0.45);
-}
-@keyframes wallpaper-drift {
-  0% { transform: scale(1.04) translate(0, 0); }
-  100% { transform: scale(1.1) translate(-1.5%, -2%); }
 }
 
 /* Pearly app glyphs, styled after the Partiful logo */
@@ -633,9 +627,6 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   .linen-window {
     animation: none !important;
     will-change: auto;
-  }
-  .mobile-wallpaper {
-    transform: scale(1.06);
   }
 }
 
