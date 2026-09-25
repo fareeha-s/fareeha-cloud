@@ -675,14 +675,25 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   .main-container.intro-glow::after { display: none; }
 }
 
-/* Kineship mark used like an emoji next to a name; takes the surrounding text colour */
+/* Kineship mark used like an emoji next to a name, in polished rose gold */
 .kineship-mark {
   display: inline-block;
   width: 1.7em;
   height: 1.15em;
   margin-left: 0.15em;
   vertical-align: -0.2em;
-  background-color: currentColor;
+  /* Metal: bright highlights and deeper copper bands, angled like light on a curved surface */
+  background: linear-gradient(
+    120deg,
+    #b8736a 0%,
+    #f3c9bd 22%,
+    #fff1ea 38%,
+    #d99a8c 52%,
+    #a8635a 66%,
+    #f6d3c7 82%,
+    #c7887b 100%
+  );
+  filter: drop-shadow(0 0.5px 0.5px rgba(80, 30, 20, 0.35));
   -webkit-mask: url('/icons/kineship-mark.png') center / contain no-repeat;
   mask: url('/icons/kineship-mark.png') center / contain no-repeat;
 }
