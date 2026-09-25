@@ -69,7 +69,7 @@ If this feels like your kind of world, I'd love to [hear from you.](mailto:faree
     content: `A slow-burn project with collaborators across a few countries, so it's moving at its own pace.
 
 Date TBD 🩵`,
-    date: "25/09/26",
+    date: "24/09/26",
     timeframe: 'recent',
     pinned: false
   },
