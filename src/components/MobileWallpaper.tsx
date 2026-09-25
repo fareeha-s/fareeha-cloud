@@ -19,13 +19,12 @@ const MobileWallpaper: React.FC<{ isLoaded: boolean }> = ({ isLoaded }) => {
   return (
     <div
       className="absolute inset-0 overflow-hidden pointer-events-none z-0"
-      style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 1.4s ease' }}
       aria-hidden="true"
     >
       <div className="mobile-wallpaper absolute inset-0">
         {scattered.map(({ photo, style, rotate }, i) => (
           <div key={photo.caption} className="absolute" style={{ ...style, transform: `rotate(${rotate}deg)` }}>
-            <Polaroid src={photo.src} width={width} developDelay={0.3 + i * 0.15} />
+            <Polaroid src={photo.src} width={width} develop={false} />
           </div>
         ))}
       </div>

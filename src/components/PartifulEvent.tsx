@@ -832,7 +832,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                   <a href="https://www.cnn.com/2026/06/09/entertainment/video/mango-meetup-san-francisco-mango-tango-hundreds-digvid-vrtc" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>CNN</a>!! and{' '}
                   <a href="https://www.kqed.org/arts/13990218/indian-mango-party-san-francisco-mission" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>KQED</a> and the{' '}
                   <a href="https://www.sfchronicle.com/entertainment/article/indian-mango-party-22283051.php" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>SF Chronicle</a> and{' '}
-                  <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>MTS</a>!! 🥭😭 thank you so much to Darshil for inviting me to co-host this
+                  <a href="https://x.com/mtslive" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>MTS</a>!! 🥭😭 thank you so much to Darshil for inviting me to co-host this
                 </p>
                 <div className="flex items-center gap-2 mt-2">
                   <span style={{ fontSize: '16px' }}>💬</span>

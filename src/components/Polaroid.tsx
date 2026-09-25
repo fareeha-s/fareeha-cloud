@@ -6,6 +6,8 @@ interface PolaroidProps {
   width: number;
   // Seconds before the photo starts "developing"
   developDelay?: number;
+  // false: show the photo straight away (no "developing" fade-in)
+  develop?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -13,7 +15,7 @@ interface PolaroidProps {
 // A clean instant photo: softly rounded corners, a slightly wide print and the
 // classic deeper bottom border. The image fades in from washed-out white the
 // way a real one develops.
-const Polaroid: React.FC<PolaroidProps> = ({ src, alt = '', width, developDelay = 0, className = '', style }) => {
+const Polaroid: React.FC<PolaroidProps> = ({ src, alt = '', width, developDelay = 0, develop = true, className = '', style }) => {
   const pad = Math.round(width * 0.034);
   return (
     <div
@@ -26,7 +28,7 @@ const Polaroid: React.FC<PolaroidProps> = ({ src, alt = '', width, developDelay 
       }}
     >
       <div className="polaroid__photo" style={{ borderRadius: Math.max(2, Math.round(width * 0.008)) }}>
-        <img src={src} alt={alt} draggable={false} style={{ animationDelay: `${developDelay}s` }} />
+        <img src={src} alt={alt} draggable={false} style={develop ? { animationDelay: `${developDelay}s` } : { animation: 'none' }} />
       </div>
     </div>
   );

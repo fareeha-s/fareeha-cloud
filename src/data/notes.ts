@@ -24,6 +24,7 @@ const readings: Reading[] = [
   { title: 'Software 2.0', author: 'Andrej Karpathy', url: 'https://karpathy.medium.com/software-2-0-a64152b37c35', published: '2017-11', read: false },
   { title: 'Constitutional AI: Harmlessness from AI Feedback', author: 'Anthropic', url: 'https://arxiv.org/abs/2212.08073', published: '2022-12', read: false },
   { title: 'From AGI to ASI', author: 'Google DeepMind', url: 'https://deepmind.google/research/publications/239142/', published: '2026-06', read: false },
+  { title: 'The Future is for Everyone', author: 'Mark Zuckerberg', url: 'https://about.fb.com/news/2026/08/the-future-is-for-everyone/', published: '2026-08', read: false },
   { title: 'AI 2027', author: 'Daniel Kokotajlo et al.', url: 'https://ai-2027.com', published: '2025-04', read: false },
 ];
 
