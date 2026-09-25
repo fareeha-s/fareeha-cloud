@@ -213,6 +213,12 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   // One soft glow that travels around the note's edge when the site first opens on a phone
   const [showIntroGlow, setShowIntroGlow] = useState(!isPhoneEmbed);
+  // The automatic opening of the hello world note shouldn't play the "icon expanding" effect
+  const [isAutoOpening, setIsAutoOpening] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsAutoOpening(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
   useEffect(() => {
     const timer = setTimeout(() => setShowIntroGlow(false), 3500);
     return () => clearTimeout(timer);
@@ -307,7 +313,10 @@ function App() {
   const [hasShownFirstDisplay, setHasShownFirstDisplay] = useState(false);
   const [lastManualNavigation, setLastManualNavigation] = useState<number | null>(null);
   // Add state to detect if user is on a mobile device
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  // Decided before the first paint so the note is drawn at phone size straight away
+  const [isMobileDevice, setIsMobileDevice] = useState(
+    () => isPhoneEmbed || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || '')
+  );
   // Track if home has been seen in this session
   const [hasSeenHomeSession, setHasSeenHomeSession] = useState(false);
   const [arrowDismissed, setArrowDismissed] = useState(false);
@@ -978,7 +987,7 @@ function App() {
       {!isPhoneEmbed && (
         <div
           className="fixed left-1/2 -translate-x-1/2 z-40"
-          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 22px)', opacity: isLoaded ? 1 : 0, transition: 'opacity 0.8s ease 0.6s' }}
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 22px)' }}
         >
           <ThemeToggle />
         </div>
@@ -1010,7 +1019,8 @@ function App() {
         // ADD stopPropagation to prevent clicks here closing the app
         onClick={(e) => e.stopPropagation()}
         style={{
-          opacity: isLoaded ? 1 : 0,
+          // No fade-in: browsers drop the frosted-glass blur while an element fades,
+          // which made the note look see-through and then snap solid
           transform: 'translateX(-50%) translateZ(0)',
           WebkitTransform: 'translateX(-50%) translateZ(0)',
           transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
@@ -1150,7 +1160,7 @@ function App() {
             activeApp ? 'glass-solid-shine' : ''
           } ${isNoteDetailView || isEventDetailView ? 'portrait-container expanded' : ''}`}
           variants={frameVariants}
-          initial="closed"
+          initial={isPhoneEmbed ? 'closed' : 'open'} // phones open straight onto the note, already full height
           animate={(isNoteDetailView && activeApp === 'notes') || (activeApp === 'partiful') ? 'open' : 'closed'} // Control animation state - partiful always uses open/tall frame
           style={{
             borderRadius: '24px',
@@ -1158,7 +1168,8 @@ function App() {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Icon in center during expansion */}
+          {/* Icon in center during expansion (only after tapping an app icon, not on first load) */}
+          {clonedAppIcon && !isAutoOpening && (
           <motion.div
             className="absolute flex items-center justify-center"
             initial={{
@@ -1189,6 +1200,7 @@ function App() {
               )}
             </div>
           </motion.div>
+          )}
           
           {/* Home Screen Layer - Always present */}
           <div 
