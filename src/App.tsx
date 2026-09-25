@@ -648,6 +648,24 @@ function App() {
     };
   }, []);
   
+  // Links on the desktop card ("Partifuls", "apples"...) open screens in this app,
+  // whether it's the phone mockup (via postMessage) or the full-screen app view
+  useEffect(() => {
+    const open = (target: { app: string; noteId?: number }) => {
+      window.handleAppClick?.('home');
+      setTimeout(() => {
+        window.handleAppClick?.(target.app);
+        if (target.noteId) setTimeout(() => window.openNoteWithId?.(target.noteId!), 700);
+      }, 450);
+    };
+    (window as any).__openInApp = open;
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin === window.location.origin && e.data?.type === 'open') open(e.data);
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
   // Create a mapping from app IDs to handleAppClick (for use with inline links)
   useEffect(() => {
     // Make handleAppClick available to the window object for links in notes
