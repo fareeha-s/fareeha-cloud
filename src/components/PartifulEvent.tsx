@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shirt, Utensils } from 'lucide-react';
 import { EventItem } from '../data/events';
-import Polaroid from './Polaroid';
+
+// Photos from the night, shown under the invite
+const nightPhotos: Record<string, string[]> = {
+  'for the culture': ['./images/photoalbum/ftc-photo.jpeg'],
+  'Winter Editorial.': ['./images/photoalbum/we-1.jpeg', './images/photoalbum/we-2.jpeg'],
+};
 
 type PartifulEventProps = {
   onBack: () => void;
@@ -124,7 +129,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
   ];
   
   // Use the actual attendee count from the event data
-  const approvedCount = eventData?.attendees || 12;
+  const approvedCount = eventData?.attendees ?? 12;
   const attendeePhotos = [
     { id: 1, image: 'https://i.pravatar.cc/100?img=1' },
     { id: 2, image: 'https://i.pravatar.cc/100?img=2' },
@@ -258,6 +263,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                          eventTitle === "citrus salon" ? 'rgba(200, 100, 15, 0.45)' :
                          eventTitle === "Winter Editorial." ? 'rgba(60, 5, 5, 0.55)' :
                          eventTitle === "for the culture" ? 'rgba(50, 25, 5, 0.55)' :
+                         eventTitle === "mango tango four" ? 'rgba(190, 115, 10, 0.45)' :
                          'rgba(14, 43, 23, 0.5)';
 
   return (
@@ -347,7 +353,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
             textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'none' : 'lowercase',
             fontStretch: '150%',
             fontStyle: eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'italic' : 'normal',
-            whiteSpace: eventTitle === "pomegranate garden" || eventTitle === "citrus salon" ? 'normal' : 'nowrap',
+            whiteSpace: eventTitle === "pomegranate garden" || eventTitle === "citrus salon" || eventTitle === "mango tango four" ? 'normal' : 'nowrap',
             overflow: 'hidden'
           }}
         >
@@ -471,7 +477,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </div>
           
           {/* Music lyrics with Spotify link - smaller font */}
-          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious" && eventTitle !== "consumer social" && eventTitle !== "for the culture") && (
+          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious" && eventTitle !== "consumer social" && eventTitle !== "for the culture" && eventTitle !== "mango tango four") && (
           <div className="ptf-l-V5l2c ptf-l-42Hmr" style={{ display: 'flex', alignItems: 'flex-start', marginTop: '8px', marginBottom: '14px' }}>
             <span className="ptf--7nAv ptf-l-02UEs ptf-l-Y-q9d" style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}>
               {eventTitle === "blood moon rising." ? (
@@ -540,7 +546,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                 margin: '0',
                 marginTop: '12px',
             position: 'relative',
-            display: 'flex',
+            display: approvedCount > 0 ? 'flex' : 'none', // hidden when the guest count isn't public
             alignItems: 'center',
                 minHeight: '65px',  // Increased from 50px to give more space
                 paddingBottom: '15px'  // Added padding at the bottom to ensure content doesn't cut off
@@ -841,23 +847,24 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </motion.div>
         )}
         
-        {/* Photo from the night - for the culture */}
-        {eventTitle === "for the culture" && (
+        {/* Photos from the night, photo-album style */}
+        {nightPhotos[eventTitle] && (
           <motion.div
-            className="mx-4 mt-3 mb-2"
+            className="mx-4 mt-3 mb-2 space-y-3"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="flex justify-center py-2">
-              <Polaroid
-                src="./images/photoalbum/ftc-photo.jpeg"
-                alt="from the night"
-                width={240}
-                developDelay={0.5}
-                style={{ transform: 'rotate(-2.5deg)' }}
-              />
-            </div>
+            {nightPhotos[eventTitle].map((src) => (
+              <div key={src} className="w-full overflow-hidden rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+                <img
+                  src={src}
+                  alt={`${eventTitle}, from the night`}
+                  className="w-full"
+                  style={{ objectFit: 'cover', display: 'block' }}
+                />
+              </div>
+            ))}
           </motion.div>
         )}
 

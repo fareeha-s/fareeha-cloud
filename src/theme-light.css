@@ -13,7 +13,7 @@
 
 html.theme-light {
   --page-bg: #ebe5da;
-  --fg: rgb(34 30 27);
+  --fg: rgb(58 40 30);
   --fg-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
   color-scheme: light;
 }
@@ -33,10 +33,14 @@ html.theme-light h2:not(.keep-dark *),
 html.theme-light h3:not(.keep-dark *),
 html.theme-light h4:not(.keep-dark *),
 html.theme-light p:not(.keep-dark *) {
-  color: rgb(34 30 27 / 0.94);
+  color: rgb(58 40 30 / 0.94);
 }
 
 /* Frosted white glass */
+html.theme-light .main-container.glass-solid-shine {
+  background-color: rgba(250, 247, 241, 0.55);
+}
+
 html.theme-light .glass-solid {
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.36) 100%);
   border: 1px solid rgba(255, 255, 255, 0.85);
@@ -61,14 +65,14 @@ html.theme-light .custom-pink-link:not(.keep-dark *):hover {
 }
 
 html.theme-light .refined-sf-pro-note-text:not(.keep-dark *) {
-  color: rgb(34 30 27) !important;
+  color: rgb(58 40 30) !important;
 }
 
 html.theme-light .scrollbar-subtle {
-  scrollbar-color: rgb(34 30 27 / 0.15) transparent;
+  scrollbar-color: rgb(58 40 30 / 0.15) transparent;
 }
 html.theme-light .scrollbar-subtle::-webkit-scrollbar-thumb {
-  background: rgb(34 30 27 / 0.15);
+  background: rgb(58 40 30 / 0.15);
 }
 
 /* Background layers (see AppBackground) */
@@ -79,10 +83,6 @@ html.theme-light .bg-layer-light { display: block; }
 /* Daylight polaroid wallpaper: crisper, brighter, washed rather than darkened */
 html.theme-light .mobile-wallpaper {
   filter: blur(1.5px) brightness(1.02) saturate(1.05);
-}
-html.theme-light .mobile-wallpaper--receded {
-  filter: blur(18px) brightness(1.08) saturate(1.15);
-  opacity: 0.8;
 }
 html.theme-light .mobile-wallpaper-scrim {
   background: linear-gradient(to bottom, rgba(235, 229, 218, 0.7) 0%, rgba(235, 229, 218, 0.1) 28%, rgba(235, 229, 218, 0.15) 65%, rgba(235, 229, 218, 0.6) 100%) !important;
@@ -101,28 +101,28 @@ html.theme-light .invite-card {
 }
 
 /* Remapped white utilities */
-html.theme-light .text-white:not(.keep-dark *) { color: rgb(34 30 27 / 1); }
-html.theme-light .text-white\/90:not(.keep-dark *) { color: rgb(34 30 27 / 0.9); }
-html.theme-light .text-white\/80:not(.keep-dark *) { color: rgb(34 30 27 / 0.82); }
-html.theme-light .text-white\/70:not(.keep-dark *) { color: rgb(34 30 27 / 0.72); }
-html.theme-light .text-white\/65:not(.keep-dark *) { color: rgb(34 30 27 / 0.66); }
-html.theme-light .text-white\/60:not(.keep-dark *) { color: rgb(34 30 27 / 0.62); }
-html.theme-light .text-white\/50:not(.keep-dark *) { color: rgb(34 30 27 / 0.55); }
-html.theme-light .text-white\/45:not(.keep-dark *) { color: rgb(34 30 27 / 0.5); }
-html.theme-light .hover\:text-white:hover:not(.keep-dark *) { color: rgb(34 30 27 / 1); }
-html.theme-light .group:hover .group-hover\:text-white:not(.keep-dark *) { color: rgb(34 30 27 / 1); }
-html.theme-light .group:hover .group-hover\:text-white\/70:not(.keep-dark *) { color: rgb(34 30 27 / 0.72); }
-html.theme-light .bg-white:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.8); }
-html.theme-light .bg-white\/70:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.55); }
-html.theme-light .bg-white\/40:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.25); }
-html.theme-light .bg-white\/5:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.05); }
-html.theme-light .bg-white\/3:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.03); }
+html.theme-light .text-white:not(.keep-dark *) { color: rgb(58 40 30 / 1); }
+html.theme-light .text-white\/90:not(.keep-dark *) { color: rgb(58 40 30 / 0.9); }
+html.theme-light .text-white\/80:not(.keep-dark *) { color: rgb(58 40 30 / 0.82); }
+html.theme-light .text-white\/70:not(.keep-dark *) { color: rgb(58 40 30 / 0.72); }
+html.theme-light .text-white\/65:not(.keep-dark *) { color: rgb(58 40 30 / 0.66); }
+html.theme-light .text-white\/60:not(.keep-dark *) { color: rgb(58 40 30 / 0.62); }
+html.theme-light .text-white\/50:not(.keep-dark *) { color: rgb(58 40 30 / 0.55); }
+html.theme-light .text-white\/45:not(.keep-dark *) { color: rgb(58 40 30 / 0.5); }
+html.theme-light .hover\:text-white:hover:not(.keep-dark *) { color: rgb(58 40 30 / 1); }
+html.theme-light .group:hover .group-hover\:text-white:not(.keep-dark *) { color: rgb(58 40 30 / 1); }
+html.theme-light .group:hover .group-hover\:text-white\/70:not(.keep-dark *) { color: rgb(58 40 30 / 0.72); }
+html.theme-light .bg-white:not(.keep-dark *) { background-color: rgb(58 40 30 / 0.8); }
+html.theme-light .bg-white\/70:not(.keep-dark *) { background-color: rgb(58 40 30 / 0.55); }
+html.theme-light .bg-white\/40:not(.keep-dark *) { background-color: rgb(58 40 30 / 0.25); }
+html.theme-light .bg-white\/5:not(.keep-dark *) { background-color: rgb(58 40 30 / 0.05); }
+html.theme-light .bg-white\/3:not(.keep-dark *) { background-color: rgb(58 40 30 / 0.03); }
 html.theme-light .bg-white\/15:not(.keep-dark *) { background-color: rgb(255 255 255 / 0.6); }
-html.theme-light .hover\:bg-white\/5:hover:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.05); }
-html.theme-light .hover\:bg-white\/\[0\.06\]:hover:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.05); }
-html.theme-light .active\:bg-white\/10:active:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.08); }
-html.theme-light .border-white\/20:not(.keep-dark *) { border-color: rgb(34 30 27 / 0.1); }
-html.theme-light .border-white\/10:not(.keep-dark *) { border-color: rgb(34 30 27 / 0.08); }
+html.theme-light .hover\:bg-white\/5:hover:not(.keep-dark *) { background-color: rgb(58 40 30 / 0.05); }
+html.theme-light .hover\:bg-white\/\[0\.06\]:hover:not(.keep-dark *) { background-color: rgb(58 40 30 / 0.05); }
+html.theme-light .active\:bg-white\/10:active:not(.keep-dark *) { background-color: rgb(58 40 30 / 0.08); }
+html.theme-light .border-white\/20:not(.keep-dark *) { border-color: rgb(58 40 30 / 0.1); }
+html.theme-light .border-white\/10:not(.keep-dark *) { border-color: rgb(58 40 30 / 0.08); }
 html.theme-light .ring-white\/20:not(.keep-dark *) { --tw-ring-color: rgb(255 255 255 / 0.9); }
 
 html.theme-light .keep-dark {
@@ -178,5 +178,20 @@ html.theme-light .desktop-card {
   -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
 }
 html.theme-light .desktop-card .text-white\/90 {
-  color: rgb(34 30 27 / 0.9);
+  color: rgb(58 40 30 / 0.9);
+}
+
+/* Pearl glyphs on white glass need a deeper, cooler pearl to stay visible */
+html.theme-light {
+  --pearl-1: #b9aede;
+  --pearl-2: #9fb4e0;
+  --pearl-3: #c8b3e6;
+  --pearl-4: #a7c3ea;
+}
+html.theme-light .pearl-image {
+  filter: brightness(0.68) saturate(2.4) contrast(1.25) drop-shadow(0 1px 1.5px rgba(70, 60, 130, 0.35));
+}
+html.theme-light .widget-icon-tile {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%);
+  border-color: rgba(255, 255, 255, 0.95) !important;
 }

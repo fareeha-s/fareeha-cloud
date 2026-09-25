@@ -494,7 +494,7 @@ function App() {
       timestamp: getRelativeDate(widgetNote.date),
       timestampLabel: 'notes',
       progress: 65,
-      iconBgColor: 'bg-[#FF8A5B]/20',
+      iconBgColor: 'widget-icon-tile',
       noteId: widgetNote.id // Use the randomly selected note's ID
     },
     {
@@ -518,7 +518,7 @@ function App() {
         }
       })(), // Calculate based on date comparison
       progress: 0, // Set progress if applicable, otherwise 0
-      iconBgColor: 'bg-[#FF4081]/20', // Partiful color
+      iconBgColor: 'widget-icon-tile',
       eventId: widgetEvent.id, // Use widgetEvent state
       attendees: widgetEvent.attendees // Use widgetEvent state
     }
@@ -934,8 +934,19 @@ function App() {
       style={{ backgroundColor: 'var(--page-bg)' }} 
     >
       {/* Use the AppBackground component here */}
+      {/* Pearlescent gradient shared by the app glyphs so they match Partiful's pearly logo */}
+      <svg width="0" height="0" className="absolute" aria-hidden="true">
+        <defs>
+          <linearGradient id="pearl" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" style={{ stopColor: 'var(--pearl-1)' }} />
+            <stop offset="45%" style={{ stopColor: 'var(--pearl-2)' }} />
+            <stop offset="75%" style={{ stopColor: 'var(--pearl-3)' }} />
+            <stop offset="100%" style={{ stopColor: 'var(--pearl-4)' }} />
+          </linearGradient>
+        </defs>
+      </svg>
       <AppBackground isLoaded={isLoaded} />
-      {!isPhoneEmbed && <MobileWallpaper isLoaded={isLoaded} recede={activeApp !== null} />}
+      {!isPhoneEmbed && <MobileWallpaper isLoaded={isLoaded} />}
       {!isPhoneEmbed && <PolaroidIntro />}
 
       <AnimatePresence>
@@ -1328,13 +1339,13 @@ function App() {
                         />
                       )}
                       {widgets[currentWidgetIndex].type === 'notes' && (
-                        <StickyNote size={20} className="text-white" strokeWidth={1.5} />
+                        <StickyNote size={20} className="pearl-glyph" color="url(#pearl)" strokeWidth={2.2} />
                       )}
                       {widgets[currentWidgetIndex].type === 'partiful' && (
                         <img 
                           src="./icons/apps/partiful.png" 
                           alt="Partiful" 
-                          className="w-6 h-6 object-contain" 
+                          className="pearl-image w-6 h-6 object-contain" 
                         />
                     )}
                   </div>
@@ -1376,7 +1387,7 @@ function App() {
                           {widgets[currentWidgetIndex].type === 'notes' ? 
                             '' : // Remove duplicate title for notes widget
                             widgets[currentWidgetIndex].type === 'partiful' ?
-                            `${widgets[currentWidgetIndex].attendees} approved` :
+                            (widgets[currentWidgetIndex].attendees ? `${widgets[currentWidgetIndex].attendees} approved` : '') :
                             'with megan, sam'}
                         </p>
                       </div>

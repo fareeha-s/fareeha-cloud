@@ -17,6 +17,8 @@ export const EventScreen: React.FC<AppScreenProps> = ({
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [widgetEventId, setWidgetEventId] = useState<number | null>(null);
   const [defaultHighlightEventId, setDefaultHighlightEventId] = useState<number | null>(null);
+  // Unfolded year groups in the gatherings list; the newest year starts open
+  const [openYears, setOpenYears] = useState<number[]>(() => [Math.max(...events.map((e) => 2000 + Number(e.date.split('/')[2])))]);
   const [showSwipeIndicator, setShowSwipeIndicator] = useState(false);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
 
@@ -366,6 +368,12 @@ export const EventScreen: React.FC<AppScreenProps> = ({
   // Get all events that are not in the past month section
   const remainingEvents = allEvents.filter(event => !isPastMonth(event.date));
 
+  // Years with older gatherings, newest first
+  const eventYear = (dateStr: string) => 2000 + Number(dateStr.split('/')[2]);
+  const eventYears = [...new Set(remainingEvents.map((event) => eventYear(event.date)))].sort((a, b) => b - a);
+  const toggleYear = (year: number) =>
+    setOpenYears((prev) => (prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year]));
+
   // Function to determine if the pulsing dot should be shown for an event
   const shouldShowPulsingDot = (eventId: number) => {
     console.log(`[EventScreen shouldShowPulsingDot] Checking eventId: ${eventId} against widgetEventId: ${widgetEventId}`);
@@ -466,74 +474,112 @@ export const EventScreen: React.FC<AppScreenProps> = ({
             </div>
           )}
 
-          {/* All events section */}
-          {remainingEvents.length > 0 && (
-            <div>
-              <h2 className="text-white/45 text-[13px] font-medium tracking-[0.01em] mb-2 px-2">
-                All gatherings
-              </h2>
-              <div className="space-y-2">
-                {remainingEvents.map((event, index) => (
-                  <motion.div 
-                    key={`all-${event.id}`}
-                    className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative" 
-                    onClick={(e) => {
-                      if (event.clickable) {
-                        e.stopPropagation();
-                        createTactileEffect();
-                        handleEventPress(event);
-                      }
-                    }}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
-                      <motion.div
-                        variants={chevronVariants}
-                        initial="initial"
-                        whileHover="hover"
+          {/* Older gatherings, grouped by year; tap a year to unfold it */}
+          {eventYears.map((year) => {
+            const yearEvents = remainingEvents.filter((event) => eventYear(event.date) === year);
+            const isOpen = openYears.includes(year);
+            return (
+              <div key={year}>
+                <button
+                  type="button"
+                  className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors"
+                  aria-expanded={isOpen}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    createTactileEffect();
+                    toggleYear(year);
+                  }}
+                >
+                  <span className="flex items-center gap-1.5 text-white/90 text-[15px] font-semibold tracking-[0.01em]">
+                    <motion.span
+                      className="flex text-white/45"
+                      animate={{ rotate: isOpen ? 90 : 0 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    >
+                      <ChevronRight size={15} />
+                    </motion.span>
+                    {year}
+                  </span>
+                  <span className="text-white/45 text-[13px]">
+                    {yearEvents.length} {yearEvents.length === 1 ? 'gathering' : 'gatherings'}
+                  </span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="events"
+                      className="overflow-hidden"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <div className="space-y-2 pt-1 pb-3 pl-3">
+                        {yearEvents.map((event, index) => (
+                      <motion.div 
+                        key={`all-${event.id}`}
+                        className="flex group px-1 py-0.5 rounded-md hover:bg-white/5 active:bg-white/10 relative" 
+                        onClick={(e) => {
+                          if (event.clickable) {
+                            e.stopPropagation();
+                            createTactileEffect();
+                            handleEventPress(event);
+                          }
+                        }}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ duration: 0.2 }}
                       >
-                        <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                        <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-white/50">
+                          <motion.div
+                            variants={chevronVariants}
+                            initial="initial"
+                            whileHover="hover"
+                          >
+                            <ChevronRight size={16} className="group-hover:text-white/70 transition-colors duration-200" />
+                          </motion.div>
+                        </div>
+                        <div className="ml-1 flex-1 flex justify-between items-center">
+                          <div className="flex-1 pr-3">
+                            <h3 className={`${event.clickable ? 'text-white/90 group-hover:text-white' : 'text-white/60'} break-words transition-colors duration-200 distinct-note-font`}>
+                              {event.title}
+                            </h3>
+                          </div>
+                          <div className="flex-shrink-0 flex items-center">
+                            <span className="text-[14px] text-white/50 whitespace-nowrap">
+                              {getRelativeDate(event.date)}
+                            </span>
+                          </div>
+                        </div>
+                        {shouldShowPulsingDot(event.id) && (
+                          <div 
+                            className="absolute -right-1 top-1/3 -translate-y-1/2" 
+                          >
+                            <motion.div 
+                              className="w-2 h-2 rounded-full bg-white/70" 
+                              initial={{ opacity: 0.7 }}
+                              animate={{ 
+                                opacity: [0.5, 0.9, 0.5],
+                                scale: [1, 1.2, 1]
+                              }}
+                              transition={{ 
+                                repeat: Infinity, 
+                                repeatType: "reverse", 
+                                duration: 1.5,
+                                repeatDelay: 1
+                              }}
+                            />
+                          </div>
+                        )}
                       </motion.div>
-                    </div>
-                    <div className="ml-1 flex-1 flex justify-between items-center">
-                      <div className="flex-1 pr-3">
-                        <h3 className={`${event.clickable ? 'text-white/90 group-hover:text-white' : 'text-white/60'} break-words transition-colors duration-200 distinct-note-font`}>
-                          {event.title}
-                        </h3>
+                        ))}
                       </div>
-                      <div className="flex-shrink-0 flex items-center">
-                        <span className="text-[14px] text-white/50 whitespace-nowrap">
-                          {getRelativeDate(event.date)}
-                        </span>
-                      </div>
-                    </div>
-                    {shouldShowPulsingDot(event.id) && (
-                      <div 
-                        className="absolute -right-1 top-1/3 -translate-y-1/2" 
-                      >
-                        <motion.div 
-                          className="w-2 h-2 rounded-full bg-white/70" 
-                          initial={{ opacity: 0.7 }}
-                          animate={{ 
-                            opacity: [0.5, 0.9, 0.5],
-                            scale: [1, 1.2, 1]
-                          }}
-                          transition={{ 
-                            repeat: Infinity, 
-                            repeatType: "reverse", 
-                            duration: 1.5,
-                            repeatDelay: 1
-                          }}
-                        />
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
-          )}
+            );
+          })}
         </div>
       </motion.div>
     </div>

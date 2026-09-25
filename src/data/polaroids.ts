@@ -12,5 +12,6 @@ export const polaroidPhotos: Record<string, PolaroidPhoto> = {
   kiwi: { src: './images/polaroids/ks.webp', caption: 'kiwi soirée' },
   strawberry: { src: './images/polaroids/sh.webp', caption: 'strawberry hour' },
   bloodMoon: { src: './images/polaroids/bmr.webp', caption: 'blood moon rising' },
+  mango: { src: './images/polaroids/mt.webp', caption: 'mango tango four' },
   mentalStatic: { src: './images/polaroids/ms.webp', caption: 'mental static' },
 };

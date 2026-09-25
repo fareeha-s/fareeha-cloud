@@ -19,12 +19,29 @@ const titanium = 'linear-gradient(145deg, #6a6966 0%, #34343a 28%, #1d1d20 55%, 
 const getScale = () =>
   typeof window === 'undefined' ? 0.9 : Math.min(0.95, (window.innerHeight - 170) / VISIBLE_H);
 
-const StatusBar: React.FC = () => (
+// The visitor's actual local time, like a real lock screen (no AM/PM, as on iPhone)
+const formatTime = () => {
+  const now = new Date();
+  return `${now.getHours() % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')}`;
+};
+
+const useClock = () => {
+  const [time, setTime] = useState(formatTime);
+  useEffect(() => {
+    const tick = setInterval(() => setTime(formatTime()), 10_000);
+    return () => clearInterval(tick);
+  }, []);
+  return time;
+};
+
+const StatusBar: React.FC = () => {
+  const time = useClock();
+  return (
   <div
     className="absolute left-0 right-0 flex items-center justify-between pointer-events-none z-20 text-white"
     style={{ top: 18, height: 22, paddingLeft: 52, paddingRight: 38, fontFamily: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif' }}
   >
-    <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em' }}>9:41</span>
+    <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em' }}>{time}</span>
     <span className="flex items-center" style={{ gap: 6 }}>
       {/* Signal */}
       <svg width="18" height="12" viewBox="0 0 18 12" fill="white">
@@ -45,7 +62,8 @@ const StatusBar: React.FC = () => (
       </svg>
     </span>
   </div>
-);
+  );
+};
 
 const PhoneMockup: React.FC<{ src: string }> = ({ src }) => {
   const [scale, setScale] = useState(getScale);

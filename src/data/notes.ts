@@ -94,23 +94,5 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     date: '15/12/24',
     timeframe: 'recent',
     pinned: false
-  },
-  { 
-    id: 5, 
-    title: "dinner tables...", 
-    content: "", 
-    date: "", 
-    timeframe: 'older',
-    pinned: false,
-    locked: true,
-    style: { color: 'rgba(128, 128, 128, 0.5)', pointerEvents: 'none' }
-  },
-  { 
-    id: 6, 
-    title: "a blueprint for social longevity...", 
-    content: "", 
-    date: "", 
-    timeframe: 'older',
-    locked: true
   }
 ]; 

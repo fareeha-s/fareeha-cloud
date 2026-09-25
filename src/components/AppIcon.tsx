@@ -40,7 +40,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <StickyNote className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+        <StickyNote className="pearl-glyph w-7 h-7 relative z-10" color="url(#pearl)" strokeWidth={2.4} />
       </div>
     ),
     'AtSign': (
@@ -59,7 +59,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <AtSign className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+        <AtSign className="pearl-glyph w-7 h-7 relative z-10" color="url(#pearl)" strokeWidth={2.4} />
       </div>
     ),
     'PartyPopper': (
@@ -78,7 +78,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <PartyPopper className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+        <PartyPopper className="pearl-glyph w-7 h-7 relative z-10" color="url(#pearl)" strokeWidth={2.4} />
       </div>
     ),
     'Partiful': (
@@ -97,7 +97,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <img src="./icons/apps/partiful.png" alt="Partiful" className="w-7 h-7 relative z-10 opacity-90" />
+        <img src="./icons/apps/partiful.png" alt="Partiful" className="pearl-image w-7 h-7 relative z-10" />
       </div>
     ),
   };

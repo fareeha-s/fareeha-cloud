@@ -22,6 +22,38 @@ export type EventItem = {
 
 export const events: EventItem[] = [
   {
+    id: 14,
+    title: "mango tango four",
+    date: "31/05/26",
+    attendees: 721,
+    clickable: true,
+    timeframe: 'past',
+    time: "2:00pm",
+    description: `it’s that time of year again 🚨
+
+🗞️ “SF Mango Party Returns to Fight Bay Area Shortage” 😱 “Indian Mangoes Spark U.S. Rush Among Diaspora Fans” 🤩 “San Francisco ‘solves mango shortage’, plans mango party amid high demand in US” 😍
+
+We have, once again, wrestled the global supply chain to the ground with our bare hands to bring you…
+
+• fresh Kesar and Alphonso mangoes imported straight from India
+• mango delicacies for the earliest guests
+• salt water… tajín… tarragon… & other Interesting toppings to try 🧡
+
+you bring the tango, we bring the mango 🥭🥰
+see you soon!!`,
+    image: {
+      webp: "./images/partiful/mt.webp",
+      fallback: "./images/partiful/mt-fallback.jpg"
+    },
+    hosts: [
+      { id: 1, image: './icons/hosts/darshil.jpg' },
+      { id: 2, image: './icons/hosts/fareeha.jpg' },
+      { id: 3, image: './icons/hosts/dylan.jpg' },
+      { id: 4, image: './icons/hosts/parth.jpg' },
+      { id: 5, image: './icons/hosts/deep.jpg' }
+    ]
+  },
+  {
     id: 1,
     title: "mental static",
     date: "31/03/25",
