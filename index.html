@@ -261,8 +261,8 @@
     </style>
     <script>
       // Phones and tablets follow the system appearance (daylight linen theme in
-      // light mode). Desktop is dark unless the visitor flips the toggle, which is
-      // remembered; the phone mockup on desktop is told which theme to use.
+      // light mode) unless the visitor flips the toggle; desktop is dark unless flipped.
+      // Choices are remembered; the phone mockup on desktop is told which theme to use.
       (function () {
         var params = new URLSearchParams(location.search);
         var embed = params.has('phone');
@@ -278,7 +278,8 @@
         function apply() {
           if (embed) return set(params.get('theme') === 'light');
           if (desktop) return set(saved === 'light');
-          set(light.matches);
+          // Phones follow the system until the visitor picks with the toggle
+          set(saved ? saved === 'light' : light.matches);
         }
         apply();
         if (light.addEventListener) light.addEventListener('change', apply);

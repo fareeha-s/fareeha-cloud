@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-// iOS-style switch for the desktop page: moon (dark) ↔ sun (daylight linen).
+// iOS-style glass switch: moon (dark) ↔ sun (daylight linen). Used on desktop and phones.
 // The theme itself is applied and remembered by the script in index.html.
 const ThemeToggle: React.FC = () => {
   const [light, setLight] = useState(() => document.documentElement.classList.contains('theme-light'));
@@ -31,10 +31,13 @@ const ThemeToggle: React.FC = () => {
         height: 34,
         cursor: 'pointer',
         justifyContent: light ? 'flex-end' : 'flex-start',
-        background: light ? 'linear-gradient(180deg, #f3d9a4, #eab66a)' : 'rgba(255, 255, 255, 0.14)',
+        // Frosted glass track, lightly tinted gold in daylight
+        background: light ? 'rgba(236, 184, 108, 0.32)' : 'rgba(255, 255, 255, 0.08)',
+        backdropFilter: 'blur(14px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(14px) saturate(160%)',
         boxShadow: light
-          ? 'inset 0 1px 2px rgba(120, 80, 20, 0.25), 0 1px 0 rgba(255,255,255,0.6)'
-          : 'inset 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.08)',
+          ? 'inset 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 1px 2px rgba(120, 80, 20, 0.15), 0 4px 14px -6px rgba(120, 80, 20, 0.3)'
+          : 'inset 0 0 0 1px rgba(255, 255, 255, 0.14), inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px -6px rgba(0, 0, 0, 0.5)',
       }}
     >
       {/* Faint icon on the empty side of the track */}
@@ -49,8 +52,15 @@ const ThemeToggle: React.FC = () => {
       <motion.span
         layout
         transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-        className="relative z-10 flex items-center justify-center rounded-full bg-white"
-        style={{ width: 28, height: 28, boxShadow: '0 2px 6px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(0,0,0,0.04)' }}
+        className="relative z-10 flex items-center justify-center rounded-full"
+        style={{
+          width: 28,
+          height: 28,
+          background: 'rgba(255, 255, 255, 0.82)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.2), inset 0 0 0 0.5px rgba(255,255,255,0.9)',
+        }}
       >
         {light ? <Sun color="#d99a2b" /> : <Moon color="#3a3a44" />}
       </motion.span>

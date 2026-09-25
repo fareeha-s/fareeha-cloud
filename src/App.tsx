@@ -18,8 +18,8 @@ import { NoteItem } from './data/notes';
 import DesktopOverlay from './components/DesktopOverlay';
 // Import the AppBackground component
 import AppBackground from './components/AppBackground';
-import PolaroidIntro from './components/PolaroidIntro';
 import MobileWallpaper from './components/MobileWallpaper';
+import ThemeToggle from './components/ThemeToggle';
 
 // When embedded as the phone on the desktop page, always render the mobile app on its home screen
 const isPhoneEmbed = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('phone');
@@ -204,6 +204,12 @@ function App() {
   const [windowHeight, setWindowHeight] = useState('100vh');
   const [, setIsAppleDevice] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  // One soft glow that travels around the note's edge when the site first opens on a phone
+  const [showIntroGlow, setShowIntroGlow] = useState(!isPhoneEmbed);
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntroGlow(false), 3500);
+    return () => clearTimeout(timer);
+  }, []);
   const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
   const [isNoteDetailView, setIsNoteDetailView] = useState(false);
   const [isEventDetailView, setIsEventDetailView] = useState(false); // Add state for event detail view
@@ -944,7 +950,14 @@ function App() {
       </svg>
       <AppBackground isLoaded={isLoaded} />
       {!isPhoneEmbed && <MobileWallpaper isLoaded={isLoaded} />}
-      {!isPhoneEmbed && <PolaroidIntro />}
+      {!isPhoneEmbed && (
+        <div
+          className="fixed left-1/2 -translate-x-1/2 z-40"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 22px)', opacity: isLoaded ? 1 : 0, transition: 'opacity 0.8s ease 0.6s' }}
+        >
+          <ThemeToggle />
+        </div>
+      )}
 
       <AnimatePresence>
         {activeApp && (
@@ -989,7 +1002,8 @@ function App() {
             transition: "opacity 0.9s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.9s cubic-bezier(0.25, 0.8, 0.25, 1)",
             transitionDelay: "0.1s",
             height: "30px",
-            pointerEvents: "none"
+            pointerEvents: "none",
+            zIndex: 30 // above the glass card (its opacity/transform make this its own layer)
           }}
         >
           {activeApp ? (
@@ -1106,7 +1120,7 @@ function App() {
         
         {/* Main container - with glass solid effect instead of blur */}
         <motion.div 
-          className={`overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container border border-white/10 ${ // Added border classes
+          className={`overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container border border-white/10 ${showIntroGlow ? 'intro-glow' : ''} ${ // Added border classes
             // Restore shine effect
             activeApp ? 'glass-solid-shine' : ''
           } ${isNoteDetailView || isEventDetailView ? 'portrait-container expanded' : ''}`}

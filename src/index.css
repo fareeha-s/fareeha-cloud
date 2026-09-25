@@ -638,3 +638,39 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
     transform: scale(1.06);
   }
 }
+
+/* Intro: a soft light travels once around the edge of the opening note */
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+:root {
+  --intro-glow: rgba(255, 255, 255, 0.95);
+}
+.main-container.intro-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: auto !important;
+  height: auto !important;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--glow-angle), transparent 0deg, var(--intro-glow) 25deg, transparent 80deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 6px var(--intro-glow));
+  pointer-events: none;
+  z-index: 50;
+  animation: intro-glow-sweep 2s cubic-bezier(0.45, 0, 0.3, 1) 0.9s both;
+}
+@keyframes intro-glow-sweep {
+  0% { --glow-angle: 0deg; opacity: 0; }
+  12% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { --glow-angle: 360deg; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .main-container.intro-glow::after { display: none; }
+}

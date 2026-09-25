@@ -351,15 +351,15 @@ limited capacity! tell us what you'd share 🫶🏼`;
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           style={{ 
             fontSize: '28px', 
-            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
+            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
             lineHeight: 1.1,
             marginBottom: '12px',
             color: 'white',
             textAlign: 'center',
-            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 500 : 600,
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? '-0.03em' : '0.12em',
+            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 500 : 600,
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? '-0.03em' : '0.12em',
             paddingTop: '0px',
-            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'none' : 'lowercase',
+            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'none' : 'lowercase',
             fontStretch: '150%',
             fontStyle: eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'italic' : 'normal',
             whiteSpace: eventTitle === "pomegranate garden" || eventTitle === "citrus salon" || eventTitle === "mango tango four" ? 'normal' : 'nowrap',
@@ -368,7 +368,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
         >
           <span className="summary" style={{ 
             fontStretch: 'expanded', 
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? '-0.04em' : '0.08em' 
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" ? '-0.04em' : '0.08em' 
           }}>
             {eventTitle === "strawberry hour" ? "Strawberry hour." : 
              eventTitle === "threading in" ? "threading in" : 

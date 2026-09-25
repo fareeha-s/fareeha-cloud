@@ -165,9 +165,6 @@ html.theme-light .app-tile img {
   opacity: 1 !important;
 }
 
-html.theme-light .polaroid-intro-backdrop {
-  background: rgba(235, 229, 218, 0.6) !important;
-}
 
 /* Desktop bio card in daylight */
 html.theme-light .desktop-card {
@@ -194,4 +191,8 @@ html.theme-light .pearl-image {
 html.theme-light .widget-icon-tile {
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%);
   border-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+html.theme-light {
+  --intro-glow: rgba(214, 150, 80, 0.95);
 }

@@ -248,7 +248,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
           style={{ marginTop: 'clamp(1em, 2vh, 1.5em)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 3, duration: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
         >
           <span
             onClick={onClose}
