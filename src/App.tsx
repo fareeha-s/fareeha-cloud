@@ -19,6 +19,7 @@ import DesktopOverlay from './components/DesktopOverlay';
 // Import the AppBackground component
 import AppBackground from './components/AppBackground';
 import PolaroidIntro from './components/PolaroidIntro';
+import MobileWallpaper from './components/MobileWallpaper';
 
 // When embedded as the phone on the desktop page, always render the mobile app on its home screen
 const isPhoneEmbed = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('phone');
@@ -612,8 +613,8 @@ function App() {
     
     // Optimize loading sequence - apply immediate background color
     // Set background color immediately to prevent flash
-    document.documentElement.style.backgroundColor = '#131518';
-    document.body.style.backgroundColor = '#131518';
+    document.documentElement.style.backgroundColor = 'var(--page-bg)';
+    document.body.style.backgroundColor = 'var(--page-bg)';
     
     // Set loaded state immediately to prevent white flash
     setIsLoaded(true);
@@ -930,10 +931,11 @@ function App() {
   return (
     <div 
       className="relative flex items-center justify-center min-h-screen"
-      style={{ backgroundColor: '#131518' }} 
+      style={{ backgroundColor: 'var(--page-bg)' }} 
     >
       {/* Use the AppBackground component here */}
       <AppBackground isLoaded={isLoaded} />
+      {!isPhoneEmbed && <MobileWallpaper isLoaded={isLoaded} recede={activeApp !== null} />}
       {!isPhoneEmbed && <PolaroidIntro />}
 
       <AnimatePresence>
@@ -998,16 +1000,16 @@ function App() {
                 top: '10px', // Nudge up
                 right: '22px', // Nudge right
                 zIndex: 10001, // Keep increased zIndex
-                color: '#ffffff',
-                textShadow: '0px 1px 1px rgba(0, 0, 0, 0.3)' // Added subtle iOS-like text shadow
+                color: 'var(--fg)',
+                textShadow: 'var(--fg-shadow)' // Subtle iOS-like text shadow (theme-aware)
               }}
             >
               <span className="flex items-center">
                 {activeAppName}
               </span>
             </motion.h2>
-          ) : (
-            /* Home screen title with enhanced styling */
+          ) : isPhoneEmbed ? null : (
+            /* Home screen title with enhanced styling (the desktop page already shows name and photo) */
             <motion.h2 
               className="text-[18px] font-semibold text-right fixed" // Keep this semi-bold
               initial={{ opacity: 0 }}
@@ -1022,8 +1024,8 @@ function App() {
                 top: '14px', // Moved down a few pixels
                 right: '22px', // Nudge right
                 zIndex: 10001, // Keep increased zIndex
-                color: '#ffffff',
-                textShadow: '0px 1px 1px rgba(0, 0, 0, 0.3)' // Added subtle iOS-like text shadow
+                color: 'var(--fg)',
+                textShadow: 'var(--fg-shadow)' // Subtle iOS-like text shadow (theme-aware)
               }}
             >
               <span className="flex items-center">
@@ -1076,7 +1078,7 @@ function App() {
                     fill="none" 
                     xmlns="http://www.w3.org/2000/svg" 
                     style={{
-                      stroke: 'white', 
+                      stroke: 'var(--fg)', 
                       strokeWidth: 2.5, 
                       position: 'absolute',
                       top: '-1px',

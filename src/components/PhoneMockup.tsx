@@ -17,7 +17,7 @@ const APP_H = VISIBLE_H - EDGE - BEZEL - FADE + 10; // app viewport ends where t
 const titanium = 'linear-gradient(145deg, #6a6966 0%, #34343a 28%, #1d1d20 55%, #57565a 100%)';
 
 const getScale = () =>
-  typeof window === 'undefined' ? 1 : Math.min(1.08, (window.innerHeight - 80) / VISIBLE_H);
+  typeof window === 'undefined' ? 0.9 : Math.min(0.95, (window.innerHeight - 170) / VISIBLE_H);
 
 const StatusBar: React.FC = () => (
   <div

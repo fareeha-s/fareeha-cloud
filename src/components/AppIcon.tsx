@@ -25,7 +25,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
   // iOS 2025 squircle icons with glassy depth (restrained)
   const iconMap: Record<string, React.ReactElement> = {
     'StickyNote': (
-      <div className="w-full h-full flex items-center justify-center" style={{
+      <div className="app-tile w-full h-full flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -44,7 +44,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
       </div>
     ),
     'AtSign': (
-      <div className="w-full h-full flex items-center justify-center" style={{
+      <div className="app-tile w-full h-full flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -63,7 +63,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
       </div>
     ),
     'PartyPopper': (
-      <div className="w-full h-full flex items-center justify-center" style={{
+      <div className="app-tile w-full h-full flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -82,7 +82,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
       </div>
     ),
     'Partiful': (
-      <div className="w-full h-full flex items-center justify-center" style={{
+      <div className="app-tile w-full h-full flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -157,7 +157,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
             fontWeight: 500,
             letterSpacing: '0',
             lineHeight: '1.1',
-            color: 'rgba(255, 255, 255, 0.95)',
+            color: 'var(--fg)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

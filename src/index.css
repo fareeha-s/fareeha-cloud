@@ -542,19 +542,18 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 /* Polaroids */
 .polaroid {
   position: relative;
-  background: linear-gradient(170deg, #fbf8f2 0%, #f1ece2 100%);
-  border-radius: 3px;
+  background: linear-gradient(170deg, #fbf9f5 0%, #f1ede6 100%);
   box-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.12),
-    0 12px 28px -8px rgba(0, 0, 0, 0.55),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 16px 34px -10px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.04);
   user-select: none;
 }
 .polaroid__photo {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1.12 / 1;
   overflow: hidden;
-  background: #e9e4da;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  background: #1a1816;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 .polaroid__photo img {
   width: 100%;
@@ -563,22 +562,9 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   display: block;
   animation: polaroid-develop 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.polaroid__caption {
-  position: absolute;
-  left: 7%;
-  right: 7%;
-  bottom: 0.45em;
-  text-align: left;
-  font-family: 'EB Garamond', Garamond, Georgia, serif;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: #3a342e;
-  line-height: 1.2;
-  white-space: nowrap;
-}
 @keyframes polaroid-develop {
   0% { filter: brightness(2.2) contrast(0.35) saturate(0) sepia(0.4) blur(3px); opacity: 0.85; }
-  60% { filter: brightness(1.15) contrast(0.9) saturate(0.8) sepia(0.15) blur(0); opacity: 1; }
+  60% { filter: brightness(1.1) contrast(0.95) saturate(0.85) sepia(0.1) blur(0); opacity: 1; }
   100% { filter: none; opacity: 1; }
 }
 
@@ -601,4 +587,19 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 .dragging-polaroid {
   user-select: none;
   -webkit-user-select: none;
+}
+
+/* Phone wallpaper: soft focus and a very slow drift */
+.mobile-wallpaper {
+  filter: blur(2.5px) brightness(0.72) saturate(1.15);
+  animation: wallpaper-drift 40s ease-in-out infinite alternate;
+  transform-origin: 50% 40%;
+  transition: filter 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.7s ease;
+}
+.mobile-wallpaper--receded {
+  filter: blur(18px) brightness(0.42) saturate(1.3);
+}
+@keyframes wallpaper-drift {
+  0% { transform: scale(1.04) translate(0, 0); }
+  100% { transform: scale(1.1) translate(-1.5%, -2%); }
 }

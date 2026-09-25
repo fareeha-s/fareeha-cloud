@@ -1,0 +1,170 @@
+/*
+ * Daylight theme for the phone experience: polaroids on a linen table in soft
+ * window light. Applied as html.theme-light (see the script in index.html) on
+ * touch devices whose system appearance is light. The desktop page stays dark.
+ * Anything inside .keep-dark (the Partiful invites) keeps its own dark art direction.
+ */
+
+:root {
+  --page-bg: #131518;
+  --fg: #ffffff;
+  --fg-shadow: 0px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+html.theme-light {
+  --page-bg: #ebe5da;
+  --fg: rgb(34 30 27);
+  --fg-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  color-scheme: light;
+}
+
+html.theme-light,
+html.theme-light body,
+html.theme-light #root {
+  background: var(--page-bg);
+  background-color: var(--page-bg);
+}
+
+html.theme-light,
+html.theme-light body,
+html.theme-light #root,
+html.theme-light h1:not(.keep-dark *),
+html.theme-light h2:not(.keep-dark *),
+html.theme-light h3:not(.keep-dark *),
+html.theme-light h4:not(.keep-dark *),
+html.theme-light p:not(.keep-dark *) {
+  color: rgb(34 30 27 / 0.94);
+}
+
+/* Frosted white glass */
+html.theme-light .glass-solid {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.36) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+  border-right-color: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 18px 40px -18px rgba(90, 70, 40, 0.35),
+    0 2px 6px rgba(90, 70, 40, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}
+
+/* Links: the pale pink disappears on white, so use a deeper rose */
+html.theme-light .custom-pink-link:not(.keep-dark *) {
+  color: #b0476a;
+  text-shadow: none;
+}
+html.theme-light .custom-pink-link:not(.keep-dark *):hover {
+  color: #8f3151;
+  text-shadow: none;
+}
+
+html.theme-light .refined-sf-pro-note-text:not(.keep-dark *) {
+  color: rgb(34 30 27) !important;
+}
+
+html.theme-light .scrollbar-subtle {
+  scrollbar-color: rgb(34 30 27 / 0.15) transparent;
+}
+html.theme-light .scrollbar-subtle::-webkit-scrollbar-thumb {
+  background: rgb(34 30 27 / 0.15);
+}
+
+/* Background layers (see AppBackground) */
+.bg-layer-light { display: none; }
+html.theme-light .bg-layer-dark { display: none; }
+html.theme-light .bg-layer-light { display: block; }
+
+/* Daylight polaroid wallpaper: crisper, brighter, washed rather than darkened */
+html.theme-light .mobile-wallpaper {
+  filter: blur(1.5px) brightness(1.02) saturate(1.05);
+}
+html.theme-light .mobile-wallpaper--receded {
+  filter: blur(18px) brightness(1.08) saturate(1.15);
+  opacity: 0.8;
+}
+html.theme-light .mobile-wallpaper-scrim {
+  background: linear-gradient(to bottom, rgba(235, 229, 218, 0.7) 0%, rgba(235, 229, 218, 0.1) 28%, rgba(235, 229, 218, 0.15) 65%, rgba(235, 229, 218, 0.6) 100%) !important;
+}
+html.theme-light .polaroid {
+  box-shadow:
+    0 1px 2px rgba(60, 40, 20, 0.2),
+    0 14px 28px -10px rgba(60, 40, 20, 0.35),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Partiful invites stay dark, like a printed card lying on the table */
+html.theme-light .invite-card {
+  background-color: transparent !important;
+  background-image: linear-gradient(var(--invite-tint), var(--invite-tint)), linear-gradient(#1c1b1d, #1c1b1d);
+}
+
+/* Remapped white utilities */
+html.theme-light .text-white:not(.keep-dark *) { color: rgb(34 30 27 / 1); }
+html.theme-light .text-white\/90:not(.keep-dark *) { color: rgb(34 30 27 / 0.9); }
+html.theme-light .text-white\/80:not(.keep-dark *) { color: rgb(34 30 27 / 0.82); }
+html.theme-light .text-white\/70:not(.keep-dark *) { color: rgb(34 30 27 / 0.72); }
+html.theme-light .text-white\/65:not(.keep-dark *) { color: rgb(34 30 27 / 0.66); }
+html.theme-light .text-white\/60:not(.keep-dark *) { color: rgb(34 30 27 / 0.62); }
+html.theme-light .text-white\/50:not(.keep-dark *) { color: rgb(34 30 27 / 0.55); }
+html.theme-light .text-white\/45:not(.keep-dark *) { color: rgb(34 30 27 / 0.5); }
+html.theme-light .hover\:text-white:hover:not(.keep-dark *) { color: rgb(34 30 27 / 1); }
+html.theme-light .group:hover .group-hover\:text-white:not(.keep-dark *) { color: rgb(34 30 27 / 1); }
+html.theme-light .group:hover .group-hover\:text-white\/70:not(.keep-dark *) { color: rgb(34 30 27 / 0.72); }
+html.theme-light .bg-white:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.8); }
+html.theme-light .bg-white\/70:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.55); }
+html.theme-light .bg-white\/40:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.25); }
+html.theme-light .bg-white\/5:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.05); }
+html.theme-light .bg-white\/3:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.03); }
+html.theme-light .bg-white\/15:not(.keep-dark *) { background-color: rgb(255 255 255 / 0.6); }
+html.theme-light .hover\:bg-white\/5:hover:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.05); }
+html.theme-light .hover\:bg-white\/\[0\.06\]:hover:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.05); }
+html.theme-light .active\:bg-white\/10:active:not(.keep-dark *) { background-color: rgb(34 30 27 / 0.08); }
+html.theme-light .border-white\/20:not(.keep-dark *) { border-color: rgb(34 30 27 / 0.1); }
+html.theme-light .border-white\/10:not(.keep-dark *) { border-color: rgb(34 30 27 / 0.08); }
+html.theme-light .ring-white\/20:not(.keep-dark *) { --tw-ring-color: rgb(255 255 255 / 0.9); }
+
+html.theme-light .keep-dark {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* A window's light on the linen: a bright skewed patch split by blurred mullion
+   shadows, drifting very slowly like the sun moving */
+.linen-window {
+  top: -20%;
+  left: -30%;
+  width: 120%;
+  height: 90%;
+  background:
+    linear-gradient(90deg, transparent 49%, rgba(110, 85, 50, 0.16) 49.5%, rgba(110, 85, 50, 0.16) 51.5%, transparent 52%),
+    linear-gradient(0deg, transparent 48%, rgba(110, 85, 50, 0.14) 48.5%, rgba(110, 85, 50, 0.14) 51%, transparent 51.5%),
+    radial-gradient(ellipse at center, rgba(255, 250, 236, 0.75) 0%, rgba(255, 250, 236, 0.35) 55%, transparent 75%);
+  transform: rotate(-14deg) skewX(-22deg);
+  filter: blur(16px);
+  animation: window-light-drift 90s ease-in-out infinite alternate;
+}
+@keyframes window-light-drift {
+  0% { transform: translate(0, 0) rotate(-14deg) skewX(-22deg); }
+  100% { transform: translate(8%, 6%) rotate(-10deg) skewX(-18deg); }
+}
+
+/* Scroll fade at the bottom of a note: fade into frosted white, not dark */
+html.theme-light .note-bottom-fade {
+  background: linear-gradient(to top, rgba(246, 242, 235, 0.95) 0%, rgba(246, 242, 235, 0.75) 35%, rgba(246, 242, 235, 0.3) 70%, transparent 100%) !important;
+}
+
+/* Home screen app icons: white glass tiles with ink glyphs */
+html.theme-light .app-tile {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.45) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 6px 16px -6px rgba(90, 70, 40, 0.3), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+html.theme-light .app-tile img {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)) saturate(1.3);
+  opacity: 1 !important;
+}
+
+html.theme-light .polaroid-intro-backdrop {
+  background: rgba(235, 229, 218, 0.6) !important;
+}

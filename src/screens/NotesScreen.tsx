@@ -545,7 +545,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
             >
               {/* Apple-style bottom fade to indicate scrollable content */}
               <div 
-                className={`absolute bottom-0 left-0 right-0 pointer-events-none z-10 ${selectedNote?.title === 'hello world' ? 'h-20' : 'h-16'}`}
+                className={`note-bottom-fade absolute bottom-0 left-0 right-0 pointer-events-none z-10 ${selectedNote?.title === 'hello world' ? 'h-20' : 'h-16'}`}
                 style={{
                   background: selectedNote?.title === 'hello world' 
                     ? 'linear-gradient(to top, rgba(45, 35, 28, 0.98) 0%, rgba(45, 35, 28, 0.85) 30%, rgba(45, 35, 28, 0.4) 60%, transparent 100%)'

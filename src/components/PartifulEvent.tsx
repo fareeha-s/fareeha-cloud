@@ -245,18 +245,8 @@ limited capacity! tell us what you'd share 🫶🏼`;
     return text;
   };
 
-  return (
-    // Root container with height and width - capture and stop all events
-    <div 
-      className="h-full w-full flex flex-col" 
-      onClick={preventBubbling}
-      onMouseDown={preventBubbling}
-      onTouchStart={preventTouchBubbling}
-      onTouchMove={preventTouchBubbling}
-      onTouchEnd={preventTouchBubbling}
-      style={{ 
-        touchAction: 'pan-y',
-        backgroundColor: eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.5)' : 
+  // Each invite's own tint. In the daylight theme it sits over a dark base (see theme-light.css)
+  const inviteTint = eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.5)' : 
                          eventTitle === "consumer social" ? 'rgba(10, 20, 40, 0.5)' : 
                          eventTitle === "Watercolour" ? 'rgba(147, 112, 142, 0.4)' :
                          eventTitle === "threading in" ? 'rgba(35, 25, 15, 0.5)' :
@@ -268,7 +258,21 @@ limited capacity! tell us what you'd share 🫶🏼`;
                          eventTitle === "citrus salon" ? 'rgba(200, 100, 15, 0.45)' :
                          eventTitle === "Winter Editorial." ? 'rgba(60, 5, 5, 0.55)' :
                          eventTitle === "for the culture" ? 'rgba(50, 25, 5, 0.55)' :
-                         'rgba(14, 43, 23, 0.5)', // Default color for mental static
+                         'rgba(14, 43, 23, 0.5)';
+
+  return (
+    // Root container with height and width - capture and stop all events
+    <div 
+      className="keep-dark invite-card h-full w-full flex flex-col" 
+      onClick={preventBubbling}
+      onMouseDown={preventBubbling}
+      onTouchStart={preventTouchBubbling}
+      onTouchMove={preventTouchBubbling}
+      onTouchEnd={preventTouchBubbling}
+      style={{ 
+        touchAction: 'pan-y',
+        backgroundColor: inviteTint,
+        ['--invite-tint' as string]: inviteTint,
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
         borderRadius: '12px',
@@ -848,7 +852,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
             <div className="flex justify-center py-2">
               <Polaroid
                 src="./images/photoalbum/ftc-photo.jpeg"
-                caption="from the night ✦"
+                alt="from the night"
                 width={240}
                 developDelay={0.5}
                 style={{ transform: 'rotate(-2.5deg)' }}

@@ -264,7 +264,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
               e.currentTarget.style.transform = 'scale(1)';
             }}
           >
-            open it as an app →
+            Click here to turn this site into an app.
           </span>
         </motion.div>
       </div>

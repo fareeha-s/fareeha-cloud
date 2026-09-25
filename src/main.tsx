@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import './theme-light.css'
 
 // Configure framer-motion for iOS-like rendering
 if (typeof window !== 'undefined') {

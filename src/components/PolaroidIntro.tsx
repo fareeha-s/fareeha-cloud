@@ -54,7 +54,7 @@ const PolaroidIntro: React.FC = () => {
       {visible && (
         <motion.div
           key="polaroid-intro"
-          className="fixed inset-0 z-[10000] flex items-center justify-center"
+          className="polaroid-intro-backdrop fixed inset-0 z-[10000] flex items-center justify-center"
           style={{ background: 'rgba(12, 13, 15, 0.55)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)' }}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }}
@@ -73,7 +73,7 @@ const PolaroidIntro: React.FC = () => {
                 animate={{ y: 0, x, rotate, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 17, delay: 0.1 + i * 0.22 }}
               >
-                <Polaroid src={photo.src} caption={photo.caption} width={200} developDelay={0.3 + i * 0.22} />
+                <Polaroid src={photo.src} alt={photo.caption} width={200} developDelay={0.3 + i * 0.22} />
               </motion.div>
             ))}
           </motion.div>

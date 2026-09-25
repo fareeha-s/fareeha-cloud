@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="/images/fav-icon.png" sizes="512x512">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
     <meta name="theme-color" content="#131518" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';">
     
     <!-- SEO Meta Tags -->
@@ -88,7 +88,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Lora:wght@400&display=swap" as="style">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&display=swap">
     <link rel="preload" as="style" href="/src/index.css">
     <link rel="stylesheet" href="/src/index.css">
                             
@@ -261,6 +260,22 @@
       }
     </style>
     <script>
+      // Phones and tablets follow the system appearance (daylight linen theme in
+      // light mode); the desktop page and its phone mockup are always dark.
+      (function () {
+        var embed = new URLSearchParams(location.search).has('phone');
+        var desktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        var light = window.matchMedia('(prefers-color-scheme: light)');
+        function apply() {
+          var on = !embed && !desktop && light.matches;
+          document.documentElement.classList.toggle('theme-light', on);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', on ? '#ebe5da' : '#131518');
+        }
+        apply();
+        if (light.addEventListener) light.addEventListener('change', apply);
+      })();
+
       // Force hello world note to open on initial page load
       if (!new URLSearchParams(location.search).has('phone')) {
         window.initialNoteId = 1; // Hello world note ID
