@@ -6,16 +6,8 @@ import { EventItem } from '../data/events';
 // Photos from the night, shown under the invite
 const nightPhotos: Record<string, string[]> = {
   'for the culture': ['./images/photoalbum/ftc-1.jpeg', './images/photoalbum/ftc-2.jpeg', './images/photoalbum/ftc-3.jpeg', './images/photoalbum/ftc-4.jpeg', './images/photoalbum/ftc-5.jpeg'],
+  'pomegranate garden': ['./images/photoalbum/pg-1.jpeg', './images/photoalbum/pg-2.jpeg', './images/photoalbum/pg-3.jpeg', './images/photoalbum/pg-4.jpeg', './images/photoalbum/pg-5.jpeg', './images/photoalbum/pg-6.jpeg'],
   'Winter Editorial.': ['./images/photoalbum/we-sq-1.jpeg', './images/photoalbum/we-sq-2.jpeg'],
-};
-
-// Press coverage, shown as a small pill where the photos from the night go
-const pressLinks: Record<string, { outlet: string; label: string; url: string }> = {
-  'mango tango four': {
-    outlet: 'CNN',
-    label: 'as seen on CNN',
-    url: 'https://www.cnn.com/2026/06/09/entertainment/video/mango-meetup-san-francisco-mango-tango-hundreds-digvid-vrtc',
-  },
 };
 
 type PartifulEventProps = {
@@ -811,6 +803,46 @@ limited capacity! tell us what you'd share 🫶🏼`;
         >
         </motion.div>
         
+        {/* Press round-up as a Text Blast - only for mango tango four */}
+        {eventTitle === "mango tango four" && (
+          <motion.div
+            className="mx-4 mt-3 mb-2 p-3 rounded-xl"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex items-start gap-3">
+              <img 
+                src="./icons/hosts/fareeha.jpg" 
+                alt="Fareeha" 
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span style={{ color: 'white', fontWeight: 600, fontSize: '14px' }}>Fareeha</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px' }}>sent a Text Blast 📣</span>
+                </div>
+                <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '14px', lineHeight: '1.4' }}>
+                  omg we made it to{' '}
+                  <a href="https://www.cnn.com/2026/06/09/entertainment/video/mango-meetup-san-francisco-mango-tango-hundreds-digvid-vrtc" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>CNN</a>!! and{' '}
+                  <a href="https://www.kqed.org/arts/13990218/indian-mango-party-san-francisco-mission" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>KQED</a> and the{' '}
+                  <a href="https://www.sfchronicle.com/entertainment/article/indian-mango-party-22283051.php" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>SF Chronicle</a> and{' '}
+                  <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>MTS</a>!! 🥭😭 thank you so much to Darshil for inviting me to co-host this
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span style={{ fontSize: '16px' }}>💬</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '13px' }}>Reply</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Meme dictionary comment - only for kiwi soirée */}
         {eventTitle === "kiwi soirée" && (
           <motion.div
@@ -906,34 +938,6 @@ limited capacity! tell us what you'd share 🫶🏼`;
                 />
               ))}
             </div>
-          </motion.div>
-        )}
-
-        {/* Press coverage, in the same spot photos from the night go */}
-        {pressLinks[eventTitle] && (
-          <motion.div
-            className="mx-4 mt-3 mb-2"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <a
-              href={pressLinks[eventTitle].url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-2 rounded-full pl-1 pr-3 py-1 transition-opacity hover:opacity-90"
-              style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', color: 'white', fontSize: 13, fontWeight: 500 }}
-            >
-              <span
-                className="inline-flex items-center justify-center rounded-full"
-                style={{ background: '#cc0000', color: 'white', fontSize: 9, fontWeight: 800, letterSpacing: '0.02em', width: 30, height: 20 }}
-              >
-                {pressLinks[eventTitle].outlet}
-              </span>
-              {pressLinks[eventTitle].label}
-              <span style={{ opacity: 0.6 }}>↗</span>
-            </a>
           </motion.div>
         )}
 

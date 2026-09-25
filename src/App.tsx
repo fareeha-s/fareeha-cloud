@@ -24,6 +24,13 @@ import ThemeToggle from './components/ThemeToggle';
 // When embedded as the phone on the desktop page, always render the mobile app on its home screen
 const isPhoneEmbed = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('phone');
 
+// Haptic tick, only during a real tap (browsers block vibration otherwise, and
+// automatic widget rotation should never buzz anyone's phone)
+const buzz = (ms: number) => {
+  const activation = (navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation;
+  if (typeof navigator.vibrate === 'function' && activation?.isActive) navigator.vibrate(ms);
+};
+
 // Global tactile effect function for better performance
 export const createTactileEffect = () => {
   if (typeof window !== 'undefined') {
@@ -32,7 +39,7 @@ export const createTactileEffect = () => {
     
     // Attempt haptic feedback first (if supported)
     if (window.navigator && window.navigator.vibrate) {
-      window.navigator.vibrate(1); // Lightest vibration
+      buzz(1); // Lightest vibration
     }
 
     /* Temporarily disable visual feedback:
@@ -68,13 +75,13 @@ export const createSwipeHapticFeedback = (intensity: 'light' | 'medium' | 'heavy
     if (window.navigator && window.navigator.vibrate) {
       switch (intensity) {
         case 'light':
-          window.navigator.vibrate(2);
+          buzz(2);
           break;
         case 'medium':
-          window.navigator.vibrate(5);
+          buzz(5);
           break;
         case 'heavy':
-          window.navigator.vibrate(8);
+          buzz(8);
           break;
       }
     }
@@ -144,7 +151,7 @@ interface WidgetData {
 // Simplified tactile effect for widget swipes
 const createWidgetSwipeFeedback = () => {
   if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
-    window.navigator.vibrate(3); // Subtle vibration feedback
+    buzz(3); // Subtle vibration feedback
   }
 };
 
@@ -281,7 +288,7 @@ function App() {
   const handleWidgetNavigation = (direction: 'prev' | 'next') => {
     // Create tactile feedback for better UX
     if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
-      window.navigator.vibrate(3); // Subtle vibration
+      buzz(3); // Subtle vibration
     }
     
     // Update the widget index based on direction

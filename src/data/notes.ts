@@ -50,7 +50,7 @@ You might've found me through one of my [Partifuls](app:partiful) where I made y
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-Beyond hosting, I'm joining [a team](https://www.mts.now) that spotlights and supports the people building AGI. I think it's the most important thing our generation has to get right. I also built [Kineship](note:2), a social layer for workouts.
+Beyond hosting, [I'm joining a team](https://www.mts.now) that spotlights and supports the people building AGI. I think it's the most important thing our generation has to get right. I also built [Kineship](note:2), a social layer for workouts.
 
 <span style="font-weight: bold;">things I love:</span>  
 ▹ taking forever to [set a table](app:partiful)

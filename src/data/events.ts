@@ -96,8 +96,8 @@ one whole hour to celebrate strawberries being in season 😊 🍓 🍓 🍓`,
     spotifyLink: "https://open.spotify.com/track/3Am0IbOxmvlSXro7N5iSfZ",
     spotifyLyrics: "nothing is real...",
     image: {
-      webp: "./images/partiful/sh-giphy.webp",
-      fallback: "./images/partiful/sh-giphy.webp"
+      webp: "./images/partiful/sh.webp",
+      fallback: "./images/partiful/sh.webp"
     },
     hosts: [
       { id: 1, image: './icons/hosts/fareeha.jpg' },
@@ -172,8 +172,8 @@ bring a consumer product hot take. hottest take gets a high five`,
     spotifyLink: "Presidio Bowl",
     spotifyLyrics: "Presidio Bowl",
     image: {
-      webp: "./images/partiful/cs-giphy.webp",
-      fallback: "./images/partiful/cs-giphy.webp"
+      webp: "./images/partiful/csoc.webp",
+      fallback: "./images/partiful/csoc.webp"
     },
     hosts: [
       { id: 1, image: './icons/hosts/fareeha.jpg' },
@@ -196,8 +196,8 @@ You are cordially invited.
 
 dress code: pastels, watercolor washes, artisan details 🪷`,
     image: {
-      webp: "./images/partiful/w-giphy.webp",
-      fallback: "./images/partiful/w-giphy.webp"
+      webp: "./images/partiful/wc.webp",
+      fallback: "./images/partiful/wc.webp"
     },
     hosts: [
       { id: 1, image: './icons/hosts/8-dd1a51c0.jpg' },
@@ -280,8 +280,8 @@ Looking forward to seeing everyone.
     spotifyLink: "https://open.spotify.com/track/2gUPyc2cDGKurgULWB8Q2Q?si=Pme9ore3S1KgLXdTee2flQ",
     spotifyLyrics: "Orchestra.",
     image: {
-      webp: "./images/partiful/we.gif",
-      fallback: "./images/partiful/we.gif"
+      webp: "./images/partiful/we.webp",
+      fallback: "./images/partiful/we.webp"
     },
     hosts: [
       { id: 1, image: './icons/hosts/fareeha.jpg' },
@@ -310,8 +310,8 @@ Entry requires citrus attire (orange, yellow, and/or white) 🍊💛
     spotifyLink: "https://open.spotify.com/track/7r0EUONfPUZ8SD1vu4ro27?si=iwDbBttnTd6hfboxa4tNig",
     spotifyLyrics: "🕵️",
     image: {
-      webp: "./images/partiful/cs.jpeg",
-      fallback: "./images/partiful/cs.jpeg"
+      webp: "./images/partiful/citrus.webp",
+      fallback: "./images/partiful/citrus.webp"
     },
     hosts: [
       { id: 1, image: './icons/hosts/11-dd1a51c0.jpg' },
@@ -338,8 +338,8 @@ See you in the garden 🩷✨
 🥗🍹🌺
 ♦️`,
     image: {
-      webp: "./images/partiful/pg.gif",
-      fallback: "./images/partiful/pg.gif"
+      webp: "./images/partiful/pg.webp",
+      fallback: "./images/partiful/pg.webp"
     },
     spotifyLink: "https://open.spotify.com/track/4wbPU5OlVziXuElgzFYHt6?si=sPIeOOgOSJSNbe1_FsVv2A",
     spotifyLyrics: "♦️",
@@ -375,8 +375,8 @@ we're so back baby!!!
     spotifyLink: "https://open.spotify.com/track/33SNO8AaciGbNaQFkxvPrW?si=uxvU-h8oS2OyyTz3YKwCOA",
     spotifyLyrics: "styles 💚",
     image: {
-      webp: "./images/partiful/ks.webp",
-      fallback: "./images/partiful/ks.webp"
+      webp: "./images/partiful/kiwi.webp",
+      fallback: "./images/partiful/kiwi.webp"
     },
     hosts: [
       { id: 1, image: './icons/hosts/fareeha.jpg' },

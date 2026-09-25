@@ -108,7 +108,7 @@ You might\'ve found me through one of my Partifuls where I made you eat somethin
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-Beyond hosting, I\'m joining <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">a team</a> that spotlights and supports the people building AGI. I think it\'s the most important thing our generation has to get right. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
+Beyond hosting, <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">I\'m joining a team</a> that spotlights and supports the people building AGI. I think it\'s the most important thing our generation has to get right. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
 
 <span style="font-weight: bold;">things I love:</span>
 ▹ taking forever to set a table
