@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shirt, Utensils } from 'lucide-react';
 import { EventItem } from '../data/events';
@@ -33,6 +33,32 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData,
   
   // Default event data if none provided
   const eventTitle = eventData?.title || "mental static";
+
+  // Titles stay on one line and shrink to fit; only very long ones (that would
+  // need to go below MIN_TITLE_SIZE) wrap onto two lines.
+  const MAX_TITLE_SIZE = 28;
+  const MIN_TITLE_SIZE = 17;
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleTextRef = useRef<HTMLSpanElement>(null);
+  const [titleFit, setTitleFit] = useState({ size: MAX_TITLE_SIZE, wrap: false });
+  useLayoutEffect(() => {
+    const fit = () => {
+      const box = titleRef.current;
+      const text = titleTextRef.current;
+      if (!box || !text) return;
+      box.style.fontSize = `${MAX_TITLE_SIZE}px`;
+      box.style.whiteSpace = 'nowrap';
+      const available = box.clientWidth * 0.96; // a little room for italic overhang
+      const needed = text.getBoundingClientRect().width;
+      const size = needed > available ? Math.floor((MAX_TITLE_SIZE * available) / needed) : MAX_TITLE_SIZE;
+      const next = size >= MIN_TITLE_SIZE ? { size, wrap: false } : { size: MIN_TITLE_SIZE + 3, wrap: true };
+      box.style.fontSize = `${next.size}px`;
+      box.style.whiteSpace = next.wrap ? 'normal' : 'nowrap';
+      setTitleFit(next);
+    };
+    fit();
+    document.fonts?.ready.then(fit);
+  }, [eventTitle]);
   const attendeeCount = eventData?.attendees || 35;
   const eventDate = eventData?.date || "31/03/25";
   const eventTime = eventData?.time || "7:30pm";
@@ -345,12 +371,13 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </motion.div>
         ) : (
         <motion.h1 
+          ref={titleRef}
           className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           style={{ 
-            fontSize: '28px', 
+            fontSize: `${titleFit.size}px`, 
             fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
             lineHeight: 1.1,
             marginBottom: '12px',
@@ -362,11 +389,11 @@ limited capacity! tell us what you'd share 🫶🏼`;
             textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'none' : 'lowercase',
             fontStretch: '150%',
             fontStyle: eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'italic' : 'normal',
-            whiteSpace: eventTitle === "pomegranate garden" || eventTitle === "citrus salon" || eventTitle === "mango tango four" ? 'normal' : 'nowrap',
+            whiteSpace: titleFit.wrap ? 'normal' : 'nowrap',
             overflow: 'hidden'
           }}
         >
-          <span className="summary" style={{ 
+          <span ref={titleTextRef} className="summary" style={{ 
             fontStretch: 'expanded', 
             letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" ? '-0.04em' : '0.08em' 
           }}>

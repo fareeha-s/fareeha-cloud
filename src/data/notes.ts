@@ -12,6 +12,34 @@ export type NoteItem = {
   locked?: boolean;
 };
 
+// The "ai reading list" note. Add essays here; each section always lists the
+// newest (by publish date) first.
+type Reading = { title: string; author: string; url: string; published: string; read: boolean };
+
+const readings: Reading[] = [
+  { title: 'The Adolescence of Technology', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/the-adolescence-of-technology', published: '2026-01', read: true },
+  { title: 'Machines of Loving Grace', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/machines-of-loving-grace', published: '2024-10', read: true },
+  { title: 'The Gentle Singularity', author: 'Sam Altman', url: 'https://blog.samaltman.com/the-gentle-singularity', published: '2025-06', read: true },
+  { title: 'The Bitter Lesson', author: 'Rich Sutton', url: 'http://www.incompleteideas.net/IncIdeas/BitterLesson.html', published: '2019-03', read: true },
+  { title: 'Software 2.0', author: 'Andrej Karpathy', url: 'https://karpathy.medium.com/software-2-0-a64152b37c35', published: '2017-11', read: false },
+  { title: 'Constitutional AI: Harmlessness from AI Feedback', author: 'Anthropic', url: 'https://arxiv.org/abs/2212.08073', published: '2022-12', read: false },
+  { title: 'From AGI to ASI', author: 'Google DeepMind', url: 'https://deepmind.google/research/publications/239142/', published: '2026-06', read: false },
+  { title: 'AI 2027', author: 'Daniel Kokotajlo et al.', url: 'https://ai-2027.com', published: '2025-04', read: false },
+];
+
+function readingListContent() {
+  const newestFirst = (a: Reading, b: Reading) => b.published.localeCompare(a.published);
+  const line = (r: Reading) => `${r.read ? '✓' : '○'} [${r.title}](${r.url}) · ${r.author}`;
+  const read = readings.filter((r) => r.read).sort(newestFirst).map(line);
+  const reading = readings.filter((r) => !r.read).sort(newestFirst).map(line);
+  return [
+    "essays I've read (✓) and ones I'm working through (○)",
+    read.join('\n'),
+    reading.join('\n'),
+    'send me your favourite 🩵',
+  ].join('\n\n');
+}
+
 export const notes: NoteItem[] = [
   { 
     id: 1, 
@@ -40,6 +68,14 @@ If this feels like your kind of world, I'd love to [hear from you.](mailto:faree
     content: `A slow-burn project with collaborators across a few countries, so it's moving at its own pace.
 
 Date TBD 🩵`,
+    date: "25/09/26",
+    timeframe: 'recent',
+    pinned: false
+  },
+  { 
+    id: 8, 
+    title: "ai reading list", 
+    content: readingListContent(),
     date: "25/09/26",
     timeframe: 'recent',
     pinned: false
