@@ -211,8 +211,6 @@ function App() {
   const [windowHeight, setWindowHeight] = useState('100vh');
   const [, setIsAppleDevice] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  // One soft glow that travels around the note's edge when the site first opens on a phone
-  const [showIntroGlow, setShowIntroGlow] = useState(!isPhoneEmbed);
   // The automatic opening of the hello world note shouldn't play the "icon expanding" effect
   const [isAutoOpening, setIsAutoOpening] = useState(true);
   useEffect(() => {
@@ -1155,7 +1153,7 @@ function App() {
         
         {/* Main container - with glass solid effect instead of blur */}
         <motion.div 
-          className={`overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container border border-white/10 ${showIntroGlow ? 'intro-glow' : ''} ${ // Added border classes
+          className={`overflow-hidden shadow-xl relative z-20 will-change-transform glass-solid main-container border border-white/10 ${ // Added border classes
             // Restore shine effect
             activeApp ? 'glass-solid-shine' : ''
           } ${isNoteDetailView || isEventDetailView ? 'portrait-container expanded' : ''}`}

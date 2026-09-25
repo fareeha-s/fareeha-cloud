@@ -193,6 +193,3 @@ html.theme-light .widget-icon-tile {
   border-color: rgba(255, 255, 255, 0.95) !important;
 }
 
-html.theme-light {
-  --intro-glow: rgba(214, 150, 80, 0.95);
-}

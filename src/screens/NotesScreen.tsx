@@ -124,6 +124,10 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
 };
 
 // Use the imported BaseAppScreenProps directly
+// Only the first note someone sees (the hello world that greets them) settles in;
+// notes opened later just appear
+let hasSettledFirstNote = false;
+
 export const NotesScreen: React.FC<BaseAppScreenProps> = ({ 
   setIsNoteDetailView, // Destructure from BaseAppScreenProps (optional)
   initialNoteId, // Add the new prop here
@@ -133,6 +137,13 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   const [hasInteracted, setHasInteracted] = useState(false);
   const chevronControls = useAnimation();
   const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
+  // The first note shown settles in once (see hasSettledFirstNote above)
+  const settleNoteIdRef = useRef<number | null>(null);
+  if (selectedNote && !hasSettledFirstNote) {
+    settleNoteIdRef.current = selectedNote.id;
+    hasSettledFirstNote = true;
+  }
+  const settleThisNote = selectedNote?.id === settleNoteIdRef.current;
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [isNoteReady, setIsNoteReady] = useState<boolean>(false);
   const [widgetNoteId, setWidgetNoteId] = useState<number | null>(null);
@@ -588,7 +599,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                     
                     {/* Show full content without preview/expand */}
                     <motion.div 
-                      className="text-sm leading-relaxed text-white/80 overflow-y-auto scrollbar-subtle pr-1 note-content-area lora-note-content"
+                      className={`text-sm leading-relaxed text-white/80 overflow-y-auto scrollbar-subtle pr-1 note-content-area lora-note-content ${settleThisNote ? 'text-settle' : ''}`}
                       variants={itemVariants}
                       style={{ 
                         WebkitOverflowScrolling: 'touch',

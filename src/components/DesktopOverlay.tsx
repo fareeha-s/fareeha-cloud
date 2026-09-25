@@ -243,7 +243,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
           }}
         >
           <div
-            className="text-base sm:text-lg leading-relaxed text-white/90 prose prose-invert max-w-none lora-note-content font-medium"
+            className="text-settle text-base sm:text-lg leading-relaxed text-white/90 prose prose-invert max-w-none lora-note-content font-medium"
             style={{ whiteSpace: 'pre-line', fontSize: 'clamp(0.95rem, 2vw, 1.15rem)' }}
           >
             {/* Render content before list */}

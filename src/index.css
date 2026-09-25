@@ -630,42 +630,6 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   }
 }
 
-/* Intro: a soft light travels once around the edge of the opening note */
-@property --glow-angle {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
-:root {
-  --intro-glow: rgba(255, 255, 255, 0.95);
-}
-.main-container.intro-glow::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  width: auto !important;
-  height: auto !important;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(from var(--glow-angle), transparent 0deg, var(--intro-glow) 25deg, transparent 80deg, transparent 360deg);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  filter: drop-shadow(0 0 6px var(--intro-glow));
-  pointer-events: none;
-  z-index: 50;
-  animation: intro-glow-sweep 2s cubic-bezier(0.45, 0, 0.3, 1) 0.9s both;
-}
-@keyframes intro-glow-sweep {
-  0% { --glow-angle: 0deg; opacity: 0; }
-  12% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { --glow-angle: 360deg; opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .main-container.intro-glow::after { display: none; }
-}
-
 /* Kineship mark used like an emoji next to a name, in polished rose gold */
 .kineship-mark {
   display: inline-block;
@@ -674,7 +638,9 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   margin-left: 0.15em;
   vertical-align: -0.2em;
   /* Metal: bright highlights and deeper copper bands, angled like light on a curved surface */
-  background: linear-gradient(
+  background:
+    linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.95) 50%, transparent 65%) no-repeat,
+    linear-gradient(
     120deg,
     #b8736a 0%,
     #f3c9bd 22%,
@@ -685,6 +651,31 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
     #c7887b 100%
   );
   filter: drop-shadow(0 0.5px 0.5px rgba(80, 30, 20, 0.35));
+  /* Welcome: one glint of light sweeps across the metal shortly after the page opens */
+  background-size: 250% 100%, 100% 100%;
+  background-position: 160% 0, 0 0;
+  animation: mark-glint 1.1s cubic-bezier(0.45, 0, 0.25, 1) 0.7s both;
   -webkit-mask: url('/icons/kineship-mark.svg') center / contain no-repeat;
   mask: url('/icons/kineship-mark.svg') center / contain no-repeat;
+}
+
+@keyframes mark-glint {
+  from { background-position: 160% 0, 0 0; }
+  to { background-position: -60% 0, 0 0; }
+}
+
+/* Welcome: the note's text settles in from the top, line after line */
+.text-settle {
+  animation: text-settle 1.4s cubic-bezier(0.45, 0, 0.35, 1) 0.1s both;
+  -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent 60%);
+  mask-image: linear-gradient(to bottom, #000 40%, transparent 60%);
+  -webkit-mask-size: 100% 250%;
+  mask-size: 100% 250%;
+}
+@keyframes text-settle {
+  from { transform: translateY(4px); -webkit-mask-position: 0 100%; mask-position: 0 100%; }
+  to { transform: none; -webkit-mask-position: 0 0; mask-position: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .text-settle { animation: none; -webkit-mask-image: none; mask-image: none; }
 }
