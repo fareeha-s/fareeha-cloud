@@ -694,6 +694,6 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
     #c7887b 100%
   );
   filter: drop-shadow(0 0.5px 0.5px rgba(80, 30, 20, 0.35));
-  -webkit-mask: url('/icons/kineship-mark.png') center / contain no-repeat;
-  mask: url('/icons/kineship-mark.png') center / contain no-repeat;
+  -webkit-mask: url('/icons/kineship-mark.svg') center / contain no-repeat;
+  mask: url('/icons/kineship-mark.svg') center / contain no-repeat;
 }
