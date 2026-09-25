@@ -15,7 +15,7 @@ const stacks: Stack[] = [
   { pos: { left: '4%', top: '12%' }, width: 185, photos: [{ photo: polaroidPhotos.scrumptious, rotate: -6, dx: 0, dy: 0 }] },
   { pos: { left: '2.5%', bottom: '5%' }, width: 170, photos: [{ photo: polaroidPhotos.citrus, rotate: 4, dx: 0, dy: 0 }] },
   { pos: { left: '51%', bottom: '3%' }, width: 170, photos: [{ photo: polaroidPhotos.kiwi, rotate: -4, dx: 0, dy: 0 }] },
-  { pos: { right: '2.5%', top: '7%' }, width: 180, photos: [{ photo: polaroidPhotos.strawberry, rotate: 6, dx: 0, dy: 0 }] },
+  { pos: { right: '2.5%', top: '12%' }, width: 180, photos: [{ photo: polaroidPhotos.strawberry, rotate: 6, dx: 0, dy: 0 }] },
   { pos: { right: '3.5%', bottom: '7%' }, width: 185, photos: [{ photo: polaroidPhotos.pomegranate, rotate: -3, dx: 0, dy: 0 }] },
 ];
 

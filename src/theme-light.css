@@ -168,3 +168,15 @@ html.theme-light .app-tile img {
 html.theme-light .polaroid-intro-backdrop {
   background: rgba(235, 229, 218, 0.6) !important;
 }
+
+/* Desktop bio card in daylight */
+html.theme-light .desktop-card {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.4) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 30px 60px -30px rgba(90, 70, 40, 0.4), 0 2px 8px rgba(90, 70, 40, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+}
+html.theme-light .desktop-card .text-white\/90 {
+  color: rgb(34 30 27 / 0.9);
+}

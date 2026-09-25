@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
 import PolaroidStacks from './PolaroidStacks';
 import PhoneMockup from './PhoneMockup';
+import ThemeToggle from './ThemeToggle';
 
 // Add VideoPlayerOverlay component for in-screen video playback
 const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: () => void }) => {
@@ -141,6 +142,10 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
       <AppBackground isLoaded={isLoaded} />
 
       <PolaroidStacks />
+
+      <div className="fixed top-5 right-6 z-[60]">
+        <ThemeToggle />
+      </div>
       
       <div className="relative z-10 flex items-center justify-center gap-16 w-full max-w-6xl mx-auto my-auto">
       <div className="relative w-full max-w-4xl [@media(min-width:1100px)_and_(min-height:680px)]:max-w-[600px]">
@@ -209,7 +214,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
         </motion.h2>
 
         <motion.div
-          className="relative w-full max-w-4xl mx-auto bg-white/8 border border-white/15 rounded-[28px] shadow-lg p-6 sm:p-8 md:p-12 overflow-y-auto max-h-[85vh] z-10"
+          className="desktop-card relative w-full max-w-4xl mx-auto bg-white/8 border border-white/15 rounded-[28px] shadow-lg p-6 sm:p-8 md:p-12 overflow-y-auto max-h-[85vh] z-10"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}

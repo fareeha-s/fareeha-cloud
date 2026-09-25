@@ -49,6 +49,10 @@ const StatusBar: React.FC = () => (
 
 const PhoneMockup: React.FC<{ src: string }> = ({ src }) => {
   const [scale, setScale] = useState(getScale);
+  // Start the embedded app in the page's current theme; later flips arrive by postMessage
+  const [frameSrc] = useState(() =>
+    document.documentElement.classList.contains('theme-light') ? `${src}&theme=light` : src
+  );
 
   useEffect(() => {
     const onResize = () => setScale(getScale());
@@ -97,7 +101,7 @@ const PhoneMockup: React.FC<{ src: string }> = ({ src }) => {
         <div className="w-full h-full bg-black" style={{ borderRadius: 61, padding: BEZEL }}>
           <div className="relative w-full h-full overflow-hidden bg-[#0b0b0c]" style={{ borderRadius: 54 }}>
             <iframe
-              src={src}
+              src={frameSrc}
               title="Fareeha OS on a phone"
               className="block"
               style={{ width: SCREEN_W, height: APP_H, border: 0 }}
