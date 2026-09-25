@@ -8,33 +8,35 @@
     </style>
     
     <!-- Preload critical resources -->
-    <link rel="preload" href="/images/background.webp" as="image" fetchpriority="high" />
-    <link rel="preload" href="/optimized/background-placeholder.webp" as="image" />
     <meta charset="UTF-8" />
     <link rel="icon" href="/images/fav-icon.png" sizes="512x512">
     <link rel="apple-touch-icon" href="/images/fav-icon.png" sizes="512x512">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
     <meta name="theme-color" content="#131518" />
+    <meta name="color-scheme" content="dark" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';">
     
     <!-- SEO Meta Tags -->
     <title>Fareeha OS</title>
-    <meta name="description" content="Hey, I'm Fareeha ✨ I'm currently exploring how social graph infrastructure shapes health outcomes and longevity. I'm also building Kineship, a social layer for workouts." />
-    <link rel="canonical" href="https://fareeha-s.github.io/fareeha-cloud/" />
+    <meta name="description" content="Hey, I'm Fareeha ✨ I'm joining a team that spotlights and supports the people building AGI. I think it's the most important thing our generation has to get right. I also built Kineship, a social layer for workouts." />
+    <link rel="canonical" href="https://fareeha.sh/" />
 
     <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://fareeha-s.github.io/fareeha-cloud/">
+    <meta property="og:url" content="https://fareeha.sh/">
     <meta property="og:title" content="Fareeha OS">
-    <meta property="og:description" content="Hey, I'm Fareeha ✨ I'm currently exploring how social graph infrastructure shapes health outcomes and longevity. I'm also building Kineship, a social layer for workouts.">
-    <!-- No og:image as requested -->
+    <meta property="og:description" content="Hey, I'm Fareeha ✨ I'm joining a team that spotlights and supports the people building AGI. I think it's the most important thing our generation has to get right. I also built Kineship, a social layer for workouts.">
+    <meta property="og:image" content="https://fareeha.sh/images/og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Hey, I'm Fareeha. hosting, kineship, the road to AGI">
 
     <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:url" content="https://fareeha-s.github.io/fareeha-cloud/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://fareeha.sh/">
     <meta name="twitter:title" content="Fareeha OS">
-    <meta name="twitter:description" content="Hey, I'm Fareeha ✨ I'm currently exploring how social graph infrastructure shapes health outcomes and longevity. I'm also building Kineship, a social layer for workouts.">
-    <!-- No twitter:image as requested -->
+    <meta name="twitter:description" content="Hey, I'm Fareeha ✨ I'm joining a team that spotlights and supports the people building AGI. I think it's the most important thing our generation has to get right. I also built Kineship, a social layer for workouts.">
+    <meta name="twitter:image" content="https://fareeha.sh/images/og.jpg">
     
     <!-- Structured data for search engines - invisible to users -->
     <script type="application/ld+json">
@@ -42,7 +44,7 @@
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Fareeha Salahuddin",
-      "url": "https://fareeha-s.github.io/fareeha-cloud/",
+      "url": "https://fareeha.sh/",
       "sameAs": [
         "https://github.com/fareeha-s",
         "https://www.linkedin.com/in/fareehas/"
@@ -86,6 +88,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Lora:wght@400&display=swap" as="style">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&display=swap">
                             
     <!-- Add inline font-display:swap rule for immediate text visibility -->
     <style>
@@ -108,7 +111,6 @@
     </style>
 
     <!-- Preload critical assets - optimized image loading strategy -->
-    <link rel="preload" href="/optimized/background-placeholder.webp" as="image" fetchpriority="high" />
     
     <style>
       :root {
@@ -129,6 +131,16 @@
         background-color: #131518;
         color: white;
         font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+
+      p, li, h1, h2, h3, .lora-note-content { text-wrap: pretty; }
+      ::-moz-selection { background: rgba(255, 182, 213, 0.35); color: #fff; }
+      ::selection { background: rgba(255, 182, 213, 0.35); color: #fff; }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
       }
 
       /* iOS devices - use system font */
@@ -249,13 +261,15 @@
     </style>
     <script>
       // Force hello world note to open on initial page load
-      window.initialNoteId = 1; // Hello world note ID
-      window.openNoteDirectly = true;
+      if (!new URLSearchParams(location.search).has('phone')) {
+        window.initialNoteId = 1; // Hello world note ID
+        window.openNoteDirectly = true;
+      }
     </script>
-    <script type="module" crossorigin src="/assets/index-DHYZyz8j.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/react-vendor-DcYyfGB6.js">
-    <link rel="modulepreload" crossorigin href="/assets/motion-vendor-DXYzeKKA.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-DOWNKn9p.css">
+    <script type="module" crossorigin src="/assets/index-uAlxFEv3.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/motion-vendor-DRWxgq9x.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-v5NtXDJg.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-xdeR_nYC.css">
   </head>
   <body>
     <div id="root">
