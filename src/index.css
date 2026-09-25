@@ -674,3 +674,15 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 @media (prefers-reduced-motion: reduce) {
   .main-container.intro-glow::after { display: none; }
 }
+
+/* Kineship mark used like an emoji next to a name; takes the surrounding text colour */
+.kineship-mark {
+  display: inline-block;
+  width: 1.7em;
+  height: 1.15em;
+  margin-left: 0.15em;
+  vertical-align: -0.2em;
+  background-color: currentColor;
+  -webkit-mask: url('/icons/kineship-mark.png') center / contain no-repeat;
+  mask: url('/icons/kineship-mark.png') center / contain no-repeat;
+}

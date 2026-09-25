@@ -102,7 +102,7 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
   };
 
   const contentBeforeLoveList = `\
-<span style="font-size: clamp(20px, 4vw, 24px); font-weight: 500; line-height: 1.3;">Hey, I\'m Fareeha ✨</span>
+<span style="font-size: clamp(20px, 4vw, 24px); font-weight: 500; line-height: 1.3;">Hey, I\'m Fareeha <span class="kineship-mark" aria-label="Kineship"></span></span>
 
 You might\'ve found me through one of my Partifuls where I made you eat something.
 

@@ -44,7 +44,7 @@ export const notes: NoteItem[] = [
   { 
     id: 1, 
     title: "hello world ˚", 
-    content: `Hey, I'm Fareeha ✨  
+    content: `Hey, I'm Fareeha <span class="kineship-mark" aria-label="Kineship"></span>  
 
 You might've found me through one of my [Partifuls](app:partiful) where I made you eat something.
 
