@@ -104,18 +104,18 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
   const contentBeforeLoveList = `\
 <span style="font-size: clamp(20px, 4vw, 24px); font-weight: 500; line-height: 1.3;">Hey, I\'m Fareeha <span class="kineship-mark" aria-label="Kineship"></span></span>
 
-You might\'ve found me through one of my <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'partiful\'})">Partifuls</a> where I made you eat something.
+You might\'ve found me through one of my <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'partiful\'})">Partifuls</a>, where I made you eat something.
 
 I love watching people light up around each other - my compass seems to keep pointing that way.
 
-Beyond hosting, <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">I\'m joining a team</a> that spotlights and supports the people building AGI. I think it\'s the most important thing our generation has to get right. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
+Beyond hosting, <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">I\'m joining a team</a> that spotlights and supports the people building AGI. Genuinely think it\'s the most important thing happening right now. I also built <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, an app for working out with your friends.
 
 <span style="font-weight: bold;">things I love:</span>
 ▹ taking forever to <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'partiful\'})">set a table</a>
 ▹ giving people <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'notes\', noteId:3})">apples</a> they didn\'t ask for
-▹ keeping my Oura ring happy 🫶
+▹ wearing one too many wearables at once
 
-If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">hear from you.</a>
+If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">hear from you</a> 💛
 `;
 
   const contentAfterLoveList = ``;
