@@ -533,12 +533,72 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 }
 
 .custom-pink-link--desktop-overlay {
-  display: inline-block; /* Needed for transform */
-}
-
-.custom-pink-link--desktop-overlay:hover {
-  transform: scale(1.02); /* Specific hover transform for DesktopOverlay links */
+  display: inline; /* Stay inline so punctuation after a link never wraps away from it */
 }
 /* == End Custom Link Styles == */
 
 /* Fix iOS font issue in WebKit */
+
+/* Polaroids */
+.polaroid {
+  position: relative;
+  background: linear-gradient(170deg, #fbf8f2 0%, #f1ece2 100%);
+  border-radius: 3px;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.12),
+    0 12px 28px -8px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  user-select: none;
+}
+.polaroid__photo {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #e9e4da;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.polaroid__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: polaroid-develop 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.polaroid__caption {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 0.45em;
+  text-align: left;
+  font-family: 'EB Garamond', Garamond, Georgia, serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #3a342e;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+@keyframes polaroid-develop {
+  0% { filter: brightness(2.2) contrast(0.35) saturate(0) sepia(0.4) blur(3px); opacity: 0.85; }
+  60% { filter: brightness(1.15) contrast(0.9) saturate(0.8) sepia(0.15) blur(0); opacity: 1; }
+  100% { filter: none; opacity: 1; }
+}
+
+/* Film grain flicker: jump the grain tile around a few times a second */
+.bg-grain {
+  animation: grain-flicker 0.9s steps(6) infinite;
+}
+@keyframes grain-flicker {
+  0% { transform: translate(0, 0); }
+  17% { transform: translate(-3%, 2%); }
+  33% { transform: translate(2%, -4%); }
+  50% { transform: translate(-4%, -1%); }
+  67% { transform: translate(3%, 3%); }
+  83% { transform: translate(-1%, 4%); }
+  100% { transform: translate(0, 0); }
+}
+.dragging-polaroid iframe {
+  pointer-events: none;
+}
+.dragging-polaroid {
+  user-select: none;
+  -webkit-user-select: none;
+}

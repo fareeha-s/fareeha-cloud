@@ -20,9 +20,9 @@ export const notes: NoteItem[] = [
 
 You might've found me through one of my [Partifuls](app:partiful) where I made you eat something.
 
-Beyond hosting, I'm currently exploring how social graph infrastructure shapes health outcomes and longevity. I'm also building [Kineship](note:2), a social layer for workouts.
+I love watching people light up around each other - my compass seems to keep pointing that way.
 
-In Autumn 2026, I'll be producing a fashion show. It's very specific. More on this soon 🩵 
+Beyond hosting, I'm joining [a team](https://www.mts.now) that spotlights and supports the people building AGI. I think it's the most important thing our generation has to get right. I also built [Kineship](note:2), a social layer for workouts.
 
 <span style="font-weight: bold;">things I love:</span>  
 ▹ taking forever to [set a table](app:partiful)
@@ -33,6 +33,16 @@ If this feels like your kind of world, I'd love to [hear from you.](mailto:faree
     date: "",
     timeframe: 'recent',
     pinned: true
+  },
+  { 
+    id: 7, 
+    title: "fashion show", 
+    content: `A slow-burn project with collaborators across a few countries, so it's moving at its own pace.
+
+Date TBD 🩵`,
+    date: "25/09/26",
+    timeframe: 'recent',
+    pinned: false
   },
   { 
     id: 2, 
@@ -82,22 +92,6 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     gravenstein
     calville blanc d'hiver`,
     date: '15/12/24',
-    timeframe: 'recent',
-    pinned: false
-  },
-  { 
-    id: 4,
-    title: 'projects',
-    content: `▹ systems design for boutique wellness spaces [infra mapping, product integration](https://silicon-divan-443.notion.site/Retention-System-Design-for-Boutique-Fitness-1f7a4827ee3380599df9c1afc31689f1)
-
-▹ social design in health & community ([tessel](https://fareeha-s.github.io/Tessel/), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni), [h&s gala](https://youtu.be/VMxSzVREUgY), [dc fashion show](https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a))
-
-▹ winning team, healthcare innovation ([mit bc x harvard med](https://silicon-divan-443.notion.site/MedBridge-235a4827ee33804b8a05c087946d7a80))
-
-▹ policy work on the ethical implications of AI on youth ([united nations x mbc](https://www.youtube.com/watch?v=6vqmUHDibTI&t=600s))
-
-▹ ice/breakers ([#3 on ProductHunt](https://www.producthunt.com/products/icebreakers-2?launch=icebreakers-b45694ac-4bea-4ec9-870f-67a447107f26))`,
-    date: '29/12/24',
     timeframe: 'recent',
     pinned: false
   },

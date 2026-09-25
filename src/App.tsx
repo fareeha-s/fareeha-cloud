@@ -18,6 +18,10 @@ import { NoteItem } from './data/notes';
 import DesktopOverlay from './components/DesktopOverlay';
 // Import the AppBackground component
 import AppBackground from './components/AppBackground';
+import PolaroidIntro from './components/PolaroidIntro';
+
+// When embedded as the phone on the desktop page, always render the mobile app on its home screen
+const isPhoneEmbed = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('phone');
 
 // Global tactile effect function for better performance
 export const createTactileEffect = () => {
@@ -184,7 +188,7 @@ function App() {
   const [showDesktopOverlay, setShowDesktopOverlay] = useState(true); // New state for controlling overlay visibility
 
   // Set 'notes' as the default active app and set up to open hello world note
-  const [activeApp, setActiveApp] = useState<string | null>('notes');
+  const [activeApp, setActiveApp] = useState<string | null>(isPhoneEmbed ? null : 'notes');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedScreen, setSelectedScreen] = useState<string | null>(null);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
@@ -220,7 +224,7 @@ function App() {
 
       // Treat as desktop if you have desktop input (mouse/trackpad), regardless of width.
       // This ensures the overlay always shows on laptops, even when window is narrow.
-      setIsDesktop(hasHoverFinePointer);
+      setIsDesktop(!isPhoneEmbed && hasHoverFinePointer);
     };
 
     checkDesktop(); // Initial check
@@ -235,20 +239,9 @@ function App() {
     // Use Promise.all to track both image and font loading
     const fontReady = document.fonts.ready;
     
-    // Function to preload the background image
-    const preloadImage = (src: string) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-    };
-    
-    // Wait for both fonts and background image to load
+    // Wait for fonts to load
     Promise.all([
-      fontReady,
-      preloadImage('/images/background.webp')
+      fontReady
     ])
     .then(() => {
       // Once everything is loaded, mark content as ready
@@ -310,7 +303,7 @@ function App() {
     const checkIfMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor;
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-      setIsMobileDevice(isMobile);
+      setIsMobileDevice(isMobile || isPhoneEmbed);
     };
     
     checkIfMobile();
@@ -340,8 +333,8 @@ function App() {
   
   // Open hello world note on page load (only on mobile, never on desktop)
   useEffect(() => {
-    // Skip auto-opening on desktop entirely
-    if (isDesktop) {
+    // Skip auto-opening on desktop entirely, and in the desktop phone embed (it starts on home)
+    if (isDesktop || isPhoneEmbed) {
       return;
     }
     
@@ -941,6 +934,7 @@ function App() {
     >
       {/* Use the AppBackground component here */}
       <AppBackground isLoaded={isLoaded} />
+      {!isPhoneEmbed && <PolaroidIntro />}
 
       <AnimatePresence>
         {activeApp && (
@@ -1451,11 +1445,9 @@ function App() {
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes'
                           ? (widgetNote.title.includes("hello world")
-                              ? "my north star: designing tech that centres human longevity. I'm with an AI lab exploring a new class of infrastructure for agent builders. I also built Kineship, a social layer for workouts. In Autumn 2026, I'll be producing a fashion show..."
+                              ? "my north star: designing tech that centres human longevity. I'm joining a team that spotlights and supports the people building AGI. I think it's the most important thing our generation has to get right. I also built Kineship, a social layer for workouts..."
                               : widgetNote.title.includes("kineship")
                                 ? "the kineship app shares your workout calendar with your circles. It feels like much of how we connect today involves adding more: more invites, more plans, more coordination. Kineship is about subtraction. Instead of scheduling, it shows you when your people are already working out..."
-                                : widgetNote.title.includes("projects")
-                                  ? "▹ systems design for boutique wellness spaces [infra mapping, product integration]\n\n▹ social design in health & community (tessel, vfc, h&s gala, dc fashion show)\n\n▹ winning team, healthcare innovation (mit bc x harvard med)"
                                   : (widgetNote.content && widgetNote.content.length > 250
                                       ? widgetNote.content.substring(0, 250) + '...'
                                       : (widgetNote.content || '') + '...'))

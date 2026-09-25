@@ -671,7 +671,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                 {pinnedNotes.length > 0 && (
                   <div>
                     {/* Remove px-2 from header */}
-                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4 flex items-center">
+                    <h2 className="text-white/45 text-[13px] font-medium tracking-[0.01em] mb-2 px-2 flex items-center gap-1">
                       <PinIcon />
                       Pinned
                     </h2>
@@ -679,7 +679,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                       {pinnedNotes.map((note, index) => (
                         <motion.div 
                           key={`pinned-${note.id}`}
-                          className="flex group px-2 py-2 rounded-md hover:bg-white/5 active:bg-white/10 relative"
+                          className="flex group px-2 py-2 rounded-xl hover:bg-white/[0.06] active:bg-white/10 transition-colors relative"
                           onClick={(e) => {
                             e.stopPropagation();
                             createTactileEffect();
@@ -719,16 +719,16 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
 
                 {/* All notes section */}
                 {allNotes.length > 0 && (
-                  <div>
+                  <div className={pinnedNotes.length > 0 ? 'mt-7' : ''}>
                     {/* Remove px-2 from header */}
-                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4">
-                      All
+                    <h2 className="text-white/45 text-[13px] font-medium tracking-[0.01em] mb-2 px-2">
+                      All notes
                     </h2>
-                    <div className="space-y-2">
+                    <div className="space-y-0.5">
                       {allNotes.map((note) => (
                         <motion.div 
                           key={`all-${note.id}`}
-                          className="flex group px-1 py-0.5 rounded-md relative"
+                          className={`flex group px-2 py-1.5 rounded-xl relative transition-colors ${note.locked ? '' : 'hover:bg-white/[0.06] active:bg-white/10'}`}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (!note.locked) {

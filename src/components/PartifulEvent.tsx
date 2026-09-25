@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shirt, Utensils } from 'lucide-react';
 import { EventItem } from '../data/events';
+import Polaroid from './Polaroid';
 
 type PartifulEventProps = {
   onBack: () => void;
@@ -844,12 +845,13 @@ limited capacity! tell us what you'd share 🫶🏼`;
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="w-full overflow-hidden rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-              <img
+            <div className="flex justify-center py-2">
+              <Polaroid
                 src="./images/photoalbum/ftc-photo.jpeg"
-                alt="for the culture"
-                className="w-full"
-                style={{ objectFit: 'cover', display: 'block' }}
+                caption="from the night ✦"
+                width={240}
+                developDelay={0.5}
+                style={{ transform: 'rotate(-2.5deg)' }}
               />
             </div>
           </motion.div>

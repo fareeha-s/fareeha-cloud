@@ -400,8 +400,8 @@ export const EventScreen: React.FC<AppScreenProps> = ({
           {/* Past Month section */}
           {pastMonthEvents.length > 0 && (
             <div>
-              <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4 px-2">
-                Past Month
+              <h2 className="text-white/45 text-[13px] font-medium tracking-[0.01em] mb-2 px-2">
+                Past month
               </h2>
               <div className="space-y-2">
                 {pastMonthEvents.map((event, index) => (
@@ -469,8 +469,8 @@ export const EventScreen: React.FC<AppScreenProps> = ({
           {/* All events section */}
           {remainingEvents.length > 0 && (
             <div>
-              <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4 px-2">
-                All
+              <h2 className="text-white/45 text-[13px] font-medium tracking-[0.01em] mb-2 px-2">
+                All gatherings
               </h2>
               <div className="space-y-2">
                 {remainingEvents.map((event, index) => (
