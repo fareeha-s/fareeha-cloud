@@ -260,19 +260,39 @@
     </style>
     <script>
       // Phones and tablets follow the system appearance (daylight linen theme in
-      // light mode); the desktop page and its phone mockup are always dark.
+      // light mode). Desktop is dark unless the visitor flips the toggle, which is
+      // remembered; the phone mockup on desktop is told which theme to use.
       (function () {
-        var embed = new URLSearchParams(location.search).has('phone');
+        var params = new URLSearchParams(location.search);
+        var embed = params.has('phone');
         var desktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
         var light = window.matchMedia('(prefers-color-scheme: light)');
-        function apply() {
-          var on = !embed && !desktop && light.matches;
+        var saved = null;
+        try { saved = localStorage.getItem('theme'); } catch (e) {}
+        function set(on) {
           document.documentElement.classList.toggle('theme-light', on);
           var meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute('content', on ? '#ebe5da' : '#131518');
         }
+        function apply() {
+          if (embed) return set(params.get('theme') === 'light');
+          if (desktop) return set(saved === 'light');
+          set(light.matches);
+        }
         apply();
         if (light.addEventListener) light.addEventListener('change', apply);
+        window.__setTheme = function (on) {
+          saved = on ? 'light' : 'dark';
+          try { localStorage.setItem('theme', saved); } catch (e) {}
+          set(on);
+          var frame = document.querySelector('iframe[title="Fareeha OS on a phone"]');
+          if (frame && frame.contentWindow) frame.contentWindow.postMessage({ type: 'theme', light: on }, location.origin);
+        };
+        if (embed) {
+          window.addEventListener('message', function (e) {
+            if (e.origin === location.origin && e.data && e.data.type === 'theme') set(!!e.data.light);
+          });
+        }
       })();
 
       // Force hello world note to open on initial page load
@@ -281,10 +301,10 @@
         window.openNoteDirectly = true;
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-BVjDos18.js"></script>
+    <script type="module" crossorigin src="/assets/index-CjFC0q6s.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/motion-vendor-DRWxgq9x.js">
     <link rel="modulepreload" crossorigin href="/assets/react-vendor-v5NtXDJg.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-CJuvZYC-.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-C-Y9AWL-.css">
   </head>
   <body>
     <div id="root">
