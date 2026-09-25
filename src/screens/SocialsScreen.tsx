@@ -40,17 +40,18 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       customStyles: "bg-white/15 backdrop-blur-lg border border-white/20"
     },
     {
-      name: "goodreads",
-      icon: "./icons/apps/goodreads.png",
-      url: "https://www.goodreads.com/user/show/7284438-fareeha",
+      name: "spotify",
+      icon: "./icons/apps/spotify.png",
+      url: "https://open.spotify.com/user/22isp6c3rjr7utadspi7b6eki",
       position: 4,
       isCustomIcon: true
     },
     {
-      name: "empty2",
-      icon: null,
-      url: "#",
-      position: 5
+      name: "signal",
+      icon: "./icons/apps/signal.png",
+      url: "https://signal.me/#eu/g7Ye-3IizjGG9YWJOx4QtrjO6sqGM_0zZRS65l14vNogRiJjQA9AUoW1WEA5xcfL",
+      position: 5,
+      isCustomIcon: true
     },
     {
       name: "kineship",
