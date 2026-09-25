@@ -679,3 +679,15 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 @media (prefers-reduced-motion: reduce) {
   .text-settle { animation: none; -webkit-mask-image: none; mask-image: none; }
 }
+
+/* Night sky: the brighter stars twinkle very gently (desktop only; still on phones) */
+.bg-stars-bright {
+  animation: star-twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes star-twinkle {
+  from { opacity: 1; }
+  to { opacity: 0.55; }
+}
+@media (hover: none) {
+  .bg-stars-bright { animation: none; }
+}
