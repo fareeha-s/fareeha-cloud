@@ -624,3 +624,17 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 .widget-icon-tile {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
 }
+
+/* Phones: keep the background layers still. Animating large blurred layers
+   under frosted glass is heavy for mobile GPUs (iOS Safari can stall or reload) */
+@media (hover: none) {
+  .mobile-wallpaper,
+  .bg-grain,
+  .linen-window {
+    animation: none !important;
+    will-change: auto;
+  }
+  .mobile-wallpaper {
+    transform: scale(1.06);
+  }
+}

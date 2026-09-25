@@ -242,7 +242,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       // Always open Hello World note (ID 1) when openNoteDirectly is true
       const helloWorldNote = notes.find(note => note.id === 1);
       if (helloWorldNote && !helloWorldNote.locked) {
-        console.log(`NotesScreen opening Hello World directly.`);
         setSelectedNote(helloWorldNote);
         setIsViewingDetail(true);
         markNoteAsViewed(1);
@@ -267,7 +266,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       // Handle opening a note passed via prop (e.g., from widget click)
       const noteToOpen = notes.find(note => note.id === initialNoteId);
       if (noteToOpen && !noteToOpen.locked) {
-        console.log(`NotesScreen opening note via prop: ${initialNoteId}`);
         setSelectedNote(noteToOpen);
         setIsViewingDetail(true);
         markNoteAsViewed(initialNoteId);

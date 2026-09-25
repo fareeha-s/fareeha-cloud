@@ -639,7 +639,6 @@ function App() {
   useEffect(() => {
     // Make handleAppClick available to the window object for links in notes
     window.handleAppClick = (appId: string) => {
-      console.log('App link clicked:', appId);
       // Special case: if appId is 'home', go to home screen
       if (appId === 'home') {
         setActiveApp(null);
@@ -693,7 +692,6 @@ function App() {
 
   // Handle app closing with proper animation - enhanced for elegant roll-up
   const handleClose = () => {
-    console.log(`handleClose called. isAnimating: ${isAnimating}`); // DEBUG
     if (isAnimating) return;
 
     // Set detail view state to false first for potentially needed state coordination
@@ -836,7 +834,6 @@ function App() {
 
   // Define handleNavigate matching the type signature expected by AppScreenProps
   const handleNavigate = (target: string, options?: { noteId?: number; eventId?: number }) => {
-    console.log(`Navigating to ${target} with options:`, options);
     // Set the target screen as active
     setActiveApp(target);
     // Potentially handle options like setting initialNoteId/initialEventId state here if needed
@@ -958,7 +955,6 @@ function App() {
             animate={{ opacity: 1, transition: { duration: 0.3 } }}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             onClick={(e) => {
-              console.log('Backdrop clicked.'); // DEBUG
               // Prevent click-through if already animating
               if (isAnimating) {
                 e.stopPropagation();
@@ -1219,7 +1215,6 @@ function App() {
                     const currentWidget = widgets[currentWidgetIndex]; // Use a variable for clarity
 
                     if (currentWidget.type === 'notes') {
-                      console.log('Notes widget clicked. Data:', currentWidget);
                       // Set the ID and then open the app
                       if (typeof currentWidget.noteId === 'number') {
                         setInitialNoteIdForScreen(currentWidget.noteId);
@@ -1296,7 +1291,6 @@ function App() {
                           const currentWidget = widgets[currentWidgetIndex];
                           
                           if (currentWidget.type === 'notes') {
-                            console.log('Notes widget clicked. Data:', currentWidget);
                             // Set the ID and then open the app
                             if (typeof currentWidget.noteId === 'number') {
                               setInitialNoteIdForScreen(currentWidget.noteId);

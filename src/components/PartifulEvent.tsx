@@ -5,8 +5,17 @@ import { EventItem } from '../data/events';
 
 // Photos from the night, shown under the invite
 const nightPhotos: Record<string, string[]> = {
-  'for the culture': ['./images/photoalbum/ftc-photo.jpeg'],
-  'Winter Editorial.': ['./images/photoalbum/we-1.jpeg', './images/photoalbum/we-2.jpeg'],
+  'for the culture': ['./images/photoalbum/ftc-1.jpeg', './images/photoalbum/ftc-2.jpeg', './images/photoalbum/ftc-3.jpeg', './images/photoalbum/ftc-4.jpeg', './images/photoalbum/ftc-5.jpeg'],
+  'Winter Editorial.': ['./images/photoalbum/we-sq-1.jpeg', './images/photoalbum/we-sq-2.jpeg'],
+};
+
+// Press coverage, shown as a small pill where the photos from the night go
+const pressLinks: Record<string, { outlet: string; label: string; url: string }> = {
+  'mango tango four': {
+    outlet: 'CNN',
+    label: 'as seen on CNN',
+    url: 'https://www.cnn.com/2026/06/09/entertainment/video/mango-meetup-san-francisco-mango-tango-hundreds-digvid-vrtc',
+  },
 };
 
 type PartifulEventProps = {
@@ -847,24 +856,57 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </motion.div>
         )}
         
-        {/* Photos from the night, photo-album style */}
+        {/* Photos from the night: a row of square photos you swipe through, like the Photos app */}
         {nightPhotos[eventTitle] && (
           <motion.div
-            className="mx-4 mt-3 mb-2 space-y-3"
+            className="mt-3 mb-2"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            {nightPhotos[eventTitle].map((src) => (
-              <div key={src} className="w-full overflow-hidden rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div
+              className="flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-hide"
+              style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y' }}
+            >
+              {nightPhotos[eventTitle].map((src) => (
                 <img
+                  key={src}
                   src={src}
                   alt={`${eventTitle}, from the night`}
-                  className="w-full"
-                  style={{ objectFit: 'cover', display: 'block' }}
+                  loading="lazy"
+                  className="flex-shrink-0 rounded-lg object-cover"
+                  style={{ width: 118, height: 118, scrollSnapAlign: 'start', border: '1px solid rgba(255,255,255,0.08)' }}
                 />
-              </div>
-            ))}
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Press coverage, in the same spot photos from the night go */}
+        {pressLinks[eventTitle] && (
+          <motion.div
+            className="mx-4 mt-3 mb-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <a
+              href={pressLinks[eventTitle].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-2 rounded-full pl-1 pr-3 py-1 transition-opacity hover:opacity-90"
+              style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', color: 'white', fontSize: 13, fontWeight: 500 }}
+            >
+              <span
+                className="inline-flex items-center justify-center rounded-full"
+                style={{ background: '#cc0000', color: 'white', fontSize: 9, fontWeight: 800, letterSpacing: '0.02em', width: 30, height: 20 }}
+              >
+                {pressLinks[eventTitle].outlet}
+              </span>
+              {pressLinks[eventTitle].label}
+              <span style={{ opacity: 0.6 }}>↗</span>
+            </a>
           </motion.div>
         )}
 

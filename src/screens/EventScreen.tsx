@@ -54,16 +54,13 @@ export const EventScreen: React.FC<AppScreenProps> = ({
   // Effect to initialize widgetEventId from prop or window property
   useEffect(() => {
     // Prioritize prop, then window object
-    console.log('[EventScreen useEffect] Received initialEventId prop:', initialEventId);
     const idFromSource = initialEventId !== undefined && initialEventId !== null 
       ? initialEventId 
       : (window as any).initialEventId;
     
-    console.log('[EventScreen useEffect] Determined idFromSource:', idFromSource);
 
     if (typeof idFromSource === 'number') {
       setWidgetEventId(idFromSource);
-      console.log('[EventScreen useEffect] Set widgetEventId state to:', idFromSource);
       // Clear the window property after reading it to prevent reuse on subsequent visits
       // Only delete if the source was the window property to avoid deleting prop-related info potentially needed elsewhere
       if (!(initialEventId !== undefined && initialEventId !== null)) {
@@ -72,7 +69,6 @@ export const EventScreen: React.FC<AppScreenProps> = ({
     } else {
       // Clear widgetEventId if no initial ID is found
       setWidgetEventId(null);
-      console.log('[EventScreen useEffect] Cleared widgetEventId state (no valid source ID)');
     }
   }, [initialEventId]); // Depend on the prop
 
@@ -96,7 +92,6 @@ export const EventScreen: React.FC<AppScreenProps> = ({
   useEffect(() => {
     if (setIsEventDetailView) {
       setIsEventDetailView(showPartiful);
-      console.log('Calling setIsEventDetailView prop:', showPartiful);
     }
     // No cleanup needed here as App.tsx manages the state
   }, [showPartiful, setIsEventDetailView]);
@@ -376,7 +371,6 @@ export const EventScreen: React.FC<AppScreenProps> = ({
 
   // Function to determine if the pulsing dot should be shown for an event
   const shouldShowPulsingDot = (eventId: number) => {
-    console.log(`[EventScreen shouldShowPulsingDot] Checking eventId: ${eventId} against widgetEventId: ${widgetEventId}`);
     return eventId === widgetEventId;
   };
 
