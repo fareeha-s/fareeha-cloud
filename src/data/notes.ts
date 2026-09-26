@@ -10,6 +10,8 @@ export type NoteItem = {
     pointerEvents?: 'none' | 'auto';
   };
   locked?: boolean;
+  // Kept in the file but left off the site (e.g. waiting on something to go live)
+  hidden?: boolean;
 };
 
 // The "ai reading list" note. Add essays here; each section always lists the
@@ -41,7 +43,7 @@ function readingListContent() {
   ].join('\n\n');
 }
 
-export const notes: NoteItem[] = [
+const allNotes: NoteItem[] = [
   { 
     id: 1, 
     title: "hello world ˚", 
@@ -84,10 +86,12 @@ Date TBD 🩵`,
   { 
     id: 9, 
     title: "should i have walked.", 
+    // Hidden until the app is working again; then add a link back
+    hidden: true,
     content: `<img src="./images/notes/should-i-have-walked.webp" alt="should i have walked. homepage" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 6px;" />
-A deadpan little guilt trip for anyone who's taken a robotaxi six blocks in San Francisco.
+I once took a robotaxi six blocks and felt a bit guilty about it, so I made this.
 
-Put in your pickup and dropoff, and it maps the walk you skipped: the coffee shops, murals, parks and notable trees you rode straight past, what the walk would've done for you (in food equivalents), and a few very SF ways you could've spent the time instead.
+Tell it where you got picked up and where you got dropped off, and it shows you everything you rode straight past: the coffee spots, the murals, the good trees. Plus what the walk would've done for you.
 
 Made in the backseat of a robotaxi 🤍`,
     date: "20/09/26",
@@ -145,4 +149,6 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     timeframe: 'recent',
     pinned: false
   }
-]; 
+];
+
+export const notes: NoteItem[] = allNotes.filter((note) => !note.hidden);
