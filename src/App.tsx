@@ -287,6 +287,9 @@ function App() {
   const [swipeStartX, setSwipeStartX] = useState<number | null>(null);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [isSwiping, setIsSwiping] = useState(false);
+  // Which way the widget carousel is moving: 1 = next (slides in from the right), -1 = previous
+  const [slideDir, setSlideDir] = useState(1);
+  const widgetDraggedRef = useRef(false);
   
   // Handle widget navigation (prev/next)
   const handleWidgetNavigation = (direction: 'prev' | 'next') => {
@@ -295,6 +298,7 @@ function App() {
       buzz(3); // Subtle vibration
     }
     
+    setSlideDir(direction === 'prev' ? -1 : 1);
     // Update the widget index based on direction
     setCurrentWidgetIndex(prevIndex => {
       if (direction === 'prev') {
@@ -567,6 +571,7 @@ function App() {
           return; // Skip this rotation cycle if manual navigation was recent
         }
         
+        setSlideDir(1);
         setCurrentWidgetIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % widgets.length;
           return nextIndex;
@@ -1075,7 +1080,7 @@ function App() {
                 }
               }}
               style={{ 
-                top: '14px', // Moved down a few pixels
+                top: '4px', // sits just above the card, like the app titles (the photo is taller than the text)
                 right: '22px', // Nudge right
                 zIndex: 10001, // Keep increased zIndex
                 color: 'var(--fg)',
@@ -1226,15 +1231,14 @@ function App() {
                 ))}
               </div>
               
-              {/* Empty space to push widget down */}
-              <div className="flex-grow"></div>
-              
-              {/* Rotating Widget */}
-              <AnimatePresence mode="wait">
+              {/* Rotating Widget: slides in the direction of travel and follows your finger.
+                  It fills the space left under the app icons, as the single widget did before */}
+              <div className="relative w-full flex-1 min-h-[96px] mt-4 mb-1 overflow-hidden rounded-2xl">
+              <AnimatePresence mode="popLayout" initial={false} custom={slideDir}>
               <motion.div 
                   ref={widgetRef}
                   key={`widget-${currentWidgetIndex}`}
-                  className={`w-full aspect-square mt-auto rounded-2xl overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''} ${isDesktop ? 'flex flex-col justify-center' : ''}`}
+                  className={`absolute inset-0 w-full rounded-2xl overflow-hidden shadow-sm will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''} ${isDesktop ? 'flex flex-col justify-center' : ''}`}
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.04)',
                     backdropFilter: 'none',
@@ -1244,21 +1248,45 @@ function App() {
                     transform: 'translateZ(0)',
                     WebkitTransform: 'translateZ(0)',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
-                    touchAction: 'none', 
-                    cursor: 'pointer',
-                    position: 'relative',
+                    touchAction: 'pan-y',
+                    cursor: 'grab',
+                    position: 'absolute',
                     overflow: 'hidden',
                   }}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ 
-                    duration: 0.5, // Slightly longer for smoother feel
-                    ease: [0.25, 0.8, 0.25, 1] // Enhanced cubic-bezier for buttery-smooth transitions
+                  custom={slideDir}
+                  variants={{
+                    enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%' }),
+                    center: { x: 0 },
+                    exit: (dir: number) => ({ x: dir > 0 ? '-100%' : '100%' }),
                   }}
-                  whileHover={{ scale: 1.02 }}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ type: 'spring', stiffness: 320, damping: 34, mass: 0.9 }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.6}
+                  onDragStart={() => {
+                    widgetDraggedRef.current = true;
+                    setIsSwiping(true);
+                  }}
+                  onDragEnd={(_, info) => {
+                    setIsSwiping(false);
+                    setLastManualNavigation(Date.now());
+                    const swipe = info.offset.x + info.velocity.x * 0.2;
+                    if (swipe < -60) {
+                      handleWidgetNavigation('next');
+                      createSwipeHapticFeedback('medium');
+                    } else if (swipe > 60) {
+                      handleWidgetNavigation('prev');
+                      createSwipeHapticFeedback('medium');
+                    }
+                    // Let the click that follows a drag be ignored
+                    setTimeout(() => { widgetDraggedRef.current = false; }, 0);
+                  }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => {
+                    if (widgetDraggedRef.current) return;
                     if (!widgets[currentWidgetIndex]) return;
                     
                     const currentWidget = widgets[currentWidgetIndex]; // Use a variable for clarity
@@ -1288,83 +1316,6 @@ function App() {
                     // Also handle swipe-related cleanup
                     setSwipeStartX(null);
                     setSwipeDirection(null);
-                  }}
-                  // Implement a direct, simpler swipe detection system for mobile devices only
-                  onTouchStart={(e) => {
-                    if (isMobileDevice) {
-                      setSwipeStartX(e.touches[0].clientX);
-                      setIsSwiping(true);
-                      setSwipeDirection(null);
-                      // Prevent default to avoid scrolling conflicts
-                      e.preventDefault();
-                    }
-                  }}
-                  onTouchMove={(e) => {
-                    if (isMobileDevice && swipeStartX !== null) {
-                      const currentX = e.touches[0].clientX;
-                      const diff = currentX - swipeStartX;
-                      
-                      // Set direction once we have a clear movement
-                      if (Math.abs(diff) > 10) {
-                        const newDirection = diff > 0 ? 'right' : 'left';
-                        if (swipeDirection !== newDirection) {
-                          setSwipeDirection(newDirection);
-                          // Add haptic feedback when direction changes
-                          createSwipeHapticFeedback('light');
-                        }
-                      }
-                      
-                      // Prevent default to avoid scrolling conflicts
-                      e.preventDefault();
-                    }
-                  }}
-                  onTouchEnd={(e) => {
-                    if (isMobileDevice && swipeStartX !== null) {
-                      const endX = e.changedTouches[0].clientX;
-                      const diff = endX - swipeStartX;
-                      
-                      if (Math.abs(diff) > 50) { // Minimum swipe distance
-                        if (swipeDirection === 'right') {
-                          handleWidgetNavigation('prev');
-                          createSwipeHapticFeedback('medium');
-                        } else if (swipeDirection === 'left') {
-                          handleWidgetNavigation('next');
-                          createSwipeHapticFeedback('medium');
-                        }
-                        
-                        // Record the time of manual navigation for swipe
-                        setLastManualNavigation(Date.now());
-                      } else {
-                        // If it's a small swipe (more like a tap), handle as a click
-                        if (Math.abs(diff) < 10) {
-                          const currentWidget = widgets[currentWidgetIndex];
-                          
-                          if (currentWidget.type === 'notes') {
-                            // Set the ID and then open the app
-                            if (typeof currentWidget.noteId === 'number') {
-                              setInitialNoteIdForScreen(currentWidget.noteId);
-                              handleAppClick('notes');
-                            }
-                          } else if (currentWidget.type === 'partiful' && currentWidget.eventId) {
-                            setInitialEventIdForScreen(currentWidget.eventId);
-                            handleAppClick('partiful');
-                          } else if (currentWidget.type === 'workout') {
-                            // Set Kineship note ID (2) and then open the app
-                            setInitialNoteIdForScreen(2);
-                            handleAppClick('notes');
-                            localStorage.setItem('openedKineshipFromWidget', 'true');
-                            setTimeout(() => {
-                              // Use setTimeout to ensure the NotesScreen component is mounted
-                              // before we try to open a specific note
-                            }, 50); // Small delay
-                          }
-                        }
-                      }
-                      
-                      setSwipeStartX(null);
-                      setSwipeDirection(null);
-                      setIsSwiping(false);
-                    }
                   }}
                   // Remove mouse-based swipes for desktop completely
                   onMouseDown={undefined}
@@ -1520,6 +1471,7 @@ function App() {
                 </div>
               </motion.div>
               </AnimatePresence>
+              </div>
               
               {/* Indicator Dots */}
               <div className="flex items-center justify-center mt-3 space-x-2">
@@ -1530,24 +1482,9 @@ function App() {
                       // Record the time of manual navigation
                       setLastManualNavigation(Date.now());
                       
-                      // Apply smooth transition between widgets when dots are clicked
-                      const direction = index > currentWidgetIndex ? 1 : -1;
-                      
-                      // Create a smoother transition by animating through each widget
-                      const animateToIndex = () => {
-                        if (currentWidgetIndex !== index) {
-                          setCurrentWidgetIndex(prev => {
-                            const next = prev + direction;
-                            // Handle wrapping around the ends
-                            if (next < 0) return widgets.length - 1;
-                            if (next >= widgets.length) return 0;
-                            return next;
-                          });
-                        }
-                      };
-                      
-                      // Start the transition
-                      animateToIndex();
+                      if (index === currentWidgetIndex) return;
+                      setSlideDir(index > currentWidgetIndex ? 1 : -1);
+                      setCurrentWidgetIndex(index);
                     }}
                   >
                     <div 
