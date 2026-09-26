@@ -84,14 +84,12 @@ Date TBD 🩵`,
   { 
     id: 9, 
     title: "should i have walked.", 
-    content: `<a href="https://shouldve-walked.vercel.app" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"><img src="./images/notes/should-i-have-walked.webp" alt="should i have walked. homepage" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 6px;" /></a>
+    content: `<img src="./images/notes/should-i-have-walked.webp" alt="should i have walked. homepage" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 6px;" />
 A deadpan little guilt trip for anyone who's taken a robotaxi six blocks in San Francisco.
 
 Put in your pickup and dropoff, and it maps the walk you skipped: the coffee shops, murals, parks and notable trees you rode straight past, what the walk would've done for you (in food equivalents), and a few very SF ways you could've spent the time instead.
 
-Made in the backseat of a robotaxi 🤍
-
-[Try it here](https://shouldve-walked.vercel.app)`,
+Made in the backseat of a robotaxi 🤍`,
     date: "20/09/26",
     timeframe: 'recent',
     pinned: false
