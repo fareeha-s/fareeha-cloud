@@ -89,7 +89,7 @@ A deadpan little guilt trip for anyone who's taken a robotaxi six blocks in San 
 
 Put in your pickup and dropoff, and it maps the walk you skipped: the coffee shops, murals, parks and notable trees you rode straight past, what the walk would've done for you (in food equivalents), and a few very SF ways you could've spent the time instead.
 
-Made in the backseat of a Waymo 🤍
+Made in the backseat of a robotaxi 🤍
 
 [Try it here](https://shouldve-walked.vercel.app)`,
     date: "20/09/26",
