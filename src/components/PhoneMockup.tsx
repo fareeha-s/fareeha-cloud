@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 
 // The top of an iPhone Pro, drawn at real proportions (393pt wide screen) and
 // cropped so it fades out at the bottom. The app only gets the visible part of
@@ -74,6 +75,25 @@ const PhoneMockup: React.FC<{ src: string }> = ({ src }) => {
   // Load the phone's copy of the site only after the page itself has finished,
   // so the card and background get the network and CPU first
   const [frameReady, setFrameReady] = useState(false);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+
+  // "Ghost tap": shortly after the phone loads, a soft touch presses once on the
+  // notes icon (without opening it), like the taps in Apple's product videos, so
+  // people realise the phone is real and they can use it
+  const [ghostTap, setGhostTap] = useState<{ x: number; y: number } | null>(null);
+  useEffect(() => {
+    if (!frameReady || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const start = setTimeout(() => {
+      const doc = frameRef.current?.contentDocument;
+      const icon = doc && [...doc.querySelectorAll<HTMLElement>('.flex.flex-col.items-center')].find((el) => el.textContent?.trim() === 'notes');
+      const tile = icon?.firstElementChild as HTMLElement | null;
+      if (!tile) return;
+      const r = tile.getBoundingClientRect();
+      if (r.width === 0) return;
+      setGhostTap({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    }, 2800);
+    return () => clearTimeout(start);
+  }, [frameReady]);
   useEffect(() => {
     const start = () => setTimeout(() => setFrameReady(true), 150);
     if (document.readyState === 'complete') {
@@ -131,6 +151,7 @@ const PhoneMockup: React.FC<{ src: string }> = ({ src }) => {
         <div className="w-full h-full bg-black" style={{ borderRadius: 61, padding: BEZEL }}>
           <div className="relative w-full h-full overflow-hidden bg-[#0b0b0c]" style={{ borderRadius: 54 }}>
             <iframe
+              ref={frameRef}
               src={frameReady ? frameSrc : 'about:blank'}
               title="Fareeha OS on a phone"
               className="block"
@@ -138,6 +159,26 @@ const PhoneMockup: React.FC<{ src: string }> = ({ src }) => {
             />
 
             <StatusBar />
+
+            {ghostTap && (
+              <motion.div
+                aria-hidden="true"
+                className="absolute rounded-full pointer-events-none z-30"
+                style={{
+                  left: ghostTap.x - 26,
+                  top: ghostTap.y - 26,
+                  width: 52,
+                  height: 52,
+                  background: 'rgba(255, 255, 255, 0.35)',
+                  boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.5), 0 4px 14px rgba(0, 0, 0, 0.25)',
+                  backdropFilter: 'blur(2px)',
+                }}
+                initial={{ opacity: 0, scale: 1.25 }}
+                animate={{ opacity: [0, 1, 1, 0], scale: [1.25, 0.9, 0.9, 1.1] }}
+                transition={{ duration: 1.1, times: [0, 0.3, 0.6, 1], ease: 'easeInOut' }}
+                onAnimationComplete={() => setGhostTap(null)}
+              />
+            )}
 
             {/* Dynamic Island */}
             <div

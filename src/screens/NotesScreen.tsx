@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { AppScreenProps as BaseAppScreenProps } from '../types'; 
 import { motion, useAnimation, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, X, Lock } from 'lucide-react';
@@ -124,6 +124,59 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
 };
 
 // Use the imported BaseAppScreenProps directly
+// iOS-style scroll indicator: a thin bar that appears briefly when a note opens
+// (the quiet "there's more below" cue) and while scrolling, then fades. Drawn by
+// us so it behaves the same on iPhone, Android and desktop, where native bars differ.
+const ScrollIndicator: React.FC<{ targetRef: React.RefObject<HTMLDivElement>; flashKey: unknown }> = ({ targetRef, flashKey }) => {
+  const [bar, setBar] = useState({ top: 0, height: 0, visible: false });
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const show = useCallback(() => {
+    const el = targetRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    if (scrollHeight <= clientHeight + 2) return;
+    const inset = 10;
+    const track = clientHeight - inset * 2;
+    const height = Math.max(28, (track * clientHeight) / scrollHeight);
+    const top = inset + ((track - height) * scrollTop) / (scrollHeight - clientHeight);
+    setBar({ top, height, visible: true });
+    clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setBar((b) => ({ ...b, visible: false })), 1100);
+  }, [targetRef]);
+
+  useEffect(() => {
+    const el = targetRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', show, { passive: true });
+    return () => el.removeEventListener('scroll', show);
+  }, [targetRef, show, flashKey]);
+
+  // Flash once when a note opens, after it has settled
+  useEffect(() => {
+    const t = setTimeout(show, 700);
+    return () => clearTimeout(t);
+  }, [flashKey, show]);
+
+  useEffect(() => () => clearTimeout(hideTimer.current), []);
+
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute pointer-events-none z-20 rounded-full"
+      style={{
+        right: 4,
+        width: 3,
+        top: bar.top,
+        height: bar.height,
+        background: 'var(--fg)',
+        opacity: bar.visible ? 0.4 : 0,
+        transition: bar.visible ? 'opacity 0.15s ease' : 'opacity 0.45s ease',
+      }}
+    />
+  );
+};
+
 // Only the first note someone sees (the hello world that greets them) settles in;
 // notes opened later just appear
 let hasSettledFirstNote = false;
@@ -564,9 +617,11 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                 }}
               />
               
+              <ScrollIndicator targetRef={noteContentRef} flashKey={selectedNote?.id} />
+
               <motion.div 
                 ref={noteContentRef}
-                className="h-full w-full overflow-auto scrollbar-subtle relative p-6 pb-28"
+                className="h-full w-full overflow-auto no-native-scrollbar relative p-6 pb-28"
                 style={{ 
                   overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
                   maxHeight: '100%',  // Make sure content stays within the container height

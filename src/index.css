@@ -691,3 +691,11 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 @media (hover: none) {
   .bg-stars-bright { animation: none; }
 }
+
+/* Notes use their own iOS-style scroll indicator instead of the native bar */
+.no-native-scrollbar {
+  scrollbar-width: none;
+}
+.no-native-scrollbar::-webkit-scrollbar {
+  display: none;
+}
