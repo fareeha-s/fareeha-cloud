@@ -1645,39 +1645,22 @@ function App() {
           )}
         </motion.div>
         
-        {/* Navigation arrows - positioned absolutely to not affect container positioning */}
+        {/* Back to home: top-left, level with the app title, labelled like an iOS back button */}
         {activeApp && (
-          <div 
-            className="absolute w-full mt-4 px-1"
-            style={{
-              opacity: isLoaded ? 1 : 0,
-              transition: "opacity 0.3s ease-in-out",
-              pointerEvents: "auto",
-              bottom: '-50px',
-              right: '0',
-              display: 'flex',
-              justifyContent: 'flex-end'
-            }}
+          <motion.button
+            type="button"
+            className="absolute flex items-center gap-0.5 z-30"
+            style={{ top: '-32px', left: '-4px', color: 'var(--fg)', fontSize: 16, fontWeight: 500, textShadow: 'var(--fg-shadow)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            onClick={!isAnimating ? handleClose : undefined}
+            whileTap={{ scale: 0.94 }}
+            aria-label={isEventDetailView ? 'Back' : 'Back to home'}
           >
-            {/* Back button - always goes back to home - moved to right side for thumb navigation */}
-            <motion.div 
-              initial={{ opacity: 0, x: -5 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -5 }}
-              transition={{ 
-                x: { duration: 0.3, delay: 4.5 },
-                opacity: { 
-                  duration: 2.5,
-                  delay: 1.5 
-                }
-              }}
-              onClick={!isAnimating ? handleClose : undefined}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronLeft size={28} className="text-white" strokeWidth={1.5} />
-            </motion.div>
-          </div>
+            <ChevronLeft size={22} strokeWidth={2.2} />
+            <span>{isEventDetailView ? 'Back' : 'Home'}</span>
+          </motion.button>
         )}
       </div>
     </div>
