@@ -89,9 +89,11 @@ Date TBD 🩵`,
     // Hidden until the app is working again; then add a link back
     hidden: true,
     content: `<img src="./images/notes/should-i-have-walked.webp" alt="should i have walked. homepage" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 6px;" />
-I once took a robotaxi six blocks and felt a bit guilty about it, so I made this.
+I was in a robotaxi for a long ride across the city, barely moving in traffic, on a beautiful day, and realised I could've just walked it in about an hour. So I made this.
 
 Tell it where you got picked up and where you got dropped off, and it shows you everything you rode straight past: the coffee spots, the murals, the good trees. Plus what the walk would've done for you.
+
+It also knows walking isn't always the right call. If the route goes somewhere that doesn't feel great on foot, especially after dark, it tells you, and offers a safer way around.
 
 Made in the backseat of a robotaxi 🤍`,
     date: "20/09/26",
