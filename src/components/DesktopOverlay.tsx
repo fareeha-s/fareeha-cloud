@@ -1,8 +1,12 @@
+import { pressable } from '../pressable';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AppBackground from './AppBackground';
 import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
+import PolaroidStacks from './PolaroidStacks';
+import PhoneMockup from './PhoneMockup';
+import ThemeToggle from './ThemeToggle';
 
 // Add VideoPlayerOverlay component for in-screen video playback
 const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: () => void }) => {
@@ -48,6 +52,7 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
       >
         <button 
           className="absolute top-8 right-8 z-10 p-3 bg-black/70 hover:bg-black/90 rounded-full text-white/80 hover:text-white transition-colors"
+          aria-label="Close"
           onClick={(e) => {
             e.stopPropagation();
             onClose();
@@ -99,25 +104,38 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
   };
 
   const contentBeforeLoveList = `\
-<span style="font-size: clamp(20px, 4vw, 24px); font-weight: 500; line-height: 1.3;">Hey, I\'m Fareeha ✨</span>
+<span style="font-size: clamp(20px, 4vw, 24px); font-weight: 500; line-height: 1.3;">Hey, I\'m Fareeha <span class="kineship-mark" aria-label="Kineship"></span></span>
 
-I love watching people light up around each other - my compass seems to keep pointing that way.
+You might\'ve found me through one of my Partifuls where I made you eat an <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'notes\', noteId:3})">apple you\'d never heard of</a> 🤍 I feel half the fun of finding something great, is sharing it.
 
-I\'m currently exploring how social graph infrastructure shapes health outcomes and longevity. I\'m also building <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>, a social layer for workouts.
+These days, I\'m mostly sharing <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'notes\', noteId:8})">what I\'m learning about superintelligence</a>, and I\'m joining <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">a team that helps the world make sense of it</a>.
 
-In Autumn 2026, I'll be producing a fashion show. It\'s ambitious. More news to come.
+<span style="font-weight: bold;">other loves:</span>
+▹ pilates with friends (my app, <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>)
+▹ walking <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'notes\', noteId:9})">almost anywhere</a>
+▹ wearing one too many <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'notes\', noteId:7})">wearables</a> at once
 
-<span style="font-weight: bold;">previous projects:</span>
-▹ systems design for boutique wellness spaces <a href="https://silicon-divan-443.notion.site/Retention-System-Design-for-Boutique-Fitness-1f7a4827ee3380599df9c1afc31689f1" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">(infra mapping, product integration)</a>
-▹ social design in health & community <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="https://fareeha-s.github.io/Tessel/" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">tessel</a><span style="color: rgba(255, 255, 255, 0.65);">, <a href="https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">vfc</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/VMxSzVREUgY');">h&s gala</a><span style="color: rgba(255, 255, 255, 0.65);">, </span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a');">dc fashion show</a><span style="color: rgba(255, 255, 255, 0.65);"></span>)</span>
-▹ winning team, healthcare innovation <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="https://silicon-divan-443.notion.site/MedBridge-235a4827ee33804b8a05c087946d7a80" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">mit bc x harvard med</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
-▹ policy work on the ethical implications of AI on youth <span style="color: rgba(255, 255, 255, 0.65);"> (</span><a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); document.handleVideoLink = function(url) { window.desktopHandleVideoLink(url) }; window.desktopHandleVideoLink('https://www.youtube.com/watch?v=6vqmUHDibTI&t=600s');">united nations x mbc</a><span style="color: rgba(255, 255, 255, 0.65);">)</span>
-▹ ice/breakers (<a href="https://www.producthunt.com/products/icebreakers-2?launch=icebreakers-b45694ac-4bea-4ec9-870f-67a447107f26" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">#3 on ProductHunt</a>)
-
-If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kineship.com" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">hear from you.</a>
+If this feels like your kind of world, <a href="mailto:fareeha@kineship.com" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">say hi</a> 💛
 `;
 
   const contentAfterLoveList = ``;
+
+  // Links in the card open the matching screen in the phone mockup; if the phone
+  // isn't shown (narrow window), switch to the full app view and open it there
+  React.useEffect(() => {
+    window.desktopOpenInPhone = (target) => {
+      const frame = document.querySelector<HTMLIFrameElement>('iframe[title="Fareeha OS on a phone"]');
+      if (frame && frame.offsetParent !== null && frame.contentWindow) {
+        frame.contentWindow.postMessage({ type: 'open', ...target }, window.location.origin);
+      } else {
+        onClose();
+        setTimeout(() => (window as any).__openInApp?.(target), 600);
+      }
+    };
+    return () => {
+      delete window.desktopOpenInPhone;
+    };
+  }, [onClose]);
 
   // Make handleVideoLink available globally within the component's lifecycle
   React.useEffect(() => {
@@ -139,8 +157,15 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
       transition={{ duration: 0.3 }}
     >
       <AppBackground isLoaded={isLoaded} />
+
+      <PolaroidStacks />
+
+      <div className="fixed top-5 right-6 z-[60]">
+        <ThemeToggle />
+      </div>
       
-      <div className="relative w-full max-w-4xl mx-auto my-auto">
+      <div className="relative z-10 flex items-center justify-center gap-16 w-full max-w-6xl mx-auto my-auto">
+      <div className="relative w-full max-w-4xl [@media(min-width:1100px)_and_(min-height:680px)]:max-w-[600px]">
         <motion.h2 
           className="absolute top-[-24px] right-9 text-[18px] font-semibold text-white z-20"
           initial={{ opacity: 0 }}
@@ -206,19 +231,19 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
         </motion.h2>
 
         <motion.div
-          className="relative w-full max-w-4xl mx-auto bg-white/8 border border-white/20 rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 overflow-y-auto max-h-[85vh] z-10"
+          className="desktop-card relative w-full max-w-4xl mx-auto bg-white/8 border border-white/15 rounded-[28px] shadow-lg p-6 sm:p-8 md:p-12 overflow-y-auto max-h-[85vh] z-10"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
           style={{
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
+            backdropFilter: 'blur(28px) saturate(160%)',
+            WebkitBackdropFilter: 'blur(28px) saturate(160%)',
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.15)',
             background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)'
           }}
         >
           <div
-            className="text-base sm:text-lg leading-relaxed text-white/90 prose prose-invert max-w-none lora-note-content font-medium"
+            className="text-settle text-base sm:text-lg leading-relaxed text-white/90 prose prose-invert max-w-none lora-note-content font-medium"
             style={{ whiteSpace: 'pre-line', fontSize: 'clamp(0.95rem, 2vw, 1.15rem)' }}
           >
             {/* Render content before list */}
@@ -236,13 +261,15 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
 
         {/* 'Fold this screen' text moved outside and below the main content container */}
         <motion.div 
+          className="[@media(min-width:1100px)_and_(min-height:680px)]:hidden"
           style={{ marginTop: 'clamp(1em, 2vh, 1.5em)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 3, duration: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
         >
           <span
             onClick={onClose}
+            {...pressable()}
             style={{ 
               opacity: 0.7, 
               fontWeight: 'normal', 
@@ -252,16 +279,27 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
             }}
             className="flex items-center justify-center hover:opacity-70 active:opacity-90"
             onMouseOver={(e) => {
-              e.currentTarget.style.opacity = '0.7';
+              e.currentTarget.style.opacity = '1';
               e.currentTarget.style.transform = 'scale(1.02)';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.opacity = '0.5';
+              e.currentTarget.style.opacity = '0.7';
               e.currentTarget.style.transform = 'scale(1)';
             }}
           >
             Click here to turn this site into an app.
           </span>
+        </motion.div>
+      </div>
+
+        {/* Live phone running the mobile app, shown when there's room */}
+        <motion.div
+          className="hidden [@media(min-width:1100px)_and_(min-height:680px)]:block shrink-0"
+          initial={{ y: 24, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <PhoneMockup src="/?phone=1" />
         </motion.div>
       </div>
 
@@ -282,6 +320,7 @@ If this feels like your kind of world, I\'d love to <a href="mailto:fareeha@kine
 declare global {
   interface Window {
     desktopHandleVideoLink?: (url: string) => void;
+    desktopOpenInPhone?: (target: { app: string; noteId?: number }) => void;
   }
 }
 

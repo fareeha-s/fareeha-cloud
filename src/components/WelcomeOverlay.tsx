@@ -29,6 +29,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ note, visible, onClose 
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             <button 
+              aria-label="Close"
               className="absolute top-4 right-4 p-2 text-white/60 hover:text-white transition-colors"
               onClick={() => {
                 onClose();

@@ -520,7 +520,10 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 /* == Custom Link Styles == */
 .custom-pink-link {
   color: #FFE7EA;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 182, 193, 0.45);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
   text-shadow: 0 0 0.8px rgba(255, 255, 255, 0.6);
   cursor: pointer;
   transition: color 0.15s ease-in-out, text-shadow 0.15s ease-in-out, transform 0.15s ease-in-out;
@@ -529,16 +532,218 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 
 .custom-pink-link:hover {
   color: #fff1f4;
+  text-decoration-color: rgba(255, 182, 193, 0.85);
   text-shadow: 0 0 1.2px rgba(255, 255, 255, 0.8);
 }
 
 .custom-pink-link--desktop-overlay {
-  display: inline-block; /* Needed for transform */
-}
-
-.custom-pink-link--desktop-overlay:hover {
-  transform: scale(1.02); /* Specific hover transform for DesktopOverlay links */
+  display: inline; /* Stay inline so punctuation after a link never wraps away from it */
 }
 /* == End Custom Link Styles == */
 
 /* Fix iOS font issue in WebKit */
+
+/* Polaroids */
+.polaroid {
+  position: relative;
+  background: linear-gradient(170deg, #fbf9f5 0%, #f1ede6 100%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 16px 34px -10px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  user-select: none;
+}
+.polaroid__photo {
+  aspect-ratio: 1.12 / 1;
+  overflow: hidden;
+  background: #1a1816;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.polaroid__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: polaroid-develop 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes polaroid-develop {
+  0% { filter: brightness(2.2) contrast(0.35) saturate(0) sepia(0.4) blur(3px); opacity: 0.85; }
+  60% { filter: brightness(1.1) contrast(0.95) saturate(0.85) sepia(0.1) blur(0); opacity: 1; }
+  100% { filter: none; opacity: 1; }
+}
+
+/* Film grain flicker: jump the grain tile around a few times a second */
+.bg-grain {
+  animation: grain-flicker 0.9s steps(6) infinite;
+}
+@keyframes grain-flicker {
+  0% { transform: translate(0, 0); }
+  17% { transform: translate(-3%, 2%); }
+  33% { transform: translate(2%, -4%); }
+  50% { transform: translate(-4%, -1%); }
+  67% { transform: translate(3%, 3%); }
+  83% { transform: translate(-1%, 4%); }
+  100% { transform: translate(0, 0); }
+}
+.dragging-polaroid iframe {
+  pointer-events: none;
+}
+.dragging-polaroid {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Phone wallpaper (pre-blurred image): just a tone adjustment per theme */
+.mobile-wallpaper {
+  filter: brightness(0.72) saturate(1.15);
+}
+
+/* With an app open the wallpaper stays put; the glass card itself frosts over
+   so text on it stays readable */
+.main-container.glass-solid-shine {
+  backdrop-filter: blur(26px) saturate(140%);
+  -webkit-backdrop-filter: blur(26px) saturate(140%);
+  background-color: rgba(20, 20, 22, 0.45);
+}
+
+/* Pearly app glyphs, styled after the Partiful logo */
+:root {
+  --pearl-1: #ffffff;
+  --pearl-2: #eee9ff;
+  --pearl-3: #cfe2ff;
+  --pearl-4: #f3e8ff;
+}
+.pearl-glyph {
+  filter: drop-shadow(0 1px 1.5px rgba(70, 60, 130, 0.45)) drop-shadow(0 0 0.5px rgba(255, 255, 255, 0.6));
+}
+.pearl-image {
+  filter: drop-shadow(0 1px 1.5px rgba(70, 60, 130, 0.35));
+}
+.widget-icon-tile {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+/* Phones: keep the background layers still. Animating large blurred layers
+   under frosted glass is heavy for mobile GPUs (iOS Safari can stall or reload) */
+@media (hover: none) {
+  .mobile-wallpaper,
+  .bg-grain,
+  .linen-window {
+    animation: none !important;
+    will-change: auto;
+  }
+}
+
+/* Kineship mark used like an emoji next to a name, in polished rose gold */
+.kineship-mark {
+  display: inline-block;
+  width: 1.7em;
+  height: 1.15em;
+  margin-left: 0.15em;
+  vertical-align: -0.2em;
+  /* Metal: bright highlights and deeper copper bands, angled like light on a curved surface */
+  background:
+    linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.95) 50%, transparent 65%) no-repeat,
+    linear-gradient(
+    120deg,
+    #b8736a 0%,
+    #f3c9bd 22%,
+    #fff1ea 38%,
+    #d99a8c 52%,
+    #a8635a 66%,
+    #f6d3c7 82%,
+    #c7887b 100%
+  );
+  filter: drop-shadow(0 0.5px 0.5px rgba(80, 30, 20, 0.35));
+  /* Welcome: one glint of light sweeps across the metal shortly after the page opens */
+  background-size: 250% 100%, 100% 100%;
+  background-position: 160% 0, 0 0;
+  animation: mark-glint 1.1s cubic-bezier(0.45, 0, 0.25, 1) 0.7s both;
+  -webkit-mask: url('/icons/kineship-mark.svg') center / contain no-repeat;
+  mask: url('/icons/kineship-mark.svg') center / contain no-repeat;
+}
+
+@keyframes mark-glint {
+  from { background-position: 160% 0, 0 0; }
+  to { background-position: -60% 0, 0 0; }
+}
+
+/* Welcome: the note's text settles in from the top, line after line */
+.text-settle {
+  animation: text-settle 1.4s cubic-bezier(0.45, 0, 0.35, 1) 0.1s both;
+  -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent 60%);
+  mask-image: linear-gradient(to bottom, #000 40%, transparent 60%);
+  -webkit-mask-size: 100% 250%;
+  mask-size: 100% 250%;
+}
+@keyframes text-settle {
+  from { transform: translateY(4px); -webkit-mask-position: 0 100%; mask-position: 0 100%; }
+  to { transform: none; -webkit-mask-position: 0 0; mask-position: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .text-settle { animation: none; -webkit-mask-image: none; mask-image: none; }
+}
+
+/* Night sky: the brighter stars twinkle very gently (desktop only; still on phones) */
+.bg-stars-bright {
+  animation: star-twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes star-twinkle {
+  from { opacity: 1; }
+  to { opacity: 0.55; }
+}
+@media (hover: none) {
+  .bg-stars-bright { animation: none; }
+}
+
+/* Notes use their own iOS-style scroll indicator instead of the native bar */
+.no-native-scrollbar {
+  scrollbar-width: none;
+}
+.no-native-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Keyboard focus ring: only shows when tabbing, never on tap or click */
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+/* Link preview card at the top of a note, like a pasted link in Apple Notes:
+   title and site on the left, the app's icon on the right */
+.note-link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 2px 0 16px;
+  padding: 10px 10px 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.09);
+  text-decoration: none;
+  white-space: normal;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  transition: background 0.15s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.note-link-card:hover { background: rgba(255, 255, 255, 0.13); }
+.note-link-card:active { transform: scale(0.985); }
+.note-link-card img {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.note-link-card-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.note-link-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.note-link-card-domain { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 1px; }

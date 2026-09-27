@@ -1,7 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shirt, Utensils } from 'lucide-react';
 import { EventItem } from '../data/events';
+
+// Photos from the night, shown under the invite
+const nightPhotos: Record<string, string[]> = {
+  'for the culture': ['./images/photoalbum/ftc-1.jpeg', './images/photoalbum/ftc-2.jpeg', './images/photoalbum/ftc-3.jpeg', './images/photoalbum/ftc-4.jpeg', './images/photoalbum/ftc-5.jpeg'],
+  'pomegranate garden': ['./images/photoalbum/pg-6.jpeg', './images/photoalbum/pg-3.jpeg', './images/photoalbum/pg-1.jpeg', './images/photoalbum/pg-2.jpeg', './images/photoalbum/pg-4.jpeg', './images/photoalbum/pg-5.jpeg'],
+  'Winter Editorial.': ['./images/photoalbum/we-sq-1.jpeg', './images/photoalbum/we-sq-2.jpeg'],
+};
 
 type PartifulEventProps = {
   onBack: () => void;
@@ -18,6 +25,32 @@ export const PartifulEvent: React.FC<PartifulEventProps> = ({ onBack, eventData,
   
   // Default event data if none provided
   const eventTitle = eventData?.title || "mental static";
+
+  // Titles stay on one line and shrink to fit; only very long ones (that would
+  // need to go below MIN_TITLE_SIZE) wrap onto two lines.
+  const MAX_TITLE_SIZE = 28;
+  const MIN_TITLE_SIZE = 17;
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleTextRef = useRef<HTMLSpanElement>(null);
+  const [titleFit, setTitleFit] = useState({ size: MAX_TITLE_SIZE, wrap: false });
+  useLayoutEffect(() => {
+    const fit = () => {
+      const box = titleRef.current;
+      const text = titleTextRef.current;
+      if (!box || !text) return;
+      box.style.fontSize = `${MAX_TITLE_SIZE}px`;
+      box.style.whiteSpace = 'nowrap';
+      const available = box.clientWidth * 0.96; // a little room for italic overhang
+      const needed = text.getBoundingClientRect().width;
+      const size = needed > available ? Math.floor((MAX_TITLE_SIZE * available) / needed) : MAX_TITLE_SIZE;
+      const next = size >= MIN_TITLE_SIZE ? { size, wrap: false } : { size: MIN_TITLE_SIZE + 3, wrap: true };
+      box.style.fontSize = `${next.size}px`;
+      box.style.whiteSpace = next.wrap ? 'normal' : 'nowrap';
+      setTitleFit(next);
+    };
+    fit();
+    document.fonts?.ready.then(fit);
+  }, [eventTitle]);
   const attendeeCount = eventData?.attendees || 35;
   const eventDate = eventData?.date || "31/03/25";
   const eventTime = eventData?.time || "7:30pm";
@@ -123,7 +156,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
   ];
   
   // Use the actual attendee count from the event data
-  const approvedCount = eventData?.attendees || 12;
+  const approvedCount = eventData?.attendees ?? 12;
   const attendeePhotos = [
     { id: 1, image: 'https://i.pravatar.cc/100?img=1' },
     { id: 2, image: 'https://i.pravatar.cc/100?img=2' },
@@ -244,18 +277,8 @@ limited capacity! tell us what you'd share 🫶🏼`;
     return text;
   };
 
-  return (
-    // Root container with height and width - capture and stop all events
-    <div 
-      className="h-full w-full flex flex-col" 
-      onClick={preventBubbling}
-      onMouseDown={preventBubbling}
-      onTouchStart={preventTouchBubbling}
-      onTouchMove={preventTouchBubbling}
-      onTouchEnd={preventTouchBubbling}
-      style={{ 
-        touchAction: 'pan-y',
-        backgroundColor: eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.5)' : 
+  // Each invite's own tint. In the daylight theme it sits over a dark base (see theme-light.css)
+  const inviteTint = eventTitle === "strawberry hour" ? 'rgba(0, 32, 63, 0.5)' : 
                          eventTitle === "consumer social" ? 'rgba(10, 20, 40, 0.5)' : 
                          eventTitle === "Watercolour" ? 'rgba(147, 112, 142, 0.4)' :
                          eventTitle === "threading in" ? 'rgba(35, 25, 15, 0.5)' :
@@ -267,7 +290,22 @@ limited capacity! tell us what you'd share 🫶🏼`;
                          eventTitle === "citrus salon" ? 'rgba(200, 100, 15, 0.45)' :
                          eventTitle === "Winter Editorial." ? 'rgba(60, 5, 5, 0.55)' :
                          eventTitle === "for the culture" ? 'rgba(50, 25, 5, 0.55)' :
-                         'rgba(14, 43, 23, 0.5)', // Default color for mental static
+                         eventTitle === "mango tango four" ? 'rgba(190, 115, 10, 0.45)' :
+                         'rgba(14, 43, 23, 0.5)';
+
+  return (
+    // Root container with height and width - capture and stop all events
+    <div 
+      className="keep-dark invite-card h-full w-full flex flex-col" 
+      onClick={preventBubbling}
+      onMouseDown={preventBubbling}
+      onTouchStart={preventTouchBubbling}
+      onTouchMove={preventTouchBubbling}
+      onTouchEnd={preventTouchBubbling}
+      style={{ 
+        touchAction: 'pan-y',
+        backgroundColor: inviteTint,
+        ['--invite-tint' as string]: inviteTint,
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         border: '1px solid rgba(255, 255, 255, 0.05)',
         borderRadius: '12px',
@@ -325,30 +363,31 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </motion.div>
         ) : (
         <motion.h1 
+          ref={titleRef}
           className="ptf-l-PKzNy ptf-l-kz-X6 cGVq-y" 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           style={{ 
-            fontSize: '28px', 
-            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
+            fontSize: `${titleFit.size}px`, 
+            fontFamily: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'Freight Display Pro, Didot, "Bodoni MT", "Times New Roman", serif' : 'Grotesk, -apple-system, BlinkMacSystemFont, Arial, sans-serif',
             lineHeight: 1.1,
             marginBottom: '12px',
             color: 'white',
             textAlign: 'center',
-            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 500 : 600,
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? '-0.03em' : '0.12em',
+            fontWeight: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 500 : 600,
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? '-0.03em' : '0.12em',
             paddingTop: '0px',
-            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'none' : 'lowercase',
+            textTransform: eventTitle === "strawberry hour" || eventTitle === "out of office" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" || eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'none' : 'lowercase',
             fontStretch: '150%',
             fontStyle: eventTitle === "Winter Editorial." || eventTitle === "for the culture" ? 'italic' : 'normal',
-            whiteSpace: eventTitle === "pomegranate garden" || eventTitle === "citrus salon" ? 'normal' : 'nowrap',
+            whiteSpace: titleFit.wrap ? 'normal' : 'nowrap',
             overflow: 'hidden'
           }}
         >
-          <span className="summary" style={{ 
+          <span ref={titleTextRef} className="summary" style={{ 
             fontStretch: 'expanded', 
-            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" ? '-0.04em' : '0.08em' 
+            letterSpacing: eventTitle === "strawberry hour" || eventTitle === "threading in" || eventTitle === "Watercolour" || eventTitle === "Scrumptious" || eventTitle === "kiwi soirée" || eventTitle === "pomegranate garden" ? '-0.04em' : '0.08em' 
           }}>
             {eventTitle === "strawberry hour" ? "Strawberry hour." : 
              eventTitle === "threading in" ? "threading in" : 
@@ -466,7 +505,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </div>
           
           {/* Music lyrics with Spotify link - smaller font */}
-          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious" && eventTitle !== "consumer social" && eventTitle !== "for the culture") && (
+          {spotifyLyrics && (eventTitle !== "threading in" && eventTitle !== "Watercolour" && eventTitle !== "Scrumptious" && eventTitle !== "consumer social" && eventTitle !== "for the culture" && eventTitle !== "mango tango four") && (
           <div className="ptf-l-V5l2c ptf-l-42Hmr" style={{ display: 'flex', alignItems: 'flex-start', marginTop: '8px', marginBottom: '14px' }}>
             <span className="ptf--7nAv ptf-l-02UEs ptf-l-Y-q9d" style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}>
               {eventTitle === "blood moon rising." ? (
@@ -535,7 +574,7 @@ limited capacity! tell us what you'd share 🫶🏼`;
                 margin: '0',
                 marginTop: '12px',
             position: 'relative',
-            display: 'flex',
+            display: approvedCount > 0 ? 'flex' : 'none', // hidden when the guest count isn't public
             alignItems: 'center',
                 minHeight: '65px',  // Increased from 50px to give more space
                 paddingBottom: '15px'  // Added padding at the bottom to ensure content doesn't cut off
@@ -764,6 +803,46 @@ limited capacity! tell us what you'd share 🫶🏼`;
         >
         </motion.div>
         
+        {/* Press round-up as a Text Blast - only for mango tango four */}
+        {eventTitle === "mango tango four" && (
+          <motion.div
+            className="mx-4 mt-3 mb-2 p-3 rounded-xl"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex items-start gap-3">
+              <img 
+                src="./icons/hosts/fareeha.jpg" 
+                alt="Fareeha" 
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span style={{ color: 'white', fontWeight: 600, fontSize: '14px' }}>Fareeha</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px' }}>sent a Text Blast 📣</span>
+                </div>
+                <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '14px', lineHeight: '1.4' }}>
+                  omg we made it to{' '}
+                  <a href="https://www.cnn.com/2026/06/09/entertainment/video/mango-meetup-san-francisco-mango-tango-hundreds-digvid-vrtc" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>CNN</a>!! and{' '}
+                  <a href="https://www.kqed.org/arts/13990218/indian-mango-party-san-francisco-mission" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>KQED</a> and the{' '}
+                  <a href="https://www.sfchronicle.com/entertainment/article/indian-mango-party-22283051.php" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>SF Chronicle</a> and{' '}
+                  <a href="https://x.com/mtslive" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD27A', textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()}>MTS</a>!! 🥭😭 thank you so much to Darshil for inviting me to co-host this
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span style={{ fontSize: '16px' }}>💬</span>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '13px' }}>Reply</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Meme dictionary comment - only for kiwi soirée */}
         {eventTitle === "kiwi soirée" && (
           <motion.div
@@ -836,21 +915,39 @@ limited capacity! tell us what you'd share 🫶🏼`;
           </motion.div>
         )}
         
-        {/* Photo from the night - for the culture */}
-        {eventTitle === "for the culture" && (
+        {/* Photos from the night: a row of square photos you swipe through, like the Photos app */}
+        {nightPhotos[eventTitle] && (
           <motion.div
-            className="mx-4 mt-3 mb-2"
+            ref={(el) => {
+              if (el && (window as any).__scrollToPhotos) {
+                (window as any).__scrollToPhotos = false;
+                setTimeout(() => {
+                  const box = el.closest<HTMLElement>('.overflow-auto');
+                  if (!box) return;
+                  const top = el.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
+                  box.scrollTo({ top: top - (box.clientHeight - el.offsetHeight) / 2, behavior: 'smooth' });
+                }, 650);
+              }
+            }}
+            className="mt-3 mb-2"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="w-full overflow-hidden rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-              <img
-                src="./images/photoalbum/ftc-photo.jpeg"
-                alt="for the culture"
-                className="w-full"
-                style={{ objectFit: 'cover', display: 'block' }}
-              />
+            <div
+              className="flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-hide"
+              style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y' }}
+            >
+              {nightPhotos[eventTitle].map((src) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt={`${eventTitle}, from the night`}
+                  loading="lazy"
+                  className="flex-shrink-0 rounded-lg object-cover"
+                  style={{ width: 118, height: 118, scrollSnapAlign: 'start', border: '1px solid rgba(255,255,255,0.08)' }}
+                />
+              ))}
             </div>
           </motion.div>
         )}

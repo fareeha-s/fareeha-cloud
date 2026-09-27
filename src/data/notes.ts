@@ -10,43 +10,96 @@ export type NoteItem = {
     pointerEvents?: 'none' | 'auto';
   };
   locked?: boolean;
+  // Kept in the file but left off the site (e.g. waiting on something to go live)
+  hidden?: boolean;
 };
 
-export const notes: NoteItem[] = [
+// The "homework" note (AI reading list). Add essays here; each section always lists the
+// newest (by publish date) first.
+type Reading = { title: string; author: string; url: string; published: string; read: boolean };
+
+const readings: Reading[] = [
+  { title: 'The Adolescence of Technology', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/the-adolescence-of-technology', published: '2026-01', read: true },
+  { title: 'Machines of Loving Grace', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/machines-of-loving-grace', published: '2024-10', read: true },
+  { title: 'The Gentle Singularity', author: 'Sam Altman', url: 'https://blog.samaltman.com/the-gentle-singularity', published: '2025-06', read: true },
+  { title: 'The Bitter Lesson', author: 'Rich Sutton', url: 'http://www.incompleteideas.net/IncIdeas/BitterLesson.html', published: '2019-03', read: true },
+  { title: 'Software 2.0', author: 'Andrej Karpathy', url: 'https://karpathy.medium.com/software-2-0-a64152b37c35', published: '2017-11', read: false },
+  { title: 'Constitutional AI: Harmlessness from AI Feedback', author: 'Anthropic', url: 'https://arxiv.org/abs/2212.08073', published: '2022-12', read: false },
+  { title: 'From AGI to ASI', author: 'Google DeepMind', url: 'https://deepmind.google/research/publications/239142/', published: '2026-06', read: false },
+  { title: 'The Future is for Everyone', author: 'Mark Zuckerberg', url: 'https://about.fb.com/news/2026/08/the-future-is-for-everyone/', published: '2026-08', read: false },
+  { title: 'AI 2027', author: 'Daniel Kokotajlo et al.', url: 'https://ai-2027.com', published: '2025-04', read: false },
+];
+
+function readingListContent() {
+  const newestFirst = (a: Reading, b: Reading) => b.published.localeCompare(a.published);
+  const line = (r: Reading) => `${r.read ? '✓' : '○'} [${r.title}](${r.url}) · ${r.author}`;
+  const read = readings.filter((r) => r.read).sort(newestFirst).map(line);
+  const reading = readings.filter((r) => !r.read).sort(newestFirst).map(line);
+  return [
+    "AI stuff I've read (✓) + my to-read pile (○)",
+    read.join('\n'),
+    reading.join('\n'),
+  ].join('\n\n');
+}
+
+const allNotes: NoteItem[] = [
   { 
     id: 1, 
     title: "hello world ˚", 
-    content: `Hey, I'm Fareeha ✨  
+    content: `Hey, I'm Fareeha <span class="kineship-mark" aria-label="Kineship"></span>  
 
-You might've found me through one of my [Partifuls](app:partiful) where I made you eat something.
+You might've found me through one of my Partifuls where I made you eat an [apple you'd never heard of](note:3) 🤍 I feel half the fun of finding something great, is sharing it.
 
-Beyond hosting, I'm currently exploring how social graph infrastructure shapes health outcomes and longevity. I'm also building [Kineship](note:2), a social layer for workouts.
+These days, I'm mostly sharing [what I'm learning about superintelligence](note:8), and I'm joining [a team that helps the world make sense of it](https://www.mts.now).
 
-In Autumn 2026, I'll be producing a fashion show. It's very specific. More on this soon 🩵 
+<span style="font-weight: bold;">other loves:</span>  
+▹ pilates with friends (my app, [Kineship](note:2))
+▹ walking [almost anywhere](note:9)
+▹ wearing one too many [wearables](note:7) at once
 
-<span style="font-weight: bold;">things I love:</span>  
-▹ taking forever to [set a table](app:partiful)
-▹ giving people [apples](note:3) they didn't ask for 
-▹ keeping my Oura ring happy 🫶
-
-If this feels like your kind of world, I'd love to [hear from you.](mailto:fareeha@kineship.com)`,
+If this feels like your kind of world, [say hi](mailto:fareeha@kineship.com) 💛`,
     date: "",
     timeframe: 'recent',
     pinned: true
   },
   { 
+    id: 7, 
+    title: "fashion show", 
+    content: `A slow-burn project with collaborators across a few countries - think runway, but everything's a little smarter than it looks. It's moving at its own pace.
+
+Date TBD 🩵`,
+    date: "24/09/26",
+    timeframe: 'recent',
+    pinned: false
+  },
+  { 
+    id: 8, 
+    title: "homework", 
+    content: readingListContent(),
+    date: "25/09/26",
+    timeframe: 'recent',
+    pinned: false
+  },
+  { 
+    id: 9, 
+    title: "should i have walked.", 
+    content: `<a class="note-link-card" href="https://justwalk.fareeha.sh" target="_blank" rel="noopener noreferrer"><span class="note-link-card-text"><span class="note-link-card-title">should i have walked.</span><span class="note-link-card-domain">justwalk.fareeha.sh</span></span><img src="/icons/apps/justwalk-icon.svg" alt="" /></a>The robotaxi said twenty minutes.
+
+It was a perfectly normal estimate when I booked, but by the time the car reached me, it was rush hour and the ETA had crept up to about an hour ‼️😰 It was such a lovely day, too, and I kept watching people stroll past on the sidewalk. I really should have just walked.
+
+So I asked Twitter what I should build from the backseat, and a few people kindly sent over ideas. This is the one I ended up making.
+
+Pop in any ride in San Francisco and it shows you exactly what you missed: every spot along the way, the steps you didn't take, even the weather you skipped (which, this being San Francisco, was probably three different kinds).
+
+I'd walk almost anywhere if I could, but sometimes it genuinely isn't safe. So if your route goes somewhere you shouldn't be on foot, especially at night, it'll let you know and suggest a safer way round.`,
+    date: "14/02/26",
+    timeframe: 'recent',
+    pinned: false
+  },
+  { 
     id: 2, 
     title: "kineship", 
-    content: `
-<div style="display: flex; align-items: center; margin-bottom: 0px; padding-bottom: 0px;">
-  <img src="/icons/apps/kineship-expand.png" alt="Kineship" style="width: 60px; height: 60px; margin-top: -15px; border-radius: 12px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), 0 0 1px rgba(255, 255, 255, 0.5) inset; background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(to bottom, #f8f9fa, #e2e6ea); transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);" 
-    onmouseover="this.style.transform='scale(1.05)'; this.style.background='linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%), linear-gradient(to bottom, #e2e6ea, #f8f9fa)'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.25), 0 0 2px rgba(255, 255, 255, 0.6) inset';"
-    onmouseout="this.style.transform='scale(1)'; this.style.background='linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(to bottom, #f8f9fa, #e2e6ea)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.2), 0 0 1px rgba(255, 255, 255, 0.5) inset';"
-    ontouchstart="this.style.transform='scale(0.97)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.15), 0 0 1px rgba(255, 255, 255, 0.3) inset'; this.style.background='linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%), linear-gradient(to bottom, #f0f0f0, #e0e0e0)';"
-    ontouchend="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.2), 0 0 1px rgba(255, 255, 255, 0.5) inset'; this.style.background='linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), linear-gradient(to bottom, #f8f9fa, #e2e6ea)';"
-    onclick="window.open('https://kineship.com', '_blank')" />
-</div> 
-It feels like much of how we connect today involves adding more: more invites, more plans, more coordination.
+    content: `<a class="note-link-card" href="https://kineship.com" target="_blank" rel="noopener noreferrer"><span class="note-link-card-text"><span class="note-link-card-title">Kineship</span><span class="note-link-card-domain">kineship.com</span></span><img src="/icons/apps/kineship.png" alt="" /></a>It feels like much of how we connect today involves adding more: more invites, more plans, more coordination.
 
 Lately, I\'ve been wondering if there might be a kind of closeness that fits into our day as it is.
 
@@ -84,39 +137,7 @@ I\'m hoping it makes it just a little easier to say hi, share laughs, linger a b
     date: '15/12/24',
     timeframe: 'recent',
     pinned: false
-  },
-  { 
-    id: 4,
-    title: 'projects',
-    content: `▹ systems design for boutique wellness spaces [infra mapping, product integration](https://silicon-divan-443.notion.site/Retention-System-Design-for-Boutique-Fitness-1f7a4827ee3380599df9c1afc31689f1)
-
-▹ social design in health & community ([tessel](https://fareeha-s.github.io/Tessel/), [vfc](https://impact.ventureforcanada.ca/2023/programs/fellowship-alumni), [h&s gala](https://youtu.be/VMxSzVREUgY), [dc fashion show](https://youtu.be/vXCGUXAQfOs?si=JUGWTpF-NB_2DE3a))
-
-▹ winning team, healthcare innovation ([mit bc x harvard med](https://silicon-divan-443.notion.site/MedBridge-235a4827ee33804b8a05c087946d7a80))
-
-▹ policy work on the ethical implications of AI on youth ([united nations x mbc](https://www.youtube.com/watch?v=6vqmUHDibTI&t=600s))
-
-▹ ice/breakers ([#3 on ProductHunt](https://www.producthunt.com/products/icebreakers-2?launch=icebreakers-b45694ac-4bea-4ec9-870f-67a447107f26))`,
-    date: '29/12/24',
-    timeframe: 'recent',
-    pinned: false
-  },
-  { 
-    id: 5, 
-    title: "dinner tables...", 
-    content: "", 
-    date: "", 
-    timeframe: 'older',
-    pinned: false,
-    locked: true,
-    style: { color: 'rgba(128, 128, 128, 0.5)', pointerEvents: 'none' }
-  },
-  { 
-    id: 6, 
-    title: "a blueprint for social longevity...", 
-    content: "", 
-    date: "", 
-    timeframe: 'older',
-    locked: true
   }
-]; 
+];
+
+export const notes: NoteItem[] = allNotes.filter((note) => !note.hidden);

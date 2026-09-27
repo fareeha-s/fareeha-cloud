@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { pressable } from '../pressable';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { AppScreenProps as BaseAppScreenProps } from '../types'; 
 import { motion, useAnimation, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, X, Lock } from 'lucide-react';
@@ -101,6 +102,7 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
       >
         <button 
           className="absolute top-8 right-8 z-10 p-3 bg-black/70 hover:bg-black/90 rounded-full text-white/80 hover:text-white transition-colors"
+          aria-label="Close"
           onClick={(e) => {
             createTactileEffect();
             e.stopPropagation();
@@ -124,6 +126,63 @@ const VideoPlayerOverlay = ({ videoUrl, onClose }: { videoUrl: string; onClose: 
 };
 
 // Use the imported BaseAppScreenProps directly
+// iOS-style scroll indicator: a thin bar that appears briefly when a note opens
+// (the quiet "there's more below" cue) and while scrolling, then fades. Drawn by
+// us so it behaves the same on iPhone, Android and desktop, where native bars differ.
+const ScrollIndicator: React.FC<{ targetRef: React.RefObject<HTMLDivElement>; flashKey: unknown }> = ({ targetRef, flashKey }) => {
+  const [bar, setBar] = useState({ top: 0, height: 0, visible: false });
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const show = useCallback(() => {
+    const el = targetRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    if (scrollHeight <= clientHeight + 2) return;
+    const inset = 10;
+    const track = clientHeight - inset * 2;
+    const height = Math.max(28, (track * clientHeight) / scrollHeight);
+    const top = inset + ((track - height) * scrollTop) / (scrollHeight - clientHeight);
+    setBar({ top, height, visible: true });
+    clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setBar((b) => ({ ...b, visible: false })), 1100);
+  }, [targetRef]);
+
+  useEffect(() => {
+    const el = targetRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', show, { passive: true });
+    return () => el.removeEventListener('scroll', show);
+  }, [targetRef, show, flashKey]);
+
+  // Flash once when a note opens, after it has settled
+  useEffect(() => {
+    const t = setTimeout(show, 700);
+    return () => clearTimeout(t);
+  }, [flashKey, show]);
+
+  useEffect(() => () => clearTimeout(hideTimer.current), []);
+
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute pointer-events-none z-20 rounded-full"
+      style={{
+        right: 4,
+        width: 3,
+        top: bar.top,
+        height: bar.height,
+        background: 'var(--fg)',
+        opacity: bar.visible ? 0.4 : 0,
+        transition: bar.visible ? 'opacity 0.15s ease' : 'opacity 0.45s ease',
+      }}
+    />
+  );
+};
+
+// Only the first note someone sees (the hello world that greets them) settles in;
+// notes opened later just appear
+let hasSettledFirstNote = false;
+
 export const NotesScreen: React.FC<BaseAppScreenProps> = ({ 
   setIsNoteDetailView, // Destructure from BaseAppScreenProps (optional)
   initialNoteId, // Add the new prop here
@@ -133,6 +192,13 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   const [hasInteracted, setHasInteracted] = useState(false);
   const chevronControls = useAnimation();
   const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
+  // The first note shown settles in once (see hasSettledFirstNote above)
+  const settleNoteIdRef = useRef<number | null>(null);
+  if (selectedNote && !hasSettledFirstNote) {
+    settleNoteIdRef.current = selectedNote.id;
+    hasSettledFirstNote = true;
+  }
+  const settleThisNote = selectedNote?.id === settleNoteIdRef.current;
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [isNoteReady, setIsNoteReady] = useState<boolean>(false);
   const [widgetNoteId, setWidgetNoteId] = useState<number | null>(null);
@@ -242,7 +308,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       // Always open Hello World note (ID 1) when openNoteDirectly is true
       const helloWorldNote = notes.find(note => note.id === 1);
       if (helloWorldNote && !helloWorldNote.locked) {
-        console.log(`NotesScreen opening Hello World directly.`);
         setSelectedNote(helloWorldNote);
         setIsViewingDetail(true);
         markNoteAsViewed(1);
@@ -267,7 +332,6 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
       // Handle opening a note passed via prop (e.g., from widget click)
       const noteToOpen = notes.find(note => note.id === initialNoteId);
       if (noteToOpen && !noteToOpen.locked) {
-        console.log(`NotesScreen opening note via prop: ${initialNoteId}`);
         setSelectedNote(noteToOpen);
         setIsViewingDetail(true);
         markNoteAsViewed(initialNoteId);
@@ -396,8 +460,15 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     // Preload the note content first
     // setPreloadedNote(note);
     
-    // Hide the note content initially until everything is ready
-    setIsNoteReady(false);
+    // Jumping from one note to another (a link inside a note): swap the text in
+    // place, from the top, with no fade out and back in
+    const jumpingFromNote = selectedNote !== null;
+    if (jumpingFromNote) {
+      noteContentRef.current?.scrollTo({ top: 0 });
+    } else {
+      // Hide the note content initially until everything is ready
+      setIsNoteReady(false);
+    }
     
     // Set flag to true BEFORE state changes for immediate effect
     setIsViewingDetail(true);
@@ -422,6 +493,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     // Set the selected note immediately
     setSelectedNote(note);
     
+    if (jumpingFromNote) return;
     // Delay to ensure backdrop blur is fully rendered before showing text
     setTimeout(() => {
       setIsNoteReady(true);
@@ -476,6 +548,12 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
     };
     // Ensure handleNoteClick is stable or included if it depends on changing state/props
   }, [handleNoteClick]); // Add handleNoteClick to dependency array
+
+  // Let App know which note is open, so links followed from it can come back here
+  useEffect(() => {
+    (window as any).__currentNote = selectedNote ? { id: selectedNote.id, title: selectedNote.title } : null;
+    return () => { (window as any).__currentNote = null; };
+  }, [selectedNote]);
 
   // Effect to set global back handler so App can delegate back action
   useEffect(() => {
@@ -545,7 +623,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
             >
               {/* Apple-style bottom fade to indicate scrollable content */}
               <div 
-                className={`absolute bottom-0 left-0 right-0 pointer-events-none z-10 ${selectedNote?.title === 'hello world' ? 'h-20' : 'h-16'}`}
+                className={`note-bottom-fade absolute bottom-0 left-0 right-0 pointer-events-none z-10 ${selectedNote?.title === 'hello world' ? 'h-20' : 'h-16'}`}
                 style={{
                   background: selectedNote?.title === 'hello world' 
                     ? 'linear-gradient(to top, rgba(45, 35, 28, 0.98) 0%, rgba(45, 35, 28, 0.85) 30%, rgba(45, 35, 28, 0.4) 60%, transparent 100%)'
@@ -555,9 +633,11 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                 }}
               />
               
+              <ScrollIndicator targetRef={noteContentRef} flashKey={selectedNote?.id} />
+
               <motion.div 
                 ref={noteContentRef}
-                className="h-full w-full overflow-auto scrollbar-subtle relative p-6 pb-28"
+                className="h-full w-full overflow-auto no-native-scrollbar relative p-6 pb-28"
                 style={{ 
                   overscrollBehavior: 'contain', // Prevent pull-to-refresh and bounce effects
                   maxHeight: '100%',  // Make sure content stays within the container height
@@ -590,7 +670,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                     
                     {/* Show full content without preview/expand */}
                     <motion.div 
-                      className="text-sm leading-relaxed text-white/80 overflow-y-auto scrollbar-subtle pr-1 note-content-area lora-note-content"
+                      className={`text-sm leading-relaxed text-white/80 overflow-y-auto scrollbar-subtle pr-1 note-content-area lora-note-content ${settleThisNote ? 'text-settle' : ''}`}
                       variants={itemVariants}
                       style={{ 
                         WebkitOverflowScrolling: 'touch',
@@ -608,7 +688,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                               let clickHandler = `(function(e) { 
                                 e.stopPropagation(); 
                                 
-                                window.openNoteWithId(${noteId});
+                                window.openInApp({ app: 'notes', noteId: ${noteId}, fromNote: true });
                               })(event)`;
                               return `<a href=\"javascript:void(0)\" class=\"custom-pink-link\" onclick=\"${clickHandler}\">${text}</a>`;
                             }
@@ -622,12 +702,21 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                               })(event)\">${text}</a>`;
                             }
                             
+                            // Event link: event:ID opens that party, event:ID:photos scrolls to its photos
+                            if (url.startsWith('event:')) {
+                              const [, id, photos] = url.split(':');
+                              return `<a href=\"javascript:void(0)\" class=\"custom-pink-link\" onclick=\"(function(e) { 
+                                e.stopPropagation(); 
+                                window.openInApp({ app: 'partiful', eventId: ${Number(id)}, photos: ${photos === 'photos'}, fromNote: true });
+                              })(event)\">${text}</a>`;
+                            }
+
                             // Check if this is an app link
                             if (url.startsWith('app:')) {
                               const appId = url.substring(4);
                               return `<a href=\"javascript:void(0)\" class=\"custom-pink-link\" onclick=\"(function(e) { 
                                 e.stopPropagation(); 
-                                window.handleAppClick(\'${appId}\');
+                                window.openInApp({ app: \'${appId}\', fromNote: true });
                               })(event)\">${text}</a>`;
                             }
                             
@@ -671,7 +760,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                 {pinnedNotes.length > 0 && (
                   <div>
                     {/* Remove px-2 from header */}
-                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4 flex items-center">
+                    <h2 className="text-white/50 text-[13px] font-medium tracking-[0.01em] mb-2 px-2 flex items-center gap-1">
                       <PinIcon />
                       Pinned
                     </h2>
@@ -679,7 +768,8 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
                       {pinnedNotes.map((note, index) => (
                         <motion.div 
                           key={`pinned-${note.id}`}
-                          className="flex group px-2 py-2 rounded-md hover:bg-white/5 active:bg-white/10 relative"
+                          {...pressable(note.title.trim())}
+                          className="flex group px-2 py-2 rounded-xl hover:bg-white/[0.06] active:bg-white/10 transition-colors relative"
                           onClick={(e) => {
                             e.stopPropagation();
                             createTactileEffect();
@@ -719,16 +809,17 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
 
                 {/* All notes section */}
                 {allNotes.length > 0 && (
-                  <div>
+                  <div className={pinnedNotes.length > 0 ? 'mt-7' : ''}>
                     {/* Remove px-2 from header */}
-                    <h2 className="text-white/60 text-[14px] font-medium uppercase tracking-wider mb-4">
-                      All
+                    <h2 className="text-white/50 text-[13px] font-medium tracking-[0.01em] mb-2 px-2">
+                      All notes
                     </h2>
-                    <div className="space-y-2">
+                    <div className="space-y-0.5">
                       {allNotes.map((note) => (
                         <motion.div 
                           key={`all-${note.id}`}
-                          className="flex group px-1 py-0.5 rounded-md relative"
+                          {...(note.locked ? {} : pressable(note.title.trim()))}
+                          className={`flex group px-2 py-1.5 rounded-xl relative transition-colors ${note.locked ? '' : 'hover:bg-white/[0.06] active:bg-white/10'}`}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (!note.locked) {

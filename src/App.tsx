@@ -1,3 +1,4 @@
+import { pressable } from './pressable';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { AppIcon } from './components/AppIcon';
@@ -18,8 +19,32 @@ import { NoteItem } from './data/notes';
 import DesktopOverlay from './components/DesktopOverlay';
 // Import the AppBackground component
 import AppBackground from './components/AppBackground';
+import MobileWallpaper from './components/MobileWallpaper';
+import ThemeToggle from './components/ThemeToggle';
+
+// When embedded as the phone on the desktop page, always render the mobile app on its home screen
+const isPhoneEmbed = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('phone');
+
+// Haptic tick, only during a real tap (browsers block vibration otherwise, and
+// automatic widget rotation should never buzz anyone's phone)
+const buzz = (ms: number) => {
+  const activation = (navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation;
+  if (typeof navigator.vibrate === 'function' && activation?.isActive) navigator.vibrate(ms);
+};
 
 // Global tactile effect function for better performance
+// A note's opening words as plain text for the widget: no images, tags or link syntax
+const plainPreview = (content: string) => {
+  const text = content
+    .replace(/<a class="note-link-card"[\s\S]*?<\/a>/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\[→[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return (text.length > 250 ? text.substring(0, 250) : text) + '...';
+};
+
 export const createTactileEffect = () => {
   if (typeof window !== 'undefined') {
     // Check if an effect is already in progress
@@ -27,7 +52,7 @@ export const createTactileEffect = () => {
     
     // Attempt haptic feedback first (if supported)
     if (window.navigator && window.navigator.vibrate) {
-      window.navigator.vibrate(1); // Lightest vibration
+      buzz(1); // Lightest vibration
     }
 
     /* Temporarily disable visual feedback:
@@ -63,13 +88,13 @@ export const createSwipeHapticFeedback = (intensity: 'light' | 'medium' | 'heavy
     if (window.navigator && window.navigator.vibrate) {
       switch (intensity) {
         case 'light':
-          window.navigator.vibrate(2);
+          buzz(2);
           break;
         case 'medium':
-          window.navigator.vibrate(5);
+          buzz(5);
           break;
         case 'heavy':
-          window.navigator.vibrate(8);
+          buzz(8);
           break;
       }
     }
@@ -139,7 +164,7 @@ interface WidgetData {
 // Simplified tactile effect for widget swipes
 const createWidgetSwipeFeedback = () => {
   if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
-    window.navigator.vibrate(3); // Subtle vibration feedback
+    buzz(3); // Subtle vibration feedback
   }
 };
 
@@ -184,7 +209,17 @@ function App() {
   const [showDesktopOverlay, setShowDesktopOverlay] = useState(true); // New state for controlling overlay visibility
 
   // Set 'notes' as the default active app and set up to open hello world note
-  const [activeApp, setActiveApp] = useState<string | null>('notes');
+  const [activeApp, setActiveApp] = useState<string | null>(isPhoneEmbed ? null : 'notes');
+  const activeAppRef = useRef(activeApp);
+  activeAppRef.current = activeApp;
+  const [titleAppState, setTitleAppState] = useState<string | null>(activeApp);
+  // Where Back should go after following a link inside a note (e.g. hello world → apples).
+  // entryDepth: whether the link landed on a detail (a note or party) or an app's list
+  const [returnTo, setReturnTo] = useState<{ noteId: number; title: string; entryDepth: number } | null>(null);
+  useEffect(() => {
+    if (!activeApp) { setTitleAppState(null); setReturnTo(null); }
+    else if (!titleAppState) setTitleAppState(activeApp);
+  }, [activeApp]); // eslint-disable-line react-hooks/exhaustive-deps
   const [isOpen, setIsOpen] = useState(false);
   const [selectedScreen, setSelectedScreen] = useState<string | null>(null);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
@@ -199,6 +234,16 @@ function App() {
   const [windowHeight, setWindowHeight] = useState('100vh');
   const [, setIsAppleDevice] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  // The automatic opening of the hello world note shouldn't play the "icon expanding" effect
+  const [isAutoOpening, setIsAutoOpening] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsAutoOpening(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntroGlow(false), 3500);
+    return () => clearTimeout(timer);
+  }, []);
   const [isHighPerformanceDevice, setIsHighPerformanceDevice] = useState(false);
   const [isNoteDetailView, setIsNoteDetailView] = useState(false);
   const [isEventDetailView, setIsEventDetailView] = useState(false); // Add state for event detail view
@@ -220,7 +265,7 @@ function App() {
 
       // Treat as desktop if you have desktop input (mouse/trackpad), regardless of width.
       // This ensures the overlay always shows on laptops, even when window is narrow.
-      setIsDesktop(hasHoverFinePointer);
+      setIsDesktop(!isPhoneEmbed && hasHoverFinePointer);
     };
 
     checkDesktop(); // Initial check
@@ -235,20 +280,9 @@ function App() {
     // Use Promise.all to track both image and font loading
     const fontReady = document.fonts.ready;
     
-    // Function to preload the background image
-    const preloadImage = (src: string) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-    };
-    
-    // Wait for both fonts and background image to load
+    // Wait for fonts to load
     Promise.all([
-      fontReady,
-      preloadImage('/images/background.webp')
+      fontReady
     ])
     .then(() => {
       // Once everything is loaded, mark content as ready
@@ -276,14 +310,18 @@ function App() {
   const [swipeStartX, setSwipeStartX] = useState<number | null>(null);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [isSwiping, setIsSwiping] = useState(false);
+  // Which way the widget carousel is moving: 1 = next (slides in from the right), -1 = previous
+  const [slideDir, setSlideDir] = useState(1);
+  const widgetDraggedRef = useRef(false);
   
   // Handle widget navigation (prev/next)
   const handleWidgetNavigation = (direction: 'prev' | 'next') => {
     // Create tactile feedback for better UX
     if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
-      window.navigator.vibrate(3); // Subtle vibration
+      buzz(3); // Subtle vibration
     }
     
+    setSlideDir(direction === 'prev' ? -1 : 1);
     // Update the widget index based on direction
     setCurrentWidgetIndex(prevIndex => {
       if (direction === 'prev') {
@@ -300,7 +338,10 @@ function App() {
   const [hasShownFirstDisplay, setHasShownFirstDisplay] = useState(false);
   const [lastManualNavigation, setLastManualNavigation] = useState<number | null>(null);
   // Add state to detect if user is on a mobile device
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  // Decided before the first paint so the note is drawn at phone size straight away
+  const [isMobileDevice, setIsMobileDevice] = useState(
+    () => isPhoneEmbed || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || '')
+  );
   // Track if home has been seen in this session
   const [hasSeenHomeSession, setHasSeenHomeSession] = useState(false);
   const [arrowDismissed, setArrowDismissed] = useState(false);
@@ -310,7 +351,7 @@ function App() {
     const checkIfMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor;
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-      setIsMobileDevice(isMobile);
+      setIsMobileDevice(isMobile || isPhoneEmbed);
     };
     
     checkIfMobile();
@@ -340,8 +381,8 @@ function App() {
   
   // Open hello world note on page load (only on mobile, never on desktop)
   useEffect(() => {
-    // Skip auto-opening on desktop entirely
-    if (isDesktop) {
+    // Skip auto-opening on desktop entirely, and in the desktop phone embed (it starts on home)
+    if (isDesktop || isPhoneEmbed) {
       return;
     }
     
@@ -500,7 +541,7 @@ function App() {
       timestamp: getRelativeDate(widgetNote.date),
       timestampLabel: 'notes',
       progress: 65,
-      iconBgColor: 'bg-[#FF8A5B]/20',
+      iconBgColor: 'widget-icon-tile',
       noteId: widgetNote.id // Use the randomly selected note's ID
     },
     {
@@ -524,7 +565,7 @@ function App() {
         }
       })(), // Calculate based on date comparison
       progress: 0, // Set progress if applicable, otherwise 0
-      iconBgColor: 'bg-[#FF4081]/20', // Partiful color
+      iconBgColor: 'widget-icon-tile',
       eventId: widgetEvent.id, // Use widgetEvent state
       attendees: widgetEvent.attendees // Use widgetEvent state
     }
@@ -553,6 +594,7 @@ function App() {
           return; // Skip this rotation cycle if manual navigation was recent
         }
         
+        setSlideDir(1);
         setCurrentWidgetIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % widgets.length;
           return nextIndex;
@@ -619,8 +661,8 @@ function App() {
     
     // Optimize loading sequence - apply immediate background color
     // Set background color immediately to prevent flash
-    document.documentElement.style.backgroundColor = '#131518';
-    document.body.style.backgroundColor = '#131518';
+    document.documentElement.style.backgroundColor = 'var(--page-bg)';
+    document.body.style.backgroundColor = 'var(--page-bg)';
     
     // Set loaded state immediately to prevent white flash
     setIsLoaded(true);
@@ -641,11 +683,61 @@ function App() {
     };
   }, []);
   
+  // Links on the desktop card ("Partifuls", "apples"...) open screens in this app,
+  // whether it's the phone mockup (via postMessage) or the full-screen app view
+  useEffect(() => {
+    const open = (target: { app: string; noteId?: number; eventId?: number; photos?: boolean; fromNote?: boolean; keepWelcome?: boolean }) => {
+      const current = activeAppRef.current;
+      // Followed from inside a note: remember it, so Back returns there
+      const from = (window as any).__currentNote as { id: number; title: string } | null;
+      if (target.fromNote && current === 'notes' && from && from.id !== target.noteId) {
+        setReturnTo({ noteId: from.id, title: from.title.replace(/[˚\s]+$/, ''), entryDepth: target.noteId || target.eventId ? 1 : 0 });
+      } else if (!target.fromNote) {
+        setReturnTo(null);
+      }
+      const openInside = () => {
+        if (target.noteId) window.openNoteWithId?.(target.noteId);
+        if (target.eventId) (window as any).openEventWithId?.(target.eventId, target.photos);
+      };
+      // Already in the right app: just open the note or event
+      if (current === target.app) return openInside();
+      if (target.noteId) {
+        // A link to a specific note wins over the usual "open hello world first"
+        if (!target.keepWelcome) window.openNoteDirectly = false;
+        setInitialNoteIdForScreen(target.noteId);
+      }
+      // From another app, swap straight across; from home, zoom in from the icon
+      if (current) {
+        setIsNoteDetailView(false);
+        setIsEventDetailView(false);
+        setActiveApp(target.app);
+      } else {
+        window.handleAppClick?.(target.app);
+      }
+      // Open the event as soon as the Partiful screen is ready, so its list never flashes up
+      if (target.eventId) {
+        const tryOpen = (tries: number) => {
+          const openEvent = (window as any).openEventWithId;
+          if (openEvent && activeAppRef.current === target.app) openEvent(target.eventId, target.photos);
+          else if (tries > 0) setTimeout(() => tryOpen(tries - 1), 30);
+        };
+        tryOpen(40);
+      }
+    };
+    (window as any).__openInApp = open;
+    // Same, under a name note text can use (the note formatter reads __ as styling)
+    (window as any).openInApp = open;
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin === window.location.origin && e.data?.type === 'open') open(e.data);
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
   // Create a mapping from app IDs to handleAppClick (for use with inline links)
   useEffect(() => {
     // Make handleAppClick available to the window object for links in notes
     window.handleAppClick = (appId: string) => {
-      console.log('App link clicked:', appId);
       // Special case: if appId is 'home', go to home screen
       if (appId === 'home') {
         setActiveApp(null);
@@ -699,8 +791,18 @@ function App() {
 
   // Handle app closing with proper animation - enhanced for elegant roll-up
   const handleClose = () => {
-    console.log(`handleClose called. isAnimating: ${isAnimating}`); // DEBUG
     if (isAnimating) return;
+
+    // Back after following a link from a note: return to that note, unless the
+    // reader has gone deeper since (then step back through that first)
+    if (returnToActive && returnTo) {
+      setReturnTo(null);
+      // Coming back to hello world from another app: reopen it as the welcome note,
+      // so its Home button still leaves the app like it did before the link
+      if (returnTo.noteId === 1 && activeApp !== 'notes') window.openNoteDirectly = true;
+      (window as any).__openInApp?.({ app: 'notes', noteId: returnTo.noteId, keepWelcome: returnTo.noteId === 1 });
+      return;
+    }
 
     // Set detail view state to false first for potentially needed state coordination
     if (activeApp === 'notes' && isNoteDetailView) {
@@ -842,7 +944,6 @@ function App() {
 
   // Define handleNavigate matching the type signature expected by AppScreenProps
   const handleNavigate = (target: string, options?: { noteId?: number; eventId?: number }) => {
-    console.log(`Navigating to ${target} with options:`, options);
     // Set the target screen as active
     setActiveApp(target);
     // Potentially handle options like setting initialNoteId/initialEventId state here if needed
@@ -854,13 +955,19 @@ function App() {
   };
 
   const ActiveComponent = activeApp ? apps.find(app => app.id === activeApp)?.component : null;
+
+  const currentDepth = (activeApp === 'notes' && isNoteDetailView) || (activeApp === 'partiful' && isEventDetailView) ? 1 : 0;
+  const returnToActive = !!returnTo && !!activeApp && currentDepth <= returnTo.entryDepth;
   
   // Get the display name for the active app, with a special case for partiful to show as parti-folio
-  const activeAppName = activeApp ? 
-    (activeApp === 'partiful' ? 'partifolio 🎉' : 
-     activeApp === 'notes' ? 'notes 🖇️' :
-     activeApp === 'socials' ? 'socials ✨' :
-     apps.find(app => app.id === activeApp)?.name) 
+  // When a link swaps one app for another, the title changes once the old
+  // screen has faded out, so it never sits over the wrong content
+  const titleApp = activeApp && titleAppState ? titleAppState : activeApp;
+  const activeAppName = titleApp ? 
+    (titleApp === 'partiful' ? 'partifolio 🎉' : 
+     titleApp === 'notes' ? 'notes 🖇️' :
+     titleApp === 'socials' ? 'socials ✨' :
+     apps.find(app => app.id === titleApp)?.name) 
     : null;
   
   // Enhanced iOS app opening animation timing for buttery-smooth transitions
@@ -937,10 +1044,30 @@ function App() {
   return (
     <div 
       className="relative flex items-center justify-center min-h-screen"
-      style={{ backgroundColor: '#131518' }} 
+      style={{ backgroundColor: 'var(--page-bg)' }} 
     >
       {/* Use the AppBackground component here */}
+      {/* Pearlescent gradient shared by the app glyphs so they match Partiful's pearly logo */}
+      <svg width="0" height="0" className="absolute" aria-hidden="true">
+        <defs>
+          <linearGradient id="pearl" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" style={{ stopColor: 'var(--pearl-1)' }} />
+            <stop offset="45%" style={{ stopColor: 'var(--pearl-2)' }} />
+            <stop offset="75%" style={{ stopColor: 'var(--pearl-3)' }} />
+            <stop offset="100%" style={{ stopColor: 'var(--pearl-4)' }} />
+          </linearGradient>
+        </defs>
+      </svg>
       <AppBackground isLoaded={isLoaded} />
+      {!isPhoneEmbed && <MobileWallpaper isLoaded={isLoaded} />}
+      {!isPhoneEmbed && (
+        <div
+          className="fixed left-1/2 -translate-x-1/2 z-40"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 22px)' }}
+        >
+          <ThemeToggle />
+        </div>
+      )}
 
       <AnimatePresence>
         {activeApp && (
@@ -951,7 +1078,6 @@ function App() {
             animate={{ opacity: 1, transition: { duration: 0.3 } }}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             onClick={(e) => {
-              console.log('Backdrop clicked.'); // DEBUG
               // Prevent click-through if already animating
               if (isAnimating) {
                 e.stopPropagation();
@@ -969,7 +1095,8 @@ function App() {
         // ADD stopPropagation to prevent clicks here closing the app
         onClick={(e) => e.stopPropagation()}
         style={{
-          opacity: isLoaded ? 1 : 0,
+          // No fade-in: browsers drop the frosted-glass blur while an element fades,
+          // which made the note look see-through and then snap solid
           transform: 'translateX(-50%) translateZ(0)',
           WebkitTransform: 'translateX(-50%) translateZ(0)',
           transition: "opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
@@ -986,7 +1113,8 @@ function App() {
             transition: "opacity 0.9s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.9s cubic-bezier(0.25, 0.8, 0.25, 1)",
             transitionDelay: "0.1s",
             height: "30px",
-            pointerEvents: "none"
+            pointerEvents: "none",
+            zIndex: 30 // above the glass card (its opacity/transform make this its own layer)
           }}
         >
           {activeApp ? (
@@ -1004,16 +1132,16 @@ function App() {
                 top: '10px', // Nudge up
                 right: '22px', // Nudge right
                 zIndex: 10001, // Keep increased zIndex
-                color: '#ffffff',
-                textShadow: '0px 1px 1px rgba(0, 0, 0, 0.3)' // Added subtle iOS-like text shadow
+                color: 'var(--fg)',
+                textShadow: 'var(--fg-shadow)' // Subtle iOS-like text shadow (theme-aware)
               }}
             >
               <span className="flex items-center">
                 {activeAppName}
               </span>
             </motion.h2>
-          ) : (
-            /* Home screen title with enhanced styling */
+          ) : isPhoneEmbed ? null : (
+            /* Home screen title with enhanced styling (the desktop page already shows name and photo) */
             <motion.h2 
               className="text-[18px] font-semibold text-right fixed" // Keep this semi-bold
               initial={{ opacity: 0 }}
@@ -1025,11 +1153,11 @@ function App() {
                 }
               }}
               style={{ 
-                top: '14px', // Moved down a few pixels
+                top: '4px', // sits just above the card, like the app titles (the photo is taller than the text)
                 right: '22px', // Nudge right
                 zIndex: 10001, // Keep increased zIndex
-                color: '#ffffff',
-                textShadow: '0px 1px 1px rgba(0, 0, 0, 0.3)' // Added subtle iOS-like text shadow
+                color: 'var(--fg)',
+                textShadow: 'var(--fg-shadow)' // Subtle iOS-like text shadow (theme-aware)
               }}
             >
               <span className="flex items-center">
@@ -1082,7 +1210,7 @@ function App() {
                     fill="none" 
                     xmlns="http://www.w3.org/2000/svg" 
                     style={{
-                      stroke: 'white', 
+                      stroke: 'var(--fg)', 
                       strokeWidth: 2.5, 
                       position: 'absolute',
                       top: '-1px',
@@ -1108,7 +1236,7 @@ function App() {
             activeApp ? 'glass-solid-shine' : ''
           } ${isNoteDetailView || isEventDetailView ? 'portrait-container expanded' : ''}`}
           variants={frameVariants}
-          initial="closed"
+          initial={isPhoneEmbed ? 'closed' : 'open'} // phones open straight onto the note, already full height
           animate={(isNoteDetailView && activeApp === 'notes') || (activeApp === 'partiful') ? 'open' : 'closed'} // Control animation state - partiful always uses open/tall frame
           style={{
             borderRadius: '24px',
@@ -1116,7 +1244,8 @@ function App() {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Icon in center during expansion */}
+          {/* Icon in center during expansion (only after tapping an app icon, not on first load) */}
+          {clonedAppIcon && !isAutoOpening && (
           <motion.div
             className="absolute flex items-center justify-center"
             initial={{
@@ -1147,9 +1276,11 @@ function App() {
               )}
             </div>
           </motion.div>
+          )}
           
           {/* Home Screen Layer - Always present */}
           <div 
+            inert={!!activeApp}
             className={`absolute inset-0 z-10 ${activeApp ? 'pointer-events-none' : ''}`}
             style={{
               opacity: activeApp ? 0 : 1,
@@ -1174,15 +1305,14 @@ function App() {
                 ))}
               </div>
               
-              {/* Empty space to push widget down */}
-              <div className="flex-grow"></div>
-              
-              {/* Rotating Widget */}
-              <AnimatePresence mode="wait">
+              {/* Rotating Widget: slides in the direction of travel and follows your finger.
+                  It fills the space left under the app icons, as the single widget did before */}
+              <div className="relative w-full flex-1 min-h-[96px] mt-4 mb-1 overflow-hidden rounded-2xl">
+              <AnimatePresence mode="popLayout" initial={false} custom={slideDir}>
               <motion.div 
                   ref={widgetRef}
                   key={`widget-${currentWidgetIndex}`}
-                  className={`w-full aspect-square mt-auto rounded-2xl overflow-hidden shadow-sm mb-1 will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''} ${isDesktop ? 'flex flex-col justify-center' : ''}`}
+                  className={`absolute inset-0 w-full rounded-2xl overflow-hidden shadow-sm will-change-transform ${isLoaded ? 'music-widget-bg-animation' : ''} ${isDesktop ? 'flex flex-col justify-center' : ''}`}
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.04)',
                     backdropFilter: 'none',
@@ -1192,27 +1322,51 @@ function App() {
                     transform: 'translateZ(0)',
                     WebkitTransform: 'translateZ(0)',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
-                    touchAction: 'none', 
-                    cursor: 'pointer',
-                    position: 'relative',
+                    touchAction: 'pan-y',
+                    cursor: 'grab',
+                    position: 'absolute',
                     overflow: 'hidden',
                   }}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ 
-                    duration: 0.5, // Slightly longer for smoother feel
-                    ease: [0.25, 0.8, 0.25, 1] // Enhanced cubic-bezier for buttery-smooth transitions
+                  custom={slideDir}
+                  variants={{
+                    enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%' }),
+                    center: { x: 0 },
+                    exit: (dir: number) => ({ x: dir > 0 ? '-100%' : '100%' }),
                   }}
-                  whileHover={{ scale: 1.02 }}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ type: 'spring', stiffness: 320, damping: 34, mass: 0.9 }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.6}
+                  onDragStart={() => {
+                    widgetDraggedRef.current = true;
+                    setIsSwiping(true);
+                  }}
+                  onDragEnd={(_, info) => {
+                    setIsSwiping(false);
+                    setLastManualNavigation(Date.now());
+                    const swipe = info.offset.x + info.velocity.x * 0.2;
+                    if (swipe < -60) {
+                      handleWidgetNavigation('next');
+                      createSwipeHapticFeedback('medium');
+                    } else if (swipe > 60) {
+                      handleWidgetNavigation('prev');
+                      createSwipeHapticFeedback('medium');
+                    }
+                    // Let the click that follows a drag be ignored
+                    setTimeout(() => { widgetDraggedRef.current = false; }, 0);
+                  }}
                   whileTap={{ scale: 0.98 }}
+                  {...pressable('Open widget')}
                   onClick={() => {
+                    if (widgetDraggedRef.current) return;
                     if (!widgets[currentWidgetIndex]) return;
                     
                     const currentWidget = widgets[currentWidgetIndex]; // Use a variable for clarity
 
                     if (currentWidget.type === 'notes') {
-                      console.log('Notes widget clicked. Data:', currentWidget);
                       // Set the ID and then open the app
                       if (typeof currentWidget.noteId === 'number') {
                         setInitialNoteIdForScreen(currentWidget.noteId);
@@ -1238,84 +1392,6 @@ function App() {
                     setSwipeStartX(null);
                     setSwipeDirection(null);
                   }}
-                  // Implement a direct, simpler swipe detection system for mobile devices only
-                  onTouchStart={(e) => {
-                    if (isMobileDevice) {
-                      setSwipeStartX(e.touches[0].clientX);
-                      setIsSwiping(true);
-                      setSwipeDirection(null);
-                      // Prevent default to avoid scrolling conflicts
-                      e.preventDefault();
-                    }
-                  }}
-                  onTouchMove={(e) => {
-                    if (isMobileDevice && swipeStartX !== null) {
-                      const currentX = e.touches[0].clientX;
-                      const diff = currentX - swipeStartX;
-                      
-                      // Set direction once we have a clear movement
-                      if (Math.abs(diff) > 10) {
-                        const newDirection = diff > 0 ? 'right' : 'left';
-                        if (swipeDirection !== newDirection) {
-                          setSwipeDirection(newDirection);
-                          // Add haptic feedback when direction changes
-                          createSwipeHapticFeedback('light');
-                        }
-                      }
-                      
-                      // Prevent default to avoid scrolling conflicts
-                      e.preventDefault();
-                    }
-                  }}
-                  onTouchEnd={(e) => {
-                    if (isMobileDevice && swipeStartX !== null) {
-                      const endX = e.changedTouches[0].clientX;
-                      const diff = endX - swipeStartX;
-                      
-                      if (Math.abs(diff) > 50) { // Minimum swipe distance
-                        if (swipeDirection === 'right') {
-                          handleWidgetNavigation('prev');
-                          createSwipeHapticFeedback('medium');
-                        } else if (swipeDirection === 'left') {
-                          handleWidgetNavigation('next');
-                          createSwipeHapticFeedback('medium');
-                        }
-                        
-                        // Record the time of manual navigation for swipe
-                        setLastManualNavigation(Date.now());
-                      } else {
-                        // If it's a small swipe (more like a tap), handle as a click
-                        if (Math.abs(diff) < 10) {
-                          const currentWidget = widgets[currentWidgetIndex];
-                          
-                          if (currentWidget.type === 'notes') {
-                            console.log('Notes widget clicked. Data:', currentWidget);
-                            // Set the ID and then open the app
-                            if (typeof currentWidget.noteId === 'number') {
-                              setInitialNoteIdForScreen(currentWidget.noteId);
-                              handleAppClick('notes');
-                            }
-                          } else if (currentWidget.type === 'partiful' && currentWidget.eventId) {
-                            setInitialEventIdForScreen(currentWidget.eventId);
-                            handleAppClick('partiful');
-                          } else if (currentWidget.type === 'workout') {
-                            // Set Kineship note ID (2) and then open the app
-                            setInitialNoteIdForScreen(2);
-                            handleAppClick('notes');
-                            localStorage.setItem('openedKineshipFromWidget', 'true');
-                            setTimeout(() => {
-                              // Use setTimeout to ensure the NotesScreen component is mounted
-                              // before we try to open a specific note
-                            }, 50); // Small delay
-                          }
-                        }
-                      }
-                      
-                      setSwipeStartX(null);
-                      setSwipeDirection(null);
-                      setIsSwiping(false);
-                    }
-                  }}
                   // Remove mouse-based swipes for desktop completely
                   onMouseDown={undefined}
                   onMouseMove={undefined}
@@ -1332,13 +1408,13 @@ function App() {
                         />
                       )}
                       {widgets[currentWidgetIndex].type === 'notes' && (
-                        <StickyNote size={20} className="text-white" strokeWidth={1.5} />
+                        <StickyNote size={20} className="pearl-glyph" color="url(#pearl)" strokeWidth={2.2} />
                       )}
                       {widgets[currentWidgetIndex].type === 'partiful' && (
                         <img 
                           src="./icons/apps/partiful.png" 
                           alt="Partiful" 
-                          className="w-6 h-6 object-contain" 
+                          className="pearl-image w-6 h-6 object-contain" 
                         />
                     )}
                   </div>
@@ -1380,7 +1456,7 @@ function App() {
                           {widgets[currentWidgetIndex].type === 'notes' ? 
                             '' : // Remove duplicate title for notes widget
                             widgets[currentWidgetIndex].type === 'partiful' ?
-                            `${widgets[currentWidgetIndex].attendees} approved` :
+                            (widgets[currentWidgetIndex].attendees ? `${widgets[currentWidgetIndex].attendees} approved` : '') :
                             'with megan, sam'}
                         </p>
                       </div>
@@ -1451,14 +1527,10 @@ function App() {
                       }}>
                         {widgets[currentWidgetIndex].type === 'notes'
                           ? (widgetNote.title.includes("hello world")
-                              ? "my north star: designing tech that centres human longevity. I'm with an AI lab exploring a new class of infrastructure for agent builders. I also built Kineship, a social layer for workouts. In Autumn 2026, I'll be producing a fashion show..."
+                              ? "my north star: designing tech that centres human longevity. I'm joining a team that spotlights and supports the people building AGI. I also built Kineship, an app for working out with your friends..."
                               : widgetNote.title.includes("kineship")
                                 ? "the kineship app shares your workout calendar with your circles. It feels like much of how we connect today involves adding more: more invites, more plans, more coordination. Kineship is about subtraction. Instead of scheduling, it shows you when your people are already working out..."
-                                : widgetNote.title.includes("projects")
-                                  ? "▹ systems design for boutique wellness spaces [infra mapping, product integration]\n\n▹ social design in health & community (tessel, vfc, h&s gala, dc fashion show)\n\n▹ winning team, healthcare innovation (mit bc x harvard med)"
-                                  : (widgetNote.content && widgetNote.content.length > 250
-                                      ? widgetNote.content.substring(0, 250) + '...'
-                                      : (widgetNote.content || '') + '...'))
+                                  : plainPreview(widgetNote.content || ''))
                           : widgets[currentWidgetIndex].type === 'partiful'
                             ? (isDesktop && widgetEvent.description && widgetEvent.description.length > 200
                                 ? widgetEvent.description.substring(0, 200) + '...'
@@ -1472,34 +1544,22 @@ function App() {
                 </div>
               </motion.div>
               </AnimatePresence>
+              </div>
               
               {/* Indicator Dots */}
               <div className="flex items-center justify-center mt-3 space-x-2">
                 {widgets.map((_, index) => (
                   <div
                     key={`indicator-${index}`}
+                    {...pressable(`Show widget ${index + 1} of ${widgets.length}`)}
+                    aria-current={index === currentWidgetIndex ? 'true' : undefined}
                     onClick={() => {
                       // Record the time of manual navigation
                       setLastManualNavigation(Date.now());
                       
-                      // Apply smooth transition between widgets when dots are clicked
-                      const direction = index > currentWidgetIndex ? 1 : -1;
-                      
-                      // Create a smoother transition by animating through each widget
-                      const animateToIndex = () => {
-                        if (currentWidgetIndex !== index) {
-                          setCurrentWidgetIndex(prev => {
-                            const next = prev + direction;
-                            // Handle wrapping around the ends
-                            if (next < 0) return widgets.length - 1;
-                            if (next >= widgets.length) return 0;
-                            return next;
-                          });
-                        }
-                      };
-                      
-                      // Start the transition
-                      animateToIndex();
+                      if (index === currentWidgetIndex) return;
+                      setSlideDir(index > currentWidgetIndex ? 1 : -1);
+                      setCurrentWidgetIndex(index);
                     }}
                   >
                     <div 
@@ -1577,7 +1637,7 @@ function App() {
             <div 
               className="absolute inset-0 z-30 overflow-hidden flex items-center justify-center"
             >
-              <AnimatePresence mode="wait" onExitComplete={() => setIsAnimating(false)}>
+              <AnimatePresence mode="wait" onExitComplete={() => { setIsAnimating(false); setTitleAppState(activeAppRef.current); }}>
                 {ActiveComponent && (
                   <ActiveComponent
                     key={activeApp} // Use activeApp as key
@@ -1597,39 +1657,22 @@ function App() {
           )}
         </motion.div>
         
-        {/* Navigation arrows - positioned absolutely to not affect container positioning */}
+        {/* Back to home: top-left, level with the app title, labelled like an iOS back button */}
         {activeApp && (
-          <div 
-            className="absolute w-full mt-4 px-1"
-            style={{
-              opacity: isLoaded ? 1 : 0,
-              transition: "opacity 0.3s ease-in-out",
-              pointerEvents: "auto",
-              bottom: '-50px',
-              right: '0',
-              display: 'flex',
-              justifyContent: 'flex-end'
-            }}
+          <motion.button
+            type="button"
+            className="absolute flex items-center gap-0.5 z-30"
+            style={{ top: '-32px', left: '-4px', color: 'var(--fg)', fontSize: 16, fontWeight: 500, textShadow: 'var(--fg-shadow)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            onClick={!isAnimating ? handleClose : undefined}
+            whileTap={{ scale: 0.94 }}
+            aria-label={returnToActive ? `Back to ${returnTo!.title}` : isEventDetailView ? 'Back' : 'Back to home'}
           >
-            {/* Back button - always goes back to home - moved to right side for thumb navigation */}
-            <motion.div 
-              initial={{ opacity: 0, x: -5 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -5 }}
-              transition={{ 
-                x: { duration: 0.3, delay: 4.5 },
-                opacity: { 
-                  duration: 2.5,
-                  delay: 1.5 
-                }
-              }}
-              onClick={!isAnimating ? handleClose : undefined}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronLeft size={28} className="text-white" strokeWidth={1.5} />
-            </motion.div>
-          </div>
+            <ChevronLeft size={22} strokeWidth={2.2} />
+            <span>{returnToActive ? returnTo!.title : isEventDetailView ? 'Back' : 'Home'}</span>
+          </motion.button>
         )}
       </div>
     </div>

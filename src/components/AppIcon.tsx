@@ -1,3 +1,4 @@
+import { pressable } from '../pressable';
 import { motion, useReducedMotion } from 'framer-motion';
 import React, { forwardRef } from 'react';
 import { StickyNote, AtSign, PartyPopper } from 'lucide-react';
@@ -25,7 +26,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
   // iOS 2025 squircle icons with glassy depth (restrained)
   const iconMap: Record<string, React.ReactElement> = {
     'StickyNote': (
-      <div className="w-full h-full flex items-center justify-center" style={{
+      <div className="app-tile w-full h-full flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -40,11 +41,11 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <StickyNote className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+        <StickyNote className="pearl-glyph w-7 h-7 relative z-10" color="url(#pearl)" strokeWidth={2.4} />
       </div>
     ),
     'AtSign': (
-      <div className="w-full h-full flex items-center justify-center" style={{
+      <div className="app-tile w-full h-full flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -59,11 +60,11 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <AtSign className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+        <AtSign className="pearl-glyph w-7 h-7 relative z-10" color="url(#pearl)" strokeWidth={2.4} />
       </div>
     ),
     'PartyPopper': (
-      <div className="w-full h-full flex items-center justify-center" style={{
+      <div className="app-tile w-full h-full flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -78,11 +79,11 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <PartyPopper className="w-7 h-7 text-white/90 relative z-10" strokeWidth={1.5} />
+        <PartyPopper className="pearl-glyph w-7 h-7 relative z-10" color="url(#pearl)" strokeWidth={2.4} />
       </div>
     ),
     'Partiful': (
-      <div className="w-full h-full flex items-center justify-center" style={{
+      <div className="app-tile w-full h-full flex items-center justify-center" style={{
         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
@@ -97,7 +98,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <img src="./icons/apps/partiful.png" alt="Partiful" className="w-7 h-7 relative z-10 opacity-90" />
+        <img src="./icons/apps/partiful.png" alt="Partiful" className="pearl-image w-7 h-7 relative z-10" />
       </div>
     ),
   };
@@ -114,7 +115,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
   // Keep all names on one line
   const displayName = name;
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     // For animation purposes, sometimes we need to prevent clicks
     if (className.includes('invisible')) return;
     
@@ -134,6 +135,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
       whileTap={{ scale: 0.95 }}
       transition={springTransition}
       onClick={handleClick}
+      {...(name ? pressable(name) : { 'aria-hidden': true })}
       className={`flex flex-col items-center will-change-transform hardware-accelerated ${className}`}
       style={{ 
         willChange: 'transform, opacity'
@@ -157,7 +159,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
             fontWeight: 500,
             letterSpacing: '0',
             lineHeight: '1.1',
-            color: 'rgba(255, 255, 255, 0.95)',
+            color: 'var(--fg)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

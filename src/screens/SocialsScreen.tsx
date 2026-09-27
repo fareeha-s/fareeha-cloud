@@ -40,9 +40,9 @@ export const SocialsScreen: React.FC<AppScreenProps> = () => {
       customStyles: "bg-white/15 backdrop-blur-lg border border-white/20"
     },
     {
-      name: "goodreads",
-      icon: "./icons/apps/goodreads.png",
-      url: "https://www.goodreads.com/user/show/7284438-fareeha",
+      name: "spotify",
+      icon: "./icons/apps/spotify.png",
+      url: "https://open.spotify.com/user/22isp6c3rjr7utadspi7b6eki",
       position: 4,
       isCustomIcon: true
     },
