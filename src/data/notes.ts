@@ -46,9 +46,9 @@ const allNotes: NoteItem[] = [
   { 
     id: 1, 
     title: "hello world ˚", 
-    content: `Hey, I'm Fareeha <span class="kineship-mark" aria-label="Kineship"></span>  
+    content: `Hey, I'm Fareeha 🤍  
 
-You might've found me through one of my Partifuls where I made you eat an [apple you'd never heard of](note:3) 🤍 I feel half the fun of finding something great, is sharing it.
+You might've found me through one of my Partifuls where I made you eat an [apple you'd never heard of](note:3). I feel half the fun of finding something great, is sharing it.
 
 These days, I'm mostly sharing [what I'm learning about superintelligence](note:8), and I'm joining [a team that helps the world make sense of it](https://www.mts.now).
 
