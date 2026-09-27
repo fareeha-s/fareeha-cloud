@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Critical dark mode styles to prevent flash - must be first in head -->
+    <style>
+      html { background-color: #131518; }
+      body { background-color: #131518; }
+    </style>
+    
+    <!-- Preload critical resources -->
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/images/fav-icon.png" sizes="512x512">
+    <link rel="apple-touch-icon" href="/images/fav-icon.png" sizes="512x512">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#131518" />
+    <meta name="color-scheme" content="dark light" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';">
+    
+    <!-- SEO Meta Tags -->
+    <title>Fareeha OS</title>
+    <link rel="canonical" href="https://fareeha.sh/" />
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fareeha.sh/">
+    <meta property="og:title" content="Fareeha OS">
+    <meta property="og:image" content="https://fareeha.sh/images/og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="An apple above the words Fareeha OS">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://fareeha.sh/">
+    <meta name="twitter:title" content="Fareeha OS">
+    <meta name="twitter:image" content="https://fareeha.sh/images/og.jpg">
+    
+    <!-- Structured data for search engines - invisible to users -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Fareeha Salahuddin",
+      "url": "https://fareeha.sh/",
+      "sameAs": [
+        "https://github.com/fareeha-s",
+        "https://www.linkedin.com/in/fareehas/"
+      ]
+    }
+    </script>
+    
+    <!-- Comprehensive fixes to prevent white flash on mobile -->
+    <style>
+      html, body, #root {
+        background-color: #131518;
+        color: white;
+      }
+      
+      /* Critical styles applied immediately */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #131518;
+        z-index: -1;
+      }
+      
+      /* Prevent any white flash during transitions */
+      *, *::before, *::after {
+        transition-property: none;
+        animation-duration: 0s;
+        animation-delay: 0s;
+        transition-duration: 0s;
+        transition-delay: 0s;
+      }
+    </style>
+
+    <!-- Font preloading - optimized strategy -->
+    <!-- Lora (the note font) is self-hosted so nothing blocks on another server -->
+    <link rel="preload" href="/fonts/lora-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/images/wallpaper.webp" as="image" media="(hover: none)">
+                            
+    <!-- Add inline font-display:swap rule for immediate text visibility -->
+    <style>
+      @font-face {
+        font-family: 'Lora';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(/fonts/lora-latin-ext.woff2) format('woff2');
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: 'Lora';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(/fonts/lora-latin.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+    </style>
+
+    <!-- Preload critical assets - optimized image loading strategy -->
+    
+    <style>
+      :root {
+        --app-height: 100vh;
+        --blur-animation-duration: 2.5s;
+        --font-sans: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      }
+      html, body {
+        overflow: hidden;
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        -webkit-overflow-scrolling: touch;
+        touch-action: manipulation;
+        height: var(--app-height);
+        background-color: #131518;
+        color: white;
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+
+      p, li, h1, h2, h3 { text-wrap: pretty; }
+      ::-moz-selection { background: rgba(255, 182, 213, 0.35); color: #fff; }
+      ::selection { background: rgba(255, 182, 213, 0.35); color: #fff; }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      }
+
+      /* iOS devices - use system font */
+      @supports (-webkit-touch-callout: none) {
+        :root {
+          --font-sans: -apple-system, BlinkMacSystemFont, 'New York', 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+        }
+      }
+
+      #root {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        font-family: var(--font-sans);
+      }
+      
+      /* Hide real content until fonts and background are loaded */
+      .content-container {
+        opacity: 0;
+        transition: opacity 0.3s ease-out;
+      }
+      
+      /* Once everything is ready */
+      .content-loaded .content-container {
+        opacity: 1;
+      }
+      
+      /* Progressive blur animation keyframes */
+      @keyframes gradualBlur {
+        0% {
+          backdrop-filter: blur(0px);
+          -webkit-backdrop-filter: blur(0px);
+        }
+        50% {
+          backdrop-filter: blur(5px);
+          -webkit-backdrop-filter: blur(5px);
+        }
+        100% {
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+        }
+      }
+
+      @keyframes gradualBlurMedium {
+        0% {
+          backdrop-filter: blur(0px);
+          -webkit-backdrop-filter: blur(0px);
+        }
+        50% {
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+        }
+        100% {
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+      }
+
+      @keyframes gradualBlurSmall {
+        0% {
+          backdrop-filter: blur(0px);
+          -webkit-backdrop-filter: blur(0px);
+        }
+        50% {
+          backdrop-filter: blur(2px);
+          -webkit-backdrop-filter: blur(2px);
+        }
+        100% {
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+        }
+      }
+
+      /* Apply animations to elements */
+      .backdrop-blur-lg {
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+      }
+
+      body.final-loaded .backdrop-blur-lg {
+        animation: gradualBlur 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;      
+        -webkit-animation: gradualBlur 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      body.final-loaded .backdrop-blur-2xl {
+        animation: gradualBlurMedium 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        -webkit-animation: gradualBlurMedium 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      body.final-loaded .backdrop-blur-sm {
+        animation: gradualBlurSmall 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+        -webkit-animation: gradualBlurSmall 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      /* Force transparency during initial load with gradual change */
+      @keyframes fadeInBackground {
+        0% { background-color: rgba(0, 0, 0, 0.02); }
+        25% { background-color: rgba(0, 0, 0, 0.05); }
+        50% { background-color: rgba(0, 0, 0, 0.08); }
+        75% { background-color: rgba(0, 0, 0, 0.12); }
+        100% { background-color: rgba(0, 0, 0, 0.15); }
+      }
+
+      .bg-black\/20 {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+
+      body.final-loaded .bg-black\/20 {
+        animation: fadeInBackground 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+      }
+
+      /* Improve rendering on mobile */
+      .will-change-transform {
+        will-change: transform;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+      }
+    </style>
+    <script>
+      // Phones and tablets follow the system appearance (daylight linen theme in
+      // light mode) unless the visitor flips the toggle; desktop is dark unless flipped.
+      // Choices are remembered; the phone mockup on desktop is told which theme to use.
+      (function () {
+        var params = new URLSearchParams(location.search);
+        var embed = params.has('phone');
+        var desktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        var light = window.matchMedia('(prefers-color-scheme: light)');
+        var saved = null;
+        try { saved = localStorage.getItem('theme'); } catch (e) {}
+        function set(on) {
+          document.documentElement.classList.toggle('theme-light', on);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', on ? '#ebe5da' : '#131518');
+        }
+        function apply() {
+          if (embed) return set(params.get('theme') === 'light');
+          if (desktop) return set(saved === 'light');
+          // Phones follow the system until the visitor picks with the toggle
+          set(saved ? saved === 'light' : light.matches);
+        }
+        apply();
+        if (light.addEventListener) light.addEventListener('change', apply);
+        window.__setTheme = function (on) {
+          saved = on ? 'light' : 'dark';
+          try { localStorage.setItem('theme', saved); } catch (e) {}
+          set(on);
+          var frame = document.querySelector('iframe[title="Fareeha OS on a phone"]');
+          if (frame && frame.contentWindow) frame.contentWindow.postMessage({ type: 'theme', light: on }, location.origin);
+        };
+        if (embed) {
+          window.addEventListener('message', function (e) {
+            if (e.origin === location.origin && e.data && e.data.type === 'theme') set(!!e.data.light);
+          });
+        }
+      })();
+
+      // Force hello world note to open on initial page load
+      if (!new URLSearchParams(location.search).has('phone')) {
+        window.initialNoteId = 1; // Hello world note ID
+        window.openNoteDirectly = true;
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/index-CLC9UAbc.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/motion-vendor-DRWxgq9x.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-v5NtXDJg.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-P1jYv27l.css">
+  </head>
+  <body>
+    <div id="root">
+      <!-- Initial loading indicator that will be replaced by React -->
+
+    </div>
+  </body>
+</html>
