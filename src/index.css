@@ -747,3 +747,6 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
   white-space: nowrap;
 }
 .note-link-card-domain { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 1px; }
+
+/* Desktop card links: barely-there underline, the pink does the work */
+.custom-pink-link--desktop-overlay { text-decoration-color: rgba(255, 182, 193, 0.14); }
