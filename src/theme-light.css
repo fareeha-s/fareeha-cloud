@@ -206,3 +206,6 @@ html.theme-light .note-link-card-domain { color: rgb(58 40 30 / 0.7); }
 /* Widgets in daylight: a soft edge so they don't melt into the linen */
 html.theme-light [aria-label="Open widget"] { border-color: rgb(58 40 30 / 0.16) !important; box-shadow: 0 2px 10px rgb(58 40 30 / 0.08) !important; }
 html.theme-light .custom-pink-link--desktop-overlay { text-decoration-color: rgb(58 40 30 / 0.12); }
+
+/* Notes and socials glyphs in daylight: a soft white halo, like the Partiful icon has */
+html.theme-light .pearl-glyph { filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.7)); opacity: 0.9; }
