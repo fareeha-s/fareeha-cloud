@@ -57,6 +57,7 @@
     -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
   .tile.linkedin { background: #0a66c2; }
   .tile.signal { background: #3b45fd; }
+  .tile.x { background: #000; }
 
   /* QR view */
   .qr { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
@@ -86,7 +87,7 @@
       <button class="app" data-app="email"><span class="tile mail">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
       </span>email</button>
-      <button class="app" data-app="x" hidden><span class="tile"><img src="/icons/apps/x.png" alt="" /></span>x</button>
+      <button class="app" data-app="x" hidden><span class="tile x"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></span>x</button>
       <button class="app" data-app="signal" hidden><span class="tile signal">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 0q-.934 0-1.83.139l.17 1.111a11 11 0 0 1 3.32 0l.172-1.111A12 12 0 0 0 12 0M9.152.34A12 12 0 0 0 5.77 1.742l.584.961a10.8 10.8 0 0 1 3.066-1.27zm5.696 0-.268 1.094a10.8 10.8 0 0 1 3.066 1.27l.584-.962A12 12 0 0 0 14.848.34M12 2.25a9.75 9.75 0 0 0-8.539 14.459c.074.134.1.292.064.441l-1.013 4.338 4.338-1.013a.62.62 0 0 1 .441.064A9.7 9.7 0 0 0 12 21.75c5.385 0 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25m-7.092.068a12 12 0 0 0-2.59 2.59l.909.664a11 11 0 0 1 2.345-2.345zm14.184 0-.664.909a11 11 0 0 1 2.345 2.345l.909-.664a12 12 0 0 0-2.59-2.59M1.742 5.77A12 12 0 0 0 .34 9.152l1.094.268a10.8 10.8 0 0 1 1.269-3.066zm20.516 0-.961.584a10.8 10.8 0 0 1 1.27 3.066l1.093-.268a12 12 0 0 0-1.402-3.383M.138 10.168A12 12 0 0 0 0 12q0 .934.139 1.83l1.111-.17A11 11 0 0 1 1.125 12q0-.848.125-1.66zm23.723.002-1.111.17q.125.812.125 1.66c0 .848-.042 1.12-.125 1.66l1.111.172a12.1 12.1 0 0 0 0-3.662M1.434 14.58l-1.094.268a12 12 0 0 0 .96 2.591l-.265 1.14 1.096.255.36-1.539-.188-.365a10.8 10.8 0 0 1-.87-2.35m21.133 0a10.8 10.8 0 0 1-1.27 3.067l.962.584a12 12 0 0 0 1.402-3.383zm-1.793 3.848a11 11 0 0 1-2.345 2.345l.664.909a12 12 0 0 0 2.59-2.59zm-19.959 1.1L.357 21.48a1.8 1.8 0 0 0 2.162 2.161l1.954-.455-.256-1.095-1.953.455a.675.675 0 0 1-.81-.81l.454-1.954zm16.832 1.769a10.8 10.8 0 0 1-3.066 1.27l.268 1.093a12 12 0 0 0 3.382-1.402zm-10.94.213-1.54.36.256 1.095 1.139-.266c.814.415 1.683.74 2.591.961l.268-1.094a10.8 10.8 0 0 1-2.35-.869zm3.634 1.24-.172 1.111a12.1 12.1 0 0 0 3.662 0l-.17-1.111q-.812.125-1.66.125a11 11 0 0 1-1.66-.125"/></svg>
       </span>signal</button>
@@ -101,7 +102,7 @@
 
 <script>
   const apps = {
-    linkedin:  { label: 'Fareeha · Special Projects, MTS', url: 'https://www.linkedin.com/in/fareehas/' },
+    linkedin:  { label: 'Fareeha · Special Projects @ MTS', url: 'https://www.linkedin.com/in/fareehas/' },
     email:     { label: 'fareeha@mts.now', url: 'mailto:fareeha@mts.now?subject=Hi%20Fareeha&body=Hi%20Fareeha!%20It\'s%20' },
     instagram: { label: '@fareehasala', url: 'https://instagram.com/fareehasala' },
     x:         { label: '@fareehasala', url: 'https://x.com/fareehasala' },
@@ -126,7 +127,8 @@
     card.classList.add('showing');
   }));
   document.addEventListener('click', (e) => {
-    if (card.classList.contains('showing') && !e.target.closest('#qrLink')) card.classList.remove('showing');
+    // Only a tap outside the card goes back; the QR itself opens the profile
+    if (card.classList.contains('showing') && !e.target.closest('#card')) card.classList.remove('showing');
   });
 
   // Secret: press and hold (about a second) to show those apps, hold again to hide them.
