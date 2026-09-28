@@ -218,6 +218,23 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
   // Create a ref for the note content container
   const noteContentRef = useRef<HTMLDivElement>(null);
 
+  // Short screens (e.g. links opened inside X, Instagram or LinkedIn, whose toolbars
+  // eat the height): keep the bottom fade thin so the next line peeks through, and
+  // the first time hello world opens, nudge it up and back so people see it scrolls
+  const isShortScreen = typeof window !== 'undefined' && window.innerHeight < 720;
+  useEffect(() => {
+    if (!isShortScreen || !isNoteReady || selectedNote?.id !== 1) return;
+    try {
+      if (localStorage.getItem('helloNudged')) return;
+      localStorage.setItem('helloNudged', '1');
+    } catch { /* storage blocked: nudge anyway */ }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const box = noteContentRef.current;
+    const down = setTimeout(() => box?.scrollTo({ top: 56, behavior: 'smooth' }), 1600);
+    const up = setTimeout(() => { if (box && box.scrollTop <= 60) box.scrollTo({ top: 0, behavior: 'smooth' }); }, 2300);
+    return () => { clearTimeout(down); clearTimeout(up); };
+  }, [isNoteReady, selectedNote?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Add function to mark note as viewed
   const markNoteAsViewed = (noteId: number) => {
     try {
@@ -623,7 +640,7 @@ export const NotesScreen: React.FC<BaseAppScreenProps> = ({
             >
               {/* Apple-style bottom fade to indicate scrollable content */}
               <div 
-                className={`note-bottom-fade absolute bottom-0 left-0 right-0 pointer-events-none z-10 ${selectedNote?.title === 'hello world' ? 'h-20' : 'h-16'}`}
+                className={`note-bottom-fade absolute bottom-0 left-0 right-0 pointer-events-none z-10 ${isShortScreen ? 'h-8' : 'h-16'}`}
                 style={{
                   background: selectedNote?.title === 'hello world' 
                     ? 'linear-gradient(to top, rgba(45, 35, 28, 0.98) 0%, rgba(45, 35, 28, 0.85) 30%, rgba(45, 35, 28, 0.4) 60%, transparent 100%)'
