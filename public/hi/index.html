@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0b0b0c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="hi" />
+<link rel="apple-touch-icon" href="/icons/hosts/fareeha.jpg" />
+<title>Fareeha</title>
+<style>
+  :root { --fg: #fff; --muted: rgba(255,255,255,0.6); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: #0b0b0c; color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; }
+  body { overflow: hidden; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+  /* The same blurred polaroid wallpaper as the phone site */
+  .wall { position: fixed; inset: 0; background: url(/images/wallpaper.webp) center top / cover; }
+  .wall::after { content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(11,11,12,.55), rgba(11,11,12,.25) 35%, rgba(11,11,12,.3) 65%, rgba(11,11,12,.65)); }
+
+  main { position: relative; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); }
+
+  header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  header img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,.35); }
+  header h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .hold { transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+  .hold.pressing { transform: scale(.94); }
+
+  /* Frosted card, like the socials screen */
+  .card { width: min(320px, 100%); aspect-ratio: 1 / 1; border-radius: 28px; position: relative;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2);
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,.6); display: grid; place-items: center; overflow: hidden; }
+
+  .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px 24px; padding: 24px; max-width: 300px; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 7px; background: none; border: 0; padding: 0;
+    color: var(--fg); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .app:active .tile { transform: scale(.93); }
+  .app[hidden] { display: none; }
+  .app.appear { animation: appear .5s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes appear { from { opacity: 0; transform: scale(.7) translateY(6px); } }
+  .tile { width: 60px; height: 60px; border-radius: 14px; overflow: hidden; display: grid; place-items: center;
+    border: .5px solid rgba(255,255,255,.15); box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 6px 14px -6px rgba(0,0,0,.4);
+    transition: transform .15s ease; position: relative; }
+  .tile::after { content: ""; position: absolute; inset: 0 0 50% 0; background: linear-gradient(rgba(255,255,255,.12), transparent); }
+  .tile img { width: 100%; height: 100%; object-fit: cover; }
+  .tile.glass { background: rgba(255,255,255,.1); }
+  .tile.linkedin { background: #0a66c2; }
+  .tile.signal { background: #3a76f0; }
+
+  /* QR view */
+  .qr { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    padding: 22px; opacity: 0; pointer-events: none; transform: scale(.96); transition: opacity .25s ease, transform .3s cubic-bezier(.2,.8,.2,1); }
+  .card.showing .qr { opacity: 1; pointer-events: auto; transform: none; }
+  .card.showing .grid { opacity: 0; pointer-events: none; }
+  .grid { transition: opacity .2s ease; }
+  .qr img { width: 72%; aspect-ratio: 1; background: #fff; border-radius: 16px; padding: 10px; }
+  .qr .label { font-size: 15px; font-weight: 600; }
+  .qr .sub { font-size: 13px; color: var(--muted); }
+  .qr a { color: var(--muted); font-size: 13px; text-decoration: none; }
+
+  .foot { margin-top: 16px; font-size: 13px; color: var(--muted); min-height: 1em; transition: opacity .3s; }
+</style>
+</head>
+<body>
+<div class="wall" aria-hidden="true"></div>
+<main>
+  <header>
+    <!-- Secret: hold the photo for X + Signal, hold the name for Instagram -->
+    <img class="hold" data-reveal="x signal" src="/icons/hosts/fareeha.jpg" alt="" draggable="false" />
+    <h1 class="hold" data-reveal="instagram">Fareeha</h1>
+  </header>
+
+  <section class="card" id="card">
+    <div class="grid">
+      <button class="app" data-app="linkedin"><span class="tile linkedin">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4V21H3zM9.5 9.75h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5c0-1.2-.02-2.73-1.66-2.73-1.67 0-1.92 1.3-1.92 2.64V21h-4z"/></svg>
+      </span>linkedin</button>
+      <button class="app" data-app="email"><span class="tile glass">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+      </span>email</button>
+      <button class="app" data-app="instagram" hidden><span class="tile"><img src="/icons/apps/instagram.png" alt="" /></span>instagram</button>
+      <button class="app" data-app="x" hidden><span class="tile"><img src="/icons/apps/x.png" alt="" /></span>x</button>
+      <button class="app" data-app="signal" hidden><span class="tile signal">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="11.5" r="7.2" fill="#fff"/><path d="M6.3 16.2 5 20l3.9-1.2" fill="#fff"/><circle cx="12" cy="11.5" r="9.3" stroke="#fff" stroke-width="1.2" stroke-dasharray="2.2 1.6"/></svg>
+      </span>signal</button>
+    </div>
+
+    <div class="qr" id="qr" role="dialog" aria-label="QR code">
+      <img id="qrImg" alt="" />
+      <div class="label" id="qrLabel"></div>
+      <a id="qrLink" target="_blank" rel="noopener">or tap to open ↗</a>
+    </div>
+  </section>
+
+  <div class="foot" id="foot">tap one to scan</div>
+</main>
+
+<script>
+  const apps = {
+    linkedin:  { label: 'Fareeha on LinkedIn', url: 'https://www.linkedin.com/in/fareehas/' },
+    email:     { label: 'fareeha@mts.now', url: 'mailto:fareeha@mts.now?subject=Hi%20Fareeha!&body=Hi%20Fareeha%2C%20it%20was%20lovely%20meeting%20you%20at%20___!%20Let\'s%20stay%20in%20touch.%0A%0A%E2%80%94%20' },
+    instagram: { label: '@fareehasala on Instagram', url: 'https://instagram.com/fareehasala' },
+    x:         { label: '@fareehasala on X', url: 'https://x.com/fareehasala' },
+    signal:    { label: 'fareeha.15 on Signal', url: 'https://signal.me/#eu/g7Ye-3IizjGG9YWJOx4QtrjO6sqGM_0zZRS65l14vNogRiJjQA9AUoW1WEA5xcfL' },
+  };
+  const card = document.getElementById('card');
+  const foot = document.getElementById('foot');
+
+  // Tap an app: flip to its QR code. Tap the card again: back to the apps.
+  document.querySelectorAll('.app').forEach((btn) => btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const a = apps[btn.dataset.app];
+    document.getElementById('qrImg').src = 'qr-' + btn.dataset.app + '.svg';
+    document.getElementById('qrLabel').textContent = a.label;
+    document.getElementById('qrLink').href = a.url;
+    card.classList.add('showing');
+    foot.textContent = 'tap to go back';
+  }));
+  card.addEventListener('click', (e) => {
+    if (!card.classList.contains('showing') || e.target.closest('a')) return;
+    card.classList.remove('showing');
+    foot.textContent = 'tap one to scan';
+  });
+
+  // Secret reveal: press and hold (about a second) on the photo or the name.
+  // Nothing is saved, so a reload goes back to LinkedIn and email only.
+  document.querySelectorAll('.hold').forEach((el) => {
+    let timer;
+    const start = (e) => {
+      e.preventDefault();
+      el.classList.add('pressing');
+      timer = setTimeout(() => {
+        el.classList.remove('pressing');
+        if (navigator.vibrate) navigator.vibrate(12);
+        el.dataset.reveal.split(' ').forEach((id) => {
+          const b = document.querySelector('.app[data-app="' + id + '"]');
+          if (b.hidden) { b.hidden = false; b.classList.add('appear'); }
+        });
+      }, 850);
+    };
+    const stop = () => { clearTimeout(timer); el.classList.remove('pressing'); };
+    el.addEventListener('pointerdown', start);
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((t) => el.addEventListener(t, stop));
+    el.addEventListener('contextmenu', (e) => e.preventDefault());
+  });
+</script>
+</body>
+</html>
