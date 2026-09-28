@@ -41,7 +41,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <StickyNote className="pearl-glyph w-7 h-7 relative z-10" color="url(#pearl)" strokeWidth={2.4} />
+        <StickyNote className="pearl-glyph w-8 h-8 relative z-10" color="url(#pearl)" strokeWidth={1.8} />
       </div>
     ),
     'AtSign': (
@@ -60,7 +60,7 @@ export const AppIcon = forwardRef<HTMLDivElement, AppIconProps>(({
           inset: 0,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)'
         }} />
-        <AtSign className="pearl-glyph w-7 h-7 relative z-10" color="url(#pearl)" strokeWidth={2.4} />
+        <AtSign className="pearl-glyph w-8 h-8 relative z-10" color="url(#pearl)" strokeWidth={1.8} />
       </div>
     ),
     'PartyPopper': (

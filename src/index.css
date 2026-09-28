@@ -750,3 +750,6 @@ div[data-event-type="blood-moon-rising"] h1.blood-moon-title {
 
 /* Desktop card links: barely-there underline, the pink does the work */
 .custom-pink-link--desktop-overlay { text-decoration-color: rgba(255, 182, 193, 0.14); }
+
+/* Night: note link underlines barely there (daylight keeps its own) */
+html:not(.theme-light) .custom-pink-link { text-decoration-color: rgba(255, 182, 193, 0.16); }
