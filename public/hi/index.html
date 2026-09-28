@@ -66,6 +66,11 @@
   .card.showing .grid { opacity: 0; pointer-events: none; }
   .qr a { width: 74%; display: block; }
   .qr img { width: 100%; aspect-ratio: 1; background: #fff; border-radius: 16px; padding: 10px; display: block; }
+  .seg { display: flex; gap: 2px; padding: 2px; border-radius: 999px; background: rgba(255,255,255,.12); margin-top: -4px; }
+  .seg[hidden] { display: none; }
+  .seg button { border: 0; background: none; color: rgba(255,255,255,.65); font: inherit; font-size: 12px; font-weight: 500;
+    padding: 5px 11px; border-radius: 999px; cursor: pointer; }
+  .seg button.on { background: rgba(255,255,255,.9); color: #111; }
   .qr .label { font-size: 15px; font-weight: 600; text-align: center; }
 </style>
 </head>
@@ -96,6 +101,10 @@
     <div class="qr" id="qr" role="dialog" aria-label="QR code">
       <a id="qrLink" target="_blank" rel="noopener"><img id="qrImg" alt="" /></a>
       <div class="label" id="qrLabel"></div>
+      <div class="seg" id="seg" hidden>
+        <button type="button" data-mode="email" class="on">email me</button>
+        <button type="button" data-mode="contact">save contact</button>
+      </div>
     </div>
   </section>
 </main>
@@ -124,8 +133,22 @@
     document.getElementById('qrImg').src = 'qr-' + btn.dataset.app + '.svg';
     document.getElementById('qrLabel').textContent = a.label;
     document.getElementById('qrLink').href = a.url;
+    const seg = document.getElementById('seg');
+    seg.hidden = btn.dataset.app !== 'email';
+    setMode('email');
     card.classList.add('showing');
   }));
+  // Email view: a normal "email me" code, or a contact card that saves straight to
+  // Contacts (name and email only, works with no signal on either phone)
+  function setMode(mode) {
+    document.querySelectorAll('#seg button').forEach((b) => b.classList.toggle('on', b.dataset.mode === mode));
+    if (document.getElementById('seg').hidden) return;
+    document.getElementById('qrImg').src = mode === 'contact' ? 'qr-contact.svg' : 'qr-email.svg';
+    document.getElementById('qrLink').removeAttribute('href');
+    if (mode === 'email') document.getElementById('qrLink').href = apps.email.url;
+  }
+  document.querySelectorAll('#seg button').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); setMode(b.dataset.mode); }));
+
   document.addEventListener('click', (e) => {
     // Only a tap outside the card goes back; the QR itself opens the profile
     if (card.classList.contains('showing') && !e.target.closest('#card')) card.classList.remove('showing');
@@ -157,6 +180,16 @@
     ['pointerup', 'pointerleave', 'pointercancel'].forEach((t) => el.addEventListener(t, stop));
     el.addEventListener('contextmenu', (e) => e.preventDefault());
   });
+
+  // Save the card on this phone the first time it's opened, so it works with no signal
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then(async () => {
+      const cache = await caches.open('hi-card-v1');
+      const urls = new Set([location.href, ...Object.keys(apps).map((k) => 'qr-' + k + '.svg'), 'qr-contact.svg', 'me.jpg']);
+      performance.getEntriesByType('resource').forEach((r) => { if (r.name.startsWith(location.origin)) urls.add(r.name); });
+      await Promise.all([...urls].map((u) => cache.add(u).catch(() => {})));
+    }).catch(() => {});
+  }
 </script>
 </body>
 </html>
