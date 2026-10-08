@@ -82,7 +82,7 @@ const allNotes: NoteItem[] = [
 
 You might've found me through one of my Partifuls where I made you eat an [apple you'd never heard of](note:3). I feel half the fun of finding something great, is sharing it.
 
-These days, I'm mostly sharing [what I'm learning about superintelligence](note:8), and I just joined [MTS](https://www.mts.now), a team that helps the world make sense of it ✨
+These days, I'm mostly sharing [what I'm learning about superintelligence](note:8), and I just joined [MTS](https://www.mts.now), a team that helps the world make sense of it.
 
 <span style="font-weight: bold;">other loves:</span>  
 ▹ pilates with friends (my app, [Kineship](note:2))
