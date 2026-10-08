@@ -16,9 +16,11 @@ export type NoteItem = {
 
 // The "homework" note (AI reading list). Add essays here; each section always lists the
 // newest (by publish date) first.
-type Reading = { title: string; author: string; url: string; published: string; read: boolean; section?: 'pacing' };
+type Reading = { title: string; author: string; url: string; published: string; read: boolean; section?: 'pacing'; kind?: 'podcast' };
 
 const readings: Reading[] = [
+  { title: 'Richard Sutton: LLMs are a dead end', author: 'Dwarkesh Podcast', url: 'https://www.dwarkesh.com/p/richard-sutton', published: '2025-09', read: true, kind: 'podcast' },
+  { title: 'Andrej Karpathy: AGI is still a decade away', author: 'Dwarkesh Podcast', url: 'https://www.dwarkesh.com/p/andrej-karpathy', published: '2025-10', read: true, kind: 'podcast' },
   { title: 'A Framework for Frontier AI and the Dawning of a New Age', author: 'Demis Hassabis', url: 'https://demishassabis.substack.com/p/a-framework-for-frontier-ai-and-the-dawning-of-a-new-age', published: '2026-07', read: false },
   { title: 'We Must Pace the Frontier', author: 'Dario Amodei', url: 'https://www.darioamodei.com/post/we-must-pace-the-frontier', published: '2026-09', read: true, section: 'pacing' },
   { title: 'The Adolescence of Technology', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/the-adolescence-of-technology', published: '2026-01', read: true },
@@ -34,7 +36,7 @@ const readings: Reading[] = [
 
 function readingListContent() {
   const newestFirst = (a: Reading, b: Reading) => b.published.localeCompare(a.published);
-  const line = (r: Reading) => `${r.read ? '✓' : '○'} [${r.title}](${r.url}) · ${r.author}`;
+  const line = (r: Reading) => `${r.read ? '✓' : '○'} ${r.kind === 'podcast' ? '🎧 ' : ''}[${r.title}](${r.url}) · ${r.author}`;
   // "on pacing" leads with Dario's latest, then the rest of that section newest first
   const pacing = readings.filter((r) => r.section === 'pacing')
     .sort((a, b) => Number(b.author === 'Dario Amodei') - Number(a.author === 'Dario Amodei') || newestFirst(a, b))
