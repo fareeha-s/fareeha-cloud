@@ -16,9 +16,22 @@ export type NoteItem = {
 
 // The "homework" note (AI reading list). Add essays here; each section always lists the
 // newest (by publish date) first.
-type Reading = { title: string; author: string; url: string; published: string; read: boolean; section?: 'pacing'; kind?: 'podcast' };
+type Reading = { title: string; author: string; url: string; published: string; read: boolean; section?: 'pacing'; kind?: 'podcast' | 'video' | 'book' };
 
 const readings: Reading[] = [
+  { title: 'Dario Amodei: Anthropic CEO on Claude, AGI & the Future of AI', author: 'Lex Fridman Podcast', url: 'https://lexfridman.com/dario-amodei/', published: '2024-11', read: false, kind: 'podcast' },
+  { title: 'Demis Hassabis', author: 'Dwarkesh Podcast', url: 'https://www.dwarkesh.com/p/demis-hassabis', published: '2024-02', read: false, kind: 'podcast' },
+  { title: 'AI 2027: month-by-month model of intelligence explosion', author: 'Dwarkesh Podcast', url: 'https://www.dwarkesh.com/p/scott-daniel', published: '2025-04', read: false, kind: 'podcast' },
+  { title: 'Software Is Changing (Again)', author: 'Andrej Karpathy', url: 'https://www.youtube.com/watch?v=LCEmiRjPEtQ', published: '2025-06', read: false, kind: 'video' },
+  { title: 'Superintelligence', author: 'Nick Bostrom', url: 'https://en.wikipedia.org/wiki/Superintelligence:_Paths,_Dangers,_Strategies', published: '2014-07', read: false, kind: 'book' },
+  { title: 'Deep Utopia', author: 'Nick Bostrom', url: 'https://nickbostrom.com/deep-utopia/', published: '2024-03', read: false, kind: 'book' },
+  { title: 'The Precipice', author: 'Toby Ord', url: 'https://theprecipice.com/', published: '2020-03', read: false, kind: 'book' },
+  { title: 'Human Compatible', author: 'Stuart Russell', url: 'https://en.wikipedia.org/wiki/Human_Compatible', published: '2019-10', read: false, kind: 'book' },
+  { title: 'The Alignment Problem', author: 'Brian Christian', url: 'https://brianchristian.org/the-alignment-problem/', published: '2020-10', read: false, kind: 'book' },
+  { title: 'The Vulnerable World Hypothesis', author: 'Nick Bostrom', url: 'https://nickbostrom.com/papers/vulnerable.pdf', published: '2019-09', read: false },
+  { title: 'The Coming Technological Singularity', author: 'Vernor Vinge', url: 'https://edoras.sdsu.edu/~vinge/misc/singularity.html', published: '1993-03', read: false },
+  { title: 'Speculations Concerning the First Ultraintelligent Machine', author: 'I.J. Good', url: 'https://www.sciencedirect.com/science/article/abs/pii/S0065245808604180', published: '1965-01', read: false },
+  { title: 'Computing Machinery and Intelligence', author: 'Alan Turing', url: 'https://academic.oup.com/mind/article/LIX/236/433/986238', published: '1950-10', read: false },
   { title: 'Richard Sutton: LLMs are a dead end', author: 'Dwarkesh Podcast', url: 'https://www.dwarkesh.com/p/richard-sutton', published: '2025-09', read: true, kind: 'podcast' },
   { title: 'Andrej Karpathy: AGI is still a decade away', author: 'Dwarkesh Podcast', url: 'https://www.dwarkesh.com/p/andrej-karpathy', published: '2025-10', read: true, kind: 'podcast' },
   { title: 'A Framework for Frontier AI and the Dawning of a New Age', author: 'Demis Hassabis', url: 'https://demishassabis.substack.com/p/a-framework-for-frontier-ai-and-the-dawning-of-a-new-age', published: '2026-07', read: false },
@@ -36,7 +49,7 @@ const readings: Reading[] = [
 
 function readingListContent() {
   const newestFirst = (a: Reading, b: Reading) => b.published.localeCompare(a.published);
-  const line = (r: Reading) => `${r.read ? '✓' : '○'} ${r.kind === 'podcast' ? '🎧 ' : ''}[${r.title}](${r.url}) · ${r.author}`;
+  const line = (r: Reading) => `${r.read ? '✓' : '○'} ${{ podcast: '🎧 ', video: '▶ ', book: '📖 ' }[r.kind ?? ''] ?? ''}[${r.title}](${r.url}) · ${r.author}`;
   // "on pacing" leads with Dario's latest, then the rest of that section newest first
   const pacing = readings.filter((r) => r.section === 'pacing')
     .sort((a, b) => Number(b.author === 'Dario Amodei') - Number(a.author === 'Dario Amodei') || newestFirst(a, b))
