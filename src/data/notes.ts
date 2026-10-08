@@ -19,6 +19,7 @@ export type NoteItem = {
 type Reading = { title: string; author: string; url: string; published: string; read: boolean; section?: 'pacing' };
 
 const readings: Reading[] = [
+  { title: 'A Framework for Frontier AI and the Dawning of a New Age', author: 'Demis Hassabis', url: 'https://demishassabis.substack.com/p/a-framework-for-frontier-ai-and-the-dawning-of-a-new-age', published: '2026-07', read: false },
   { title: 'We Must Pace the Frontier', author: 'Dario Amodei', url: 'https://www.darioamodei.com/post/we-must-pace-the-frontier', published: '2026-09', read: true, section: 'pacing' },
   { title: 'The Adolescence of Technology', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/the-adolescence-of-technology', published: '2026-01', read: true },
   { title: 'Machines of Loving Grace', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/machines-of-loving-grace', published: '2024-10', read: true },
