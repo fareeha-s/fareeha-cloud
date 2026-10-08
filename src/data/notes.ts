@@ -16,9 +16,10 @@ export type NoteItem = {
 
 // The "homework" note (AI reading list). Add essays here; each section always lists the
 // newest (by publish date) first.
-type Reading = { title: string; author: string; url: string; published: string; read: boolean };
+type Reading = { title: string; author: string; url: string; published: string; read: boolean; section?: 'pacing' };
 
 const readings: Reading[] = [
+  { title: 'We Must Pace the Frontier', author: 'Dario Amodei', url: 'https://www.darioamodei.com/post/we-must-pace-the-frontier', published: '2026-09', read: true, section: 'pacing' },
   { title: 'The Adolescence of Technology', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/the-adolescence-of-technology', published: '2026-01', read: true },
   { title: 'Machines of Loving Grace', author: 'Dario Amodei', url: 'https://www.darioamodei.com/essay/machines-of-loving-grace', published: '2024-10', read: true },
   { title: 'The Gentle Singularity', author: 'Sam Altman', url: 'https://blog.samaltman.com/the-gentle-singularity', published: '2025-06', read: true },
@@ -26,17 +27,23 @@ const readings: Reading[] = [
   { title: 'Software 2.0', author: 'Andrej Karpathy', url: 'https://karpathy.medium.com/software-2-0-a64152b37c35', published: '2017-11', read: false },
   { title: 'Constitutional AI: Harmlessness from AI Feedback', author: 'Anthropic', url: 'https://arxiv.org/abs/2212.08073', published: '2022-12', read: false },
   { title: 'From AGI to ASI', author: 'Google DeepMind', url: 'https://deepmind.google/research/publications/239142/', published: '2026-06', read: false },
-  { title: 'The Future is for Everyone', author: 'Mark Zuckerberg', url: 'https://about.fb.com/news/2026/08/the-future-is-for-everyone/', published: '2026-08', read: false },
+  { title: 'The Future is for Everyone', author: 'Mark Zuckerberg', url: 'https://www.meta.com/thefutureisforeveryone/', published: '2026-08', read: false, section: 'pacing' },
   { title: 'AI 2027', author: 'Daniel Kokotajlo et al.', url: 'https://ai-2027.com', published: '2025-04', read: false },
 ];
 
 function readingListContent() {
   const newestFirst = (a: Reading, b: Reading) => b.published.localeCompare(a.published);
   const line = (r: Reading) => `${r.read ? '✓' : '○'} [${r.title}](${r.url}) · ${r.author}`;
-  const read = readings.filter((r) => r.read).sort(newestFirst).map(line);
-  const reading = readings.filter((r) => !r.read).sort(newestFirst).map(line);
+  // "on pacing" leads with Dario's latest, then the rest of that section newest first
+  const pacing = readings.filter((r) => r.section === 'pacing')
+    .sort((a, b) => Number(b.author === 'Dario Amodei') - Number(a.author === 'Dario Amodei') || newestFirst(a, b))
+    .map(line);
+  const rest = readings.filter((r) => r.section !== 'pacing');
+  const read = rest.filter((r) => r.read).sort(newestFirst).map(line);
+  const reading = rest.filter((r) => !r.read).sort(newestFirst).map(line);
   return [
     "AI stuff I've read (✓) + my to-read pile (○)",
+    '<span style="font-weight: bold;">on pacing</span>\n' + pacing.join('\n'),
     read.join('\n'),
     reading.join('\n'),
   ].join('\n\n');
