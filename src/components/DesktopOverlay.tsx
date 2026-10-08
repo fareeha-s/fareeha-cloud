@@ -108,7 +108,7 @@ const DesktopOverlay: React.FC<DesktopOverlayProps> = ({ onClose }) => {
 
 You might\'ve found me through one of my Partifuls where I made you eat an <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'notes\', noteId:3})">apple you\'d never heard of</a>. I feel half the fun of finding something great, is sharing it.
 
-These days, I\'m mostly sharing <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'notes\', noteId:8})">what I\'m learning about superintelligence</a>, and I just joined <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">MTS</a>, a team that helps the world make sense of it.
+These days, I\'m mostly sharing <a href="javascript:void(0)" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation(); window.desktopOpenInPhone({app:\'notes\', noteId:8})">what I\'m learning about superintelligence</a>, and I\'ve just joined <a href="https://www.mts.now" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">MTS</a>, a team that helps the world make sense of it.
 
 <span style="font-weight: bold;">other loves:</span>
 ▹ pilates with friends (my app, <a href="https://kineship.com" target="_blank" rel="noopener noreferrer" class="custom-pink-link custom-pink-link--desktop-overlay" onclick="event.stopPropagation()">Kineship</a>)
