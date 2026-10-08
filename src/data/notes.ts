@@ -56,13 +56,22 @@ function readingListContent() {
     .map(line);
   const rest = readings.filter((r) => r.section !== 'pacing');
   const read = rest.filter((r) => r.read).sort(newestFirst).map(line);
-  const reading = rest.filter((r) => !r.read).sort(newestFirst).map(line);
+  // The to-read pile, grouped under small headings (the heading says what it is,
+  // so these lines skip the 🎧/▶/📖 markers)
+  const plain = (r: Reading) => `○ [${r.title}](${r.url}) · ${r.author}`;
+  const toRead = rest.filter((r) => !r.read).sort(newestFirst);
+  const group = (heading: string, items: Reading[]) =>
+    items.length ? `<span style="font-weight: bold;">${heading}</span>\n` + items.map(plain).join('\n') : '';
+  const isClassic = (r: Reading) => !r.kind && r.published < '2000';
   return [
     "AI stuff I've read (✓) + my to-read pile (○)",
     '<span style="font-weight: bold;">on pacing</span>\n' + pacing.join('\n'),
-    read.join('\n'),
-    reading.join('\n'),
-  ].join('\n\n');
+    '<span style="font-weight: bold;">finished</span>\n' + read.join('\n'),
+    group('to read', toRead.filter((r) => !r.kind && !isClassic(r))),
+    group('to listen + watch', toRead.filter((r) => r.kind === 'podcast' || r.kind === 'video')),
+    group('books', toRead.filter((r) => r.kind === 'book')),
+    group('classics', toRead.filter(isClassic)),
+  ].filter(Boolean).join('\n\n');
 }
 
 const allNotes: NoteItem[] = [
